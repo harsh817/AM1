@@ -1,28 +1,21 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   LockKey,
   PhoneCall,
   ShieldCheck,
-  Tag,
 } from "@phosphor-icons/react";
+import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "./checkout-config.js";
 import { normalizeIndianMobile } from "./phone.js";
 import "./checkout.css";
 
-const BASE_PRICE = 1999;
-const GST_RATE = 0.18;
 const DRAFT_KEY = "attractivemen-checkout-draft";
-
-const BUMPS = [
-  {
-    id: "call",
-    title: "20-Minute Style Review Call",
-    price: 799,
-    Icon: PhoneCall,
-    summary: "Review your report privately with a style expert.",
-    details: ["Personal Report Walkthrough", "Fit, Hair & Grooming Q&A", "2 Outfit Photo Reviews"],
-  },
-];
+const BUMPS = CHECKOUT_BUMPS.map((bump) => ({
+  ...bump,
+  Icon: PhoneCall,
+  summary: "Review your report privately with a style expert.",
+  details: ["Personal Report Walkthrough", "Fit, Hair & Grooming Q&A", "2 Outfit Photo Reviews"],
+}));
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -49,9 +42,7 @@ export function CheckoutPage() {
   const [selected, setSelected] = useState(initial.selected);
   const [errors, setErrors] = useState({});
   const [consent, setConsent] = useState(false);
-  const [couponOpen, setCouponOpen] = useState(false);
-  const [coupon, setCoupon] = useState("");
-  const [couponMessage, setCouponMessage] = useState("");
+
   const [status, setStatus] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
@@ -157,15 +148,6 @@ export function CheckoutPage() {
     }
   };
 
-  const saveForLater = () => {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ details, selected }));
-    setStatus("Saved on this device. You can return to this checkout when you are ready.");
-  };
-
-  const applyCoupon = () => {
-    setCouponMessage(coupon.trim() ? "This code will be verified by the live payment gateway." : "Enter a coupon code first.");
-  };
-
   return (
     <div className="checkout-page">
       <main className="checkout-main">
@@ -268,21 +250,14 @@ export function CheckoutPage() {
             </div>
             <label className="checkout-consent">
               <input type="checkbox" checked={consent} onChange={(event) => { setConsent(event.target.checked); setErrors((current) => ({ ...current, consent: "" })); }} />
-              <span>I agree to the Privacy Policy, Terms of Service and Refund Policy.</span>
+              <span>I agree to the <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms &amp; Conditions</a>.</span>
             </label>
             {errors.consent ? <small className="checkout-error">{errors.consent}</small> : null}
 
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
               <LockKey size={20} weight="fill" /> {isPaying ? "Opening secure payment..." : `Proceed to secure payment \u2022 ${formatMoney(total)}`}
             </button>
-            <button className="checkout-save" type="button" onClick={saveForLater}>Need time? Save and finish later</button>
             {status ? <p className="checkout-status" role="status">{status}</p> : null}
-
-            <div className="checkout-coupon">
-              <button type="button" onClick={() => setCouponOpen((open) => !open)}><Tag size={17} /> Have a coupon code?</button>
-              {couponOpen ? <div><input value={coupon} onChange={(event) => setCoupon(event.target.value)} placeholder="Coupon code" /><button type="button" onClick={applyCoupon}>Apply</button></div> : null}
-              {couponMessage ? <small>{couponMessage}</small> : null}
-            </div>
 
             <div className="payment-confidence">
               <span><ShieldCheck size={18} weight="fill" /> Secure Payment</span>
@@ -296,7 +271,7 @@ export function CheckoutPage() {
           <div>
             <p>Everything you need to stop guessing</p>
             <h2>The AttractiveMen Personalized Style Report</h2>
-            <strong>{"\u20B9"}1,999 + GST</strong>
+            <strong>{"\u20B9"}1,900 + GST</strong>
             <ul>
               <li><Check size={17} weight="bold" /> Face, Body & Skin Tone Analysis</li>
               <li><Check size={17} weight="bold" /> 20 Head-to-Toe Outfits</li>
@@ -314,7 +289,7 @@ export function CheckoutPage() {
       <footer className="checkout-footer">
         <a className="checkout-brand" href="?">AttractiveMen</a>
         <p>Personal style guidance made for Indian men. Individual results vary.</p>
-        <nav><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Service</a><a href="#refund">Refund Policy</a><a href="#support">Contact</a></nav>
+        <nav><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a></nav>
         <small>&copy; 2026 AttractiveMen. All rights reserved.</small>
       </footer>
     </div>

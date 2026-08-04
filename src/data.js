@@ -1,4 +1,4 @@
-﻿export const comparisonRows = [
+export const comparisonRows = [
   {
     title: "Style analysis",
     report: "Exact face shape analysis with real measurements.",
@@ -26,7 +26,7 @@
   },
   {
     title: "Cost",
-    report: "\u20B91,999",
+    report: "\u20B91,900",
     generic: "'Free' advice that wastes money on wrong purchases.",
     note: "A personal stylist can cost \u20B910,000-\u20B915,000 per session.",
   },
@@ -57,7 +57,7 @@ export const reportItems = [
   {
     number: "04",
     title: "Best Hairstyle Recommendation",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333861/ChatGPT_Image_Jul_18_2026_05_46_33_AM_8_y7eq9c.png",
+    image: "/assets/report/best-hairstyle-recommendation.png",
     description:
       "A clear haircut recommendation matched to your face shape, not a trend.",
   },
@@ -112,7 +112,7 @@ export const processSteps = [
     title: "We Run the Style Analysis Method",
     description:
       "Your face shape, body type, and skin tone are analysed against our structured styling framework, the same depth of analysis a \u20B910,000-\u20B915,000 personal stylist session would give you.",
-    image: "/assets/process/analysis.webp",
+    image: "/assets/process/analysis-v2.png",
     alt: "Minimal face, body and colour analysis preview",
   },
   {
@@ -127,27 +127,27 @@ export const processSteps = [
 
 export const testimonials = [
   {
-    quote: "It's like a stylist studied me. The recommendations were spot on for my face shape.",
+    quote: "I thought it would be a basic style report, but it felt like a stylist had actually studied my face. The hairstyle and beard suggestions made sense for my face shape, and I could see the difference right away.",
     name: "Rishi",
     meta: "Verified customer \u00B7 Pune",
     image: "/assets/testimonials/customer-1.webp",
   },
   {
-    quote: "Did the face shape test. Got 3 compliments the next day. Best investment I've made in myself.",
+    quote: "I used the face shape test and changed two small things in my grooming. The next day, three people noticed. That was enough for me. It felt like money well spent.",
     name: "Vikram",
     meta: "Verified customer \u00B7 Chennai",
     image: "/assets/testimonials/customer-2.webp",
   },
   {
-    quote: "I never knew how much difference the right style could make. After getting my report, I finally understand why certain clothes look better on me than others. The face shape analysis was spot on.",
+    quote: "I always knew some clothes looked better on me than others, but I never knew why. The report explained my face shape, body type, and colours in a simple way. Now I know what to choose and what to avoid.",
     name: "Jasprit",
     meta: "Verified customer \u00B7 Chandigarh",
     image: "/assets/testimonials/customer-3.webp",
   },
   {
-    quote: "The report made everything simple. I know which colours suit me, what fits to look for, and how to put together outfits without buying expensive brands.",
-    name: "Arjun",
-    meta: "Verified customer \u00B7 Bengaluru",
+    quote: "The best part was how practical it was. I got clear guidance on colours, fits, grooming, and outfits without being told to buy expensive brands. It helped me dress better with what I already had.",
+    name: "Verified customer",
+    meta: "",
     image: "/assets/testimonials/customer-4.webp",
   },
 ];

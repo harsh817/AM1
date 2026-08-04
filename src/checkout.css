@@ -1,4 +1,4 @@
-﻿.checkout-page {
+.checkout-page {
   min-height: 100vh;
   color: #1f292b;
   background: #f6f7f4;
@@ -50,8 +50,8 @@
 
 .checkout-field { display: block; margin-top: 15px; color: #344245; font-size: 13px; font-weight: 600; }
 .checkout-field > span { display: block; margin-bottom: 7px; }
-.checkout-field input, .checkout-coupon input { width: 100%; height: 50px; padding: 0 14px; border: 1px solid #cbd7d4; border-radius: 7px; outline: 0; background: #fff; color: #1f292b; transition: border-color .2s, box-shadow .2s; }
-.checkout-field input:focus, .checkout-coupon input:focus { border-color: #527c81; box-shadow: 0 0 0 3px rgba(82,124,129,.13); }
+.checkout-field input { width: 100%; height: 50px; padding: 0 14px; border: 1px solid #cbd7d4; border-radius: 7px; outline: 0; background: #fff; color: #1f292b; transition: border-color .2s, box-shadow .2s; }
+.checkout-field input:focus { border-color: #527c81; box-shadow: 0 0 0 3px rgba(82,124,129,.13); }
 .checkout-phone { display: flex; overflow: hidden; border: 1px solid #cbd7d4; border-radius: 7px; background: white; }
 .checkout-phone:focus-within { border-color: #527c81; box-shadow: 0 0 0 3px rgba(82,124,129,.13); }
 .checkout-phone span { padding: 15px 12px; border-right: 1px solid #dbe3e1; color: #5f6d70; font-weight: 500; }
@@ -94,17 +94,13 @@
 
 .checkout-consent { display: grid; grid-template-columns: auto 1fr; gap: 10px; margin: 17px 2px; color: #536164; font-size: 12px; line-height: 1.5; }
 .checkout-consent input { margin-top: 2px; accent-color: #527c81; }
+.checkout-consent a { color: #355f64; font-weight: 600; text-underline-offset: 2px; }
 .checkout-pay { width: 100%; min-height: 56px; border: 0; border-radius: 9px; display: flex; justify-content: center; align-items: center; gap: 9px; background: #202b2d; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(31,43,45,.18); }
 .checkout-pay:hover { background: #2c3d3f; }
 .checkout-pay:disabled { cursor: wait; opacity: .72; }
-.checkout-save { width: 100%; padding: 13px 0 5px; border: 0; background: transparent; color: #4b6f73; font-size: 12px; font-weight: 600; cursor: pointer; }
 .checkout-status { margin: 10px 0 0; padding: 11px; border-radius: 7px; background: #dfeae7; color: #355b5f; text-align: center; font-size: 12px; line-height: 1.45; }
-.checkout-coupon { margin-top: 20px; padding-top: 18px; border-top: 1px solid #d2ddda; }
-.checkout-coupon > button { padding: 0; border: 0; background: transparent; color: #4c666a; display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.checkout-coupon > div { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
-.checkout-coupon input { height: 44px; }
-.checkout-coupon > div button { padding: 0 18px; border: 0; border-radius: 7px; background: #607b7f; color: white; font-weight: 600; cursor: pointer; }
-.checkout-coupon small { display: block; margin-top: 8px; color: #667679; }
+.payment-confidence { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 18px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #d2ddda; color: #5d6d70; font-size: 11px; font-weight: 600; }
+.payment-confidence span { display: flex; align-items: center; gap: 6px; }
 .checkout-security { display: flex; justify-content: center; flex-wrap: wrap; gap: 13px 18px; margin-top: 20px; color: #69787b; font-size: 10px; }
 .checkout-security span { display: flex; align-items: center; gap: 5px; }
 

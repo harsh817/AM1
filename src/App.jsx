@@ -6,6 +6,9 @@ import {
   CaretLeft,
   CaretRight,
   Check,
+  Palette,
+  PersonSimple,
+  UserFocus,
   ShieldCheck,
   Star,
   StarHalf,
@@ -22,6 +25,29 @@ import { CHECKOUT_PATH } from "./routes.js";
 
 const CHECKOUT_TARGET = CHECKOUT_PATH;
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+const approachAnalysisCards = [
+  {
+    title: "Your face shape",
+    description: "down to the exact measurements",
+    Icon: UserFocus,
+    image: "/assets/approach/face-shape.png",
+    alt: "Face shape analysis showing facial measurements and proportions",
+  },
+  {
+    title: "Your skin undertone",
+    description: "so every color we recommend actually flatters you, not fights you",
+    Icon: Palette,
+    image: "/assets/approach/skin-undertone.png",
+    alt: "Skin undertone analysis with a personalised colour palette",
+  },
+  {
+    title: "Your body type",
+    description: "so every outfit is chosen to make you look taller, leaner, and sharper",
+    Icon: PersonSimple,
+    image: "/assets/approach/body-type.png",
+    alt: "Body type analysis showing proportions and fit guidance",
+  },
+];
 const transformationSlides = [
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/ankur_hhdjc8.png",
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/rahul_j5oyv6.png",
@@ -104,7 +130,7 @@ function StickyBuyBar() {
     <aside className={`sticky-buy-bar ${visible ? "visible" : ""}`} aria-hidden={!visible}>
       <div className="sticky-buy-inner">
         <div className="sticky-buy-offer">
-          <strong>{"\u20B9"}1,999 <small>+ GST</small></strong>
+          <strong>{"\u20B9"}1,900 <small>+ GST</small></strong>
           <span>One-time payment</span>
         </div>
         <div className="sticky-buy-countdown">
@@ -153,6 +179,19 @@ function Hero() {
           <div className="hero-subheading-card">
             <h2>Random fashion Reel and YouTube videos make you look average</h2>
           </div>
+          <div className="hero-visual">
+            <BeforeAfterSlider />
+            <Button />
+            <div className="rating-line" aria-label="Rated 4.9 out of 5 by more than 1,119 Indian men">
+              <span className="rating-stars" aria-hidden="true">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <Star key={index} size={22} weight="fill" />
+                ))}
+                <StarHalf size={22} weight="fill" />
+              </span>
+              <span><strong>4.9/5</strong> from 1,119+ Indian men who stopped guessing</span>
+            </div>
+          </div>
           <p className="hero-reason">
             Because the advice is not built for a <strong>face shape</strong>, <strong>body type</strong>, and <strong>skin tone</strong>.
           </p>
@@ -166,24 +205,10 @@ function Hero() {
           </ul>
           <p className="hero-budget-note">Without spending money on expensive clothes and accessories.</p>
         </div>
-        <div className="hero-visual">
-          <BeforeAfterSlider />
-          <Button />
-          <div className="rating-line" aria-label="Rated 4.9 out of 5 by more than 1,119 Indian men">
-            <span className="rating-stars" aria-hidden="true">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Star key={index} size={22} weight="fill" />
-              ))}
-              <StarHalf size={22} weight="fill" />
-            </span>
-            <span><strong>4.9/5</strong> from 1,119+ Indian men who stopped guessing</span>
-          </div>
-        </div>
       </div>
     </section>
   );
 }
-
 function TransformationShowcase() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -267,6 +292,17 @@ function ProblemSection() {
             <li><span><strong>A &ldquo;widely popular&rdquo; color</strong> can fade out your exact skin undertone while looking amazing on someone three shades warmer or cooler than you.</span></li>
             <li><span><strong>An outfit &ldquo;every man should own&rdquo;</strong> can add bulk in exactly the wrong place for your body type, or make you look completely bad.</span></li>
           </ul>
+          <figure className="problem-testimonial-visual">
+            <img
+              className="problem-testimonial-image"
+              src="https://res.cloudinary.com/dhjsqmejb/image/upload/v1785594161/ChatGPT_Image_Aug_1_2026_07_52_23_PM_iceryf.png"
+              alt="Before and after outfit transformation testimonial"
+              loading="lazy"
+            />
+            <div className="problem-testimonial-divider" aria-hidden="true" />
+            <span className="problem-testimonial-label problem-testimonial-label-before">Before</span>
+            <span className="problem-testimonial-label problem-testimonial-label-after">After</span>
+          </figure>
           <p>That's why you end up spending money to look <em>more</em> generic, because the internet gives the same five tips to crores of different faces, bodies, and skin tones.</p>
           <p>Meanwhile, Indian men are stepping onto a global stage for jobs, for opportunities, for first impressions that happen in under seven seconds while still being told to copy a celebrity&apos;s look off Instagram and hope for the best.</p>
           <p>The only people who actually get <em>personalized</em> styling advice are the ones who can afford a stylist. And that costs {"\u20B9"}10,000-{"\u20B9"}15,000 a session.</p>
@@ -282,17 +318,43 @@ function ApproachSection() {
     <section className="section approach" id="approach">
       <div className="shell approach-shell">
         <SectionHeading index="03" eyebrow="Our approach">
-          We reverse-engineered what <span>celebrity stylists actually do</span> and made it affordable
+          <span className="approach-heading-line">We reverse-engineered what</span>
+          <span className="approach-heading-line approach-heading-accent">celebrity stylists actually do</span>
+          <span className="approach-heading-line">and made it affordable</span>
         </SectionHeading>
         <div className="approach-content">
           <p>We spent months studying how professional personal stylists build a look for a client: they measure the face shape. They read the skin&apos;s undertone. They analyse body proportions. Then they build every recommendation, including hair, color, fit, and grooming, around those three fixed facts about a person&apos;s body.</p>
-          <p className="approach-method">We took that exact process and turned it into a structured system: <strong>the Style Analysis Method</strong>. The same depth of personalization, without the {"\u20B9"}15,000 expense and the multi-week wait for an appointment.</p>
+          <div className="approach-method-panel">
+            <p className="approach-method-lead">WE TOOK THAT EXACT PROCESS</p>
+            <figure className="approach-gif-frame">
+              <img
+                src="https://res.cloudinary.com/dhjsqmejb/image/upload/v1785596656/1589814288149_gfergb.gif"
+                alt="Surprised reaction"
+                loading="lazy"
+              />
+            </figure>
+            <p className="approach-method">and turned it into a structured system: <strong>the Style Analysis Method. The</strong> same depth of personalization, without the {"\u20B9"}15,000 expense and the multi-week wait for an appointment.</p>
+          </div>
           <h3>From your photos and a few basic measurements, our stylist analyses:</h3>
-          <ul className="approach-analysis-list">
-            <li><Check size={19} weight="bold" /><span><strong>Your face shape</strong> down to the exact measurements</span></li>
-            <li><Check size={19} weight="bold" /><span><strong>Your skin undertone</strong> so every color we recommend actually flatters you, not fights you</span></li>
-            <li><Check size={19} weight="bold" /><span><strong>Your body type</strong> so every outfit is chosen to make you look taller, leaner, and sharper</span></li>
-          </ul>
+          <div className="approach-analysis-grid">
+            {approachAnalysisCards.map(({ title, description, Icon, image, alt }) => (
+              <article className="report-card approach-analysis-card" key={title}>
+                <div className="report-card-visual approach-analysis-visual">
+                  {image ? (
+                    <img src={image} alt={alt} loading="lazy" />
+                  ) : (
+                    <div className="approach-image-placeholder" aria-label={`${title} image placeholder`}>
+                      <Icon size={52} weight="thin" aria-hidden="true" />
+                      <span>Image placeholder</span>
+                    </div>
+                  )}
+                </div>
+                <div className="report-card-copy approach-analysis-copy">
+                  <p><strong>{title}</strong> {description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
           <div className="approach-conclusion">
             <p>Then we build your full report around those three things.</p>
             <div className="approach-contrast">
@@ -345,7 +407,7 @@ function ReportContents() {
         <div className="report-grid">
           {reportItems.map((item) => (
             <article className="report-card" key={item.number}>
-              <div className="report-card-visual">
+              <div className={`report-card-visual${item.number === "04" ? " report-card-visual--full-bleed" : ""}`}>
                 <img src={item.image} alt="" loading="lazy" />
               </div>
               <div className="report-card-copy">
@@ -376,7 +438,14 @@ function ProcessSection() {
               <h3>{step.title}</h3>
               <p className="process-description">{step.description}</p>
               <ArrowDown className="process-arrow" size={38} weight="thin" aria-hidden="true" />
-              <figure><img src={step.image} alt={step.alt} loading="lazy" /></figure>
+              <figure>
+                <img
+                  className={step.number === "Step 2" ? "process-analysis-image" : undefined}
+                  src={step.image}
+                  alt={step.alt}
+                  loading="lazy"
+                />
+              </figure>
             </article>
           ))}
         </div>
@@ -392,7 +461,7 @@ function SocialProof() {
     <section className="section proof" id="reviews">
       <div className="shell">
         <SectionHeading index="07" eyebrow="Customer results" intro="Real experiences from men who stopped guessing and started dressing for their features.">
-          Real men. Practical changes. <span>Clearer choices.</span>
+          Here is what our clients say
         </SectionHeading>
         <div className="testimonial-grid">
           {testimonials.map((item, index) => (
@@ -400,10 +469,10 @@ function SocialProof() {
               <div className="testimonial-rating" aria-label="Five stars">
                 {Array.from({ length: 5 }).map((_, star) => <Star key={star} size={15} weight="fill" />)}
               </div>
-              <blockquote>&ldquo;{item.quote}&rdquo;</blockquote>
+              <blockquote>{item.quote}</blockquote>
               <footer>
                 <img className="testimonial-avatar" src={item.image} alt={`${item.name}, verified customer`} loading="lazy" />
-                <div><strong>{item.name}</strong><small>{item.meta}</small></div>
+                <div><strong>{item.name}</strong>{item.meta && <small>{item.meta}</small>}</div>
               </footer>
             </article>
           ))}
@@ -423,7 +492,10 @@ function ProductIntro() {
           <figcaption>Personalized for you &middot; Delivered within 48 hours</figcaption>
         </figure>
         <div className="product-copy">
-          <p className="product-price">{"\u20B9"}1,999 + GST</p>
+          <p className="product-price">
+            <del>{"\u20B9"}25,000</del>
+            <span>{"\u20B9"}1,900 + GST</span>
+          </p>
           <p className="product-saving">Save 33%- 80% affordable than a single stylist session, same depth of analysis</p>
           <p className="product-includes">Everything included:</p>
           <ul>
@@ -473,7 +545,7 @@ function FAQ() {
         <div>
           <h2>Stop guessing before your next haircut or purchase.</h2>
           <p>Get a complete head-to-toe plan built for your face, body, skin tone, routine and budget.</p>
-          <div className="price-line"><strong>{"\u20B9"}1,999</strong><span>One-time payment</span></div>
+          <div className="price-line"><strong>{"\u20B9"}1,900</strong><span>One-time payment</span></div>
           <Button light>Get Your Personalized Report Now</Button>
           <p className="delivery-proof"><ShieldCheck size={20} weight="regular" /> Delivered within 48 hours after your assessment.</p>
         </div>
@@ -486,11 +558,14 @@ function Footer() {
   return (
     <footer className="site-footer" id="footer">
       <div className="shell footer-inner">
-        <Brand />
         <nav className="footer-legal-links" aria-label="Legal links">
           <a href="/privacy">Privacy Policy</a>
           <a href="/terms">Terms &amp; Conditions</a>
         </nav>
+        <div className="footer-disclaimer">
+          <p>&copy; 2026 AttractiveMen. All rights reserved.</p>
+          <p>This page is not affiliated with Facebook or Meta Platforms, Inc., and is not endorsed by Facebook in any way.</p>
+        </div>
       </div>
       <div className="footer-wordmark" aria-label="AttractiveMen">AttractiveMen</div>
     </footer>

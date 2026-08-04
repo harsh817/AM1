@@ -1,16 +1,7 @@
 import crypto from "node:crypto";
+import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../../src/checkout-config.js";
 
-const BASE_PRICE = 1999;
-const GST_RATE = 0.18;
-const BUMPS = [
-  {
-    id: "call",
-    title: "20-Minute Style Review Call",
-    price: 799,
-  },
-];
-
-const BUMP_BY_ID = new Map(BUMPS.map((bump) => [bump.id, bump]));
+const BUMP_BY_ID = new Map(CHECKOUT_BUMPS.map((bump) => [bump.id, bump]));
 
 export function calculateCheckoutTotals(selected = []) {
   const selectedBumps = [...new Set(selected)]
