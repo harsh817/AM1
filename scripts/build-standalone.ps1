@@ -21,6 +21,7 @@ function Get-DataUri([string]$Path) {
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $distRoot = Join-Path $projectRoot 'dist'
+$artifactRoot = Join-Path $projectRoot 'artifacts'
 $indexPath = Join-Path $distRoot 'index.html'
 $html = [IO.File]::ReadAllText($indexPath)
 
@@ -55,7 +56,11 @@ $html = $html.Replace($styleMatch.Value, '<style>' + $style + '</style>')
 $html = $html.Replace('<script type="module"', '<script')
 $html = $html -replace "`r`n?", "`n"
 
-$primaryOutput = Join-Path $projectRoot 'AttractiveMen.html'
+if (-not (Test-Path -LiteralPath $artifactRoot)) {
+  New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
+}
+
+$primaryOutput = Join-Path $artifactRoot 'AttractiveMen.html'
 $legacyOutput = Join-Path $projectRoot 'attractiveme.html'
 [IO.File]::WriteAllText($primaryOutput, $html, [Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText($legacyOutput, $html, [Text.UTF8Encoding]::new($false))

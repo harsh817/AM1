@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StyleIQ Color Direction Preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f8f9f7;
+        --ink: #1d2426;
+        --brand: #5f7277;
+        --accent: #d7c4bd;
+        --background-rgb: 248, 249, 247;
+        --ink-rgb: 29, 36, 38;
+        --brand-rgb: 95, 114, 119;
+        --accent-rgb: 215, 196, 189;
+        --surface: color-mix(in srgb, var(--background) 92%, var(--accent));
+        --surface-cool: color-mix(in srgb, var(--background) 80%, var(--brand));
+        --surface-warm: color-mix(in srgb, var(--background) 72%, var(--accent));
+        --surface-deep: color-mix(in srgb, var(--brand) 78%, var(--ink));
+        --muted: rgba(var(--ink-rgb), 0.68);
+        --border: rgba(var(--ink-rgb), 0.12);
+        --shadow: 0 22px 60px rgba(var(--ink-rgb), 0.12);
+        --shell: 1180px;
+        --section-y: clamp(64px, 7vw, 100px);
+        --gap: clamp(18px, 2.5vw, 28px);
+        --radius: 12px;
+        --ease: 260ms cubic-bezier(0.2, 0.72, 0.2, 1);
+        font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .shell {
+        width: min(calc(100% - 48px), var(--shell));
+        margin-inline: auto;
+      }
+
+      .section {
+        position: relative;
+        padding-block: var(--section-y);
+      }
+
+      .section::before {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 8px;
+        background: var(--accent);
+        content: "";
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--brand);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 920px;
+        margin-bottom: 22px;
+        font-size: clamp(46px, 7vw, 86px);
+        font-weight: 800;
+        letter-spacing: 0;
+        line-height: 1.02;
+      }
+
+      h2 {
+        max-width: 860px;
+        margin-bottom: 18px;
+        font-size: clamp(36px, 5vw, 64px);
+        font-weight: 800;
+        letter-spacing: 0;
+        line-height: 1.06;
+      }
+
+      h3 {
+        font-size: clamp(21px, 2vw, 26px);
+        font-weight: 750;
+        line-height: 1.2;
+      }
+
+      .lead {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: clamp(17px, 1.5vw, 20px);
+        line-height: 1.68;
+      }
+
+      .button {
+        min-height: 58px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 28px;
+        border: 1px solid var(--ink);
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--background);
+        font-size: 15px;
+        font-weight: 750;
+        transition: transform var(--ease), background var(--ease), color var(--ease);
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button.light {
+        border-color: var(--background);
+        background: var(--background);
+        color: var(--ink);
+      }
+
+      .grid {
+        display: grid;
+        gap: var(--gap);
+      }
+
+      .two {
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        align-items: center;
+      }
+
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 100%;
+        padding: clamp(22px, 3vw, 34px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: rgba(var(--background-rgb), 0.82);
+        box-shadow: 0 12px 34px rgba(var(--ink-rgb), 0.08);
+      }
+
+      .card p {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-top: 5px solid var(--accent);
+        background: var(--surface-deep);
+        color: var(--background);
+      }
+
+      .nav .shell {
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        font-size: 26px;
+        font-weight: 750;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        color: rgba(var(--background-rgb), 0.78);
+        font-size: 13px;
+      }
+
+      .hero {
+        padding-block: clamp(58px, 7vw, 98px);
+        background:
+          linear-gradient(135deg, rgba(var(--ink-rgb), 0.22), transparent 58%),
+          var(--surface-deep);
+        color: var(--background);
+      }
+
+      .hero::before {
+        display: none;
+      }
+
+      .hero .eyebrow,
+      .hero .lead {
+        color: rgba(var(--background-rgb), 0.76);
+      }
+
+      .hero .price {
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .hero-panel {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: color-mix(in srgb, var(--brand) 62%, var(--background));
+        box-shadow: var(--shadow);
+      }
+
+      .hero-panel img {
+        aspect-ratio: 1;
+        object-fit: cover;
+      }
+
+      .hero-panel .label {
+        position: absolute;
+        bottom: 18px;
+        left: 18px;
+        right: 18px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        background: rgba(var(--background-rgb), 0.9);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px 22px;
+        margin-top: 30px;
+      }
+
+      .band-warm {
+        background: var(--surface-warm);
+      }
+
+      .band-clean {
+        background: var(--background);
+      }
+
+      .band-cool {
+        background: var(--surface-cool);
+      }
+
+      .band-brand {
+        background: var(--brand);
+        color: var(--background);
+      }
+
+      .band-brand .eyebrow,
+      .band-brand .lead,
+      .band-brand .card p {
+        color: rgba(var(--background-rgb), 0.76);
+      }
+
+      .band-brand .card {
+        border-color: rgba(var(--background-rgb), 0.18);
+        background: rgba(var(--background-rgb), 0.08);
+        box-shadow: none;
+      }
+
+      .band-brand .card h3 {
+        color: var(--background);
+      }
+
+      .band-ink {
+        background: var(--ink);
+        color: var(--background);
+      }
+
+      .band-ink .eyebrow {
+        color: var(--accent);
+      }
+
+      .band-ink .lead,
+      .band-ink .card p {
+        color: rgba(var(--background-rgb), 0.72);
+      }
+
+      .band-ink .card {
+        border-color: rgba(var(--background-rgb), 0.14);
+        background: rgba(var(--background-rgb), 0.07);
+        box-shadow: none;
+      }
+
+      .problem-card {
+        display: grid;
+        gap: 14px;
+      }
+
+      .problem-card span {
+        color: var(--brand);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gap);
+      }
+
+      .comparison .wrong {
+        border-left: 5px solid var(--accent);
+      }
+
+      .comparison .right {
+        border-left: 5px solid var(--brand);
+        background: color-mix(in srgb, var(--background) 76%, var(--brand));
+      }
+
+      .report-image {
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: var(--background);
+        box-shadow: var(--shadow);
+      }
+
+      .process-step {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 12px;
+      }
+
+      .process-step small {
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .review {
+        display: grid;
+        gap: 18px;
+      }
+
+      .review strong {
+        color: var(--brand);
+      }
+
+      .final {
+        text-align: center;
+      }
+
+      .final h2,
+      .final .lead {
+        margin-inline: auto;
+      }
+
+      .recap {
+        max-width: 900px;
+        margin: 34px auto;
+      }
+
+      .recap .card {
+        min-height: 94px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        font-weight: 750;
+      }
+
+      .footer {
+        padding: 40px 0;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        text-align: center;
+      }
+
+      @media (max-width: 900px) {
+        .two,
+        .three,
+        .four,
+        .comparison {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero-actions {
+          display: grid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="shell">
+        <a class="brand" href="#top">AttractiveMen</a>
+        <nav class="nav-links" aria-label="Preview sections">
+          <a href="#problem">Problem</a>
+          <a href="#styleiq">StyleIQ</a>
+          <a href="#inside">Inside</a>
+          <a href="#purchase">Buy</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Dear Indian Men</p>
+            <h1>Stop Guessing What Actually Looks Good On You</h1>
+            <p class="lead">A stronger section-color direction for StyleIQ: dark hero, warm proof band, cool problem band, clean report sections, and a dark final offer.</p>
+            <div class="hero-actions">
+              <a class="button light" href="#purchase">Get My StyleIQ</a>
+              <span class="price">Rs. 1,999 + GST</span>
+            </div>
+          </div>
+          <figure class="hero-panel">
+            <img src="../public/assets/hero/before-after-square.png" alt="Before and after personal style transformation" />
+            <figcaption class="label">Dark brand hero creates the first strong visual anchor.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-warm">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Warm Transition</p>
+            <h2>A warmer band after the hero stops the page from feeling flat</h2>
+            <p class="lead">The accent color is used as a real background tone here, not only as a tiny border or price label.</p>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h3>1,119+ clients</h3>
+              <p>Warm proof sections can make social credibility feel more human.</p>
+            </article>
+            <article class="card">
+              <h3>4.8 rating</h3>
+              <p>The card surfaces stay calm while the section gives movement.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-cool" id="problem">
+        <div class="shell">
+          <p class="eyebrow">Problem</p>
+          <h2>The internet is full of random fashion advice</h2>
+          <p class="lead">Cool brand-tinted sections work well for the pain-point parts because they feel analytical and controlled.</p>
+          <div class="grid three">
+            <article class="card problem-card">
+              <span>Question 01</span>
+              <h3>Does this suit my face?</h3>
+              <p>Face shape needs different decisions for hair, beard, collar, and glasses.</p>
+            </article>
+            <article class="card problem-card">
+              <span>Question 02</span>
+              <h3>Does this fit my build?</h3>
+              <p>Proportion issues are easier to see when the section gives visual contrast.</p>
+            </article>
+            <article class="card problem-card">
+              <span>Question 03</span>
+              <h3>What should I buy next?</h3>
+              <p>The page should feel like decisions are becoming clearer section by section.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-clean">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Clean Reset</p>
+            <h2>Clean sections give the eye a rest between stronger color bands</h2>
+            <p class="lead">Not every section should be loud. The rhythm should be dark, warm, cool, clean, dark, not one continuous pale background.</p>
+          </div>
+          <figure class="report-image">
+            <img src="../public/assets/problem/reel-vs-real.webp" alt="Outfit advice looking different in reels and reality" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-brand" id="styleiq">
+        <div class="shell">
+          <p class="eyebrow">Brand Band</p>
+          <h2>Your StyleIQ becomes the strong middle anchor</h2>
+          <p class="lead">A brand-dark section in the middle gives the page another visual peak and makes the system feel premium.</p>
+          <div class="grid four">
+            <article class="card">
+              <h3>Your Features</h3>
+              <p>Face shape, facial hair, glasses, and hair direction.</p>
+            </article>
+            <article class="card">
+              <h3>Your Build</h3>
+              <p>Fit, proportion, fabric weight, and outfit structure.</p>
+            </article>
+            <article class="card">
+              <h3>Your Coloring</h3>
+              <p>Skin tone, undertone, contrast, and color palette.</p>
+            </article>
+            <article class="card">
+              <h3>Your Lifestyle</h3>
+              <p>Recommendations that work for your real life and budget.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-warm">
+        <div class="shell">
+          <p class="eyebrow">Comparison</p>
+          <h2>Use warm and cool contrast inside the same section</h2>
+          <div class="comparison">
+            <article class="card wrong">
+              <h3>Without StyleIQ</h3>
+              <p>You copy a haircut, shirt, or outfit from someone else and hope it works on your face, build, and skin tone.</p>
+            </article>
+            <article class="card right">
+              <h3>With StyleIQ</h3>
+              <p>You know which directions work for your features, proportions, coloring, lifestyle, and next purchases.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-clean" id="inside">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Inside The Report</p>
+            <h2>Report sections can stay clean because the surrounding bands carry the energy</h2>
+            <p class="lead">The product needs inspection space. Clean backgrounds make the report screenshots easier to read.</p>
+          </div>
+          <figure class="report-image">
+            <img src="../public/assets/product/attractivemen-style-report-mockup-v2.png" alt="StyleIQ report mockup" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-cool">
+        <div class="shell">
+          <p class="eyebrow">Process</p>
+          <h2>Cool process bands make the service feel structured</h2>
+          <div class="grid three">
+            <article class="card process-step">
+              <small>Step 1</small>
+              <h3>Complete your assessment</h3>
+              <p>Photos, fit preferences, lifestyle, and budget.</p>
+            </article>
+            <article class="card process-step">
+              <small>Step 2</small>
+              <h3>Stylist reviews your inputs</h3>
+              <p>Your recommendations are built from your actual context.</p>
+            </article>
+            <article class="card process-step">
+              <small>Step 3</small>
+              <h3>Receive your report</h3>
+              <p>Your full StyleIQ arrives within 48 hours.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-warm">
+        <div class="shell">
+          <p class="eyebrow">Reviews</p>
+          <h2>Warm reviews make the page feel less clinical</h2>
+          <div class="grid three">
+            <article class="card review">
+              <p>"I stopped buying random clothes and finally understood what fits my build."</p>
+              <strong>Verified customer</strong>
+            </article>
+            <article class="card review">
+              <p>"The haircut and color advice were the most useful parts for me."</p>
+              <strong>Verified customer</strong>
+            </article>
+            <article class="card review">
+              <p>"It felt like practical styling advice, not generic fashion tips."</p>
+              <strong>Verified customer</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-ink final" id="purchase">
+        <div class="shell">
+          <p class="eyebrow">Final CTA</p>
+          <h2>End with a dark, decisive buying section</h2>
+          <p class="lead">The final offer should feel different from informational sections. Strong contrast helps the page close.</p>
+          <div class="grid four recap">
+            <article class="card">Hair</article>
+            <article class="card">Colors</article>
+            <article class="card">Fits</article>
+            <article class="card">Outfits</article>
+          </div>
+          <a class="button light" href="#">Get My Personal Style Report</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">Style direction preview artifact. Same four palette colors, stronger section rhythm.</div>
+    </footer>
+  </body>
+</html>

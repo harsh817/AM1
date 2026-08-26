@@ -9,22 +9,22 @@ import {
 
 test("calculates trusted server-side totals from selected bump ids", () => {
   assert.deepEqual(calculateCheckoutTotals([]), {
-    basePrice: 1900,
+    basePrice: 1999,
     bumpsTotal: 0,
-    subtotal: 1900,
-    gst: 342,
-    total: 2242,
-    amountPaise: 224200,
+    subtotal: 1999,
+    gst: 359.82,
+    total: 2358.82,
+    amountPaise: 235882,
     selectedBumps: [],
   });
 
   assert.deepEqual(calculateCheckoutTotals(["call"]), {
-    basePrice: 1900,
+    basePrice: 1999,
     bumpsTotal: 499,
-    subtotal: 2399,
-    gst: 431.82,
-    total: 2830.82,
-    amountPaise: 283082,
+    subtotal: 2498,
+    gst: 449.64,
+    total: 2947.64,
+    amountPaise: 294764,
     selectedBumps: [
       {
         id: "call",

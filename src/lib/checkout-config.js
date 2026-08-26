@@ -1,4 +1,4 @@
-export const BASE_PRICE = 1900;
+export const BASE_PRICE = 1999;
 export const GST_RATE = 0.18;
 export const CHECKOUT_BUMPS = Object.freeze([
   Object.freeze({

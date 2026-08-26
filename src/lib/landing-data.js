@@ -1,151 +1,218 @@
-export const comparisonRows = [
+export const trustBadges = [
+  "1,119+ happy clients",
+  "4.8 star rating",
+  "Delivered in 48 hours",
+  "Lifetime access",
+];
+
+export const heroBenefits = [
+  "Personalized to your face, body, height, skin tone, lifestyle, and preferences",
+  "No expensive brands required",
+  "Practical head-to-toe recommendations",
+];
+
+export const styleIqPillars = [
   {
-    title: "Style analysis",
-    report: "Exact face shape analysis with real measurements.",
-    generic: "One-size-fits-all tips made for everyone.",
+    title: "Your Features",
+    description:
+      "Facial characteristics and proportions guide hairstyles, beard shapes, eyewear, collars, and grooming choices.",
   },
   {
-    title: "Color selection",
-    report: "Skin-tone-matched palette built for your undertone.",
-    generic: "Random 'trending' colors.",
+    title: "Your Build & Proportions",
+    description:
+      "Your height, frame, and proportions guide the fits, lengths, rises, tapers, and silhouettes that work better on your body.",
   },
   {
-    title: "Body type guide",
-    report: "Precise body assessment and outfit fit built around it.",
-    generic: "Ignores your proportions.",
+    title: "Your Coloring",
+    description:
+      "Your complexion and undertone shape the color families that work more naturally with your appearance.",
   },
   {
-    title: "Hairstyle",
-    report: "Hairstyle matched to your specific face shape.",
-    generic: "Copy a celebrity cut.",
+    title: "Your Lifestyle",
+    description:
+      "Office, dates, weekends, weddings, and casual outings are considered so the advice fits where you actually go.",
   },
   {
-    title: "Full look",
-    report: "Complete head-to-toe looks built for your features.",
-    generic: "Copy what's trending in Bollywood or Hollywood.",
-  },
-  {
-    title: "Cost",
-    report: "\u20B91,900",
-    generic: "'Free' advice that wastes money on wrong purchases.",
-    note: "A personal stylist can cost \u20B910,000-\u20B915,000 per session.",
+    title: "Your Preferences & Budget",
+    description:
+      "Your stylist considers what you like wearing and what you are comfortable spending, because advice is useful only when it fits real life.",
   },
 ];
 
-export const reportItems = [
+export const comparisonRows = [
   {
-    number: "01",
-    title: "Face Shape Analysis",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333864/ChatGPT_Image_Jul_18_2026_05_46_29_AM_1_xh0fqc.png",
-    description:
-      "Your exact face shape, with hairstyle guidance that sharpens your features.",
+    withoutStyleIq: "Guessing which haircut will suit your face",
+    withStyleIq: "Knowing which hairstyles and beard styles complement your features",
   },
   {
-    number: "02",
-    title: "Body Type Analysis",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333863/ChatGPT_Image_Jul_18_2026_05_46_30_AM_2_wmzalr.png",
-    description:
-      "Fit guidance for your proportions, so clothes look cleaner and sharper.",
+    withoutStyleIq: "Buying colors because they look good on Instagram Reels",
+    withStyleIq: "Knowing which colors work naturally with your complexion",
   },
   {
-    number: "03",
-    title: "Skin Tone Analysis",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333863/ChatGPT_Image_Jul_18_2026_05_46_30_AM_3_cif0mo.png",
-    description:
-      "Your best colour palette, chosen to make your skin look brighter and healthier.",
+    withoutStyleIq: "Choosing fits by trial and error",
+    withStyleIq: "Understanding the fits, lengths, and silhouettes that work for your proportions",
   },
   {
-    number: "04",
-    title: "Best Hairstyle Recommendation",
-    image: "/assets/report/best-hairstyle-recommendation.png",
-    description:
-      "A clear haircut recommendation matched to your face shape, not a trend.",
+    withoutStyleIq: "Using AI for style and looking like everyone else",
+    withStyleIq: "Getting personalized outfit direction by understanding your personality and lifestyle",
   },
   {
-    number: "05",
-    title: "20 Outfit Recommendations",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333862/ChatGPT_Image_Jul_18_2026_05_46_32_AM_5_qmnamq.png",
-    description:
-      "Twenty looks for work, casual days, dates, and events.",
+    withoutStyleIq: "Buying more clothes hoping something finally works",
+    withStyleIq: "Knowing what to buy next, and what you can stop wasting money on",
   },
   {
-    number: "06",
-    title: "Accessories & Footwear",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333864/ChatGPT_Image_Jul_18_2026_05_46_32_AM_6_yqpfgb.png",
-    description:
-      "Shoes and accessories that complete the outfit without overdoing it.",
+    withoutStyleIq: "Following advice that ignores your lifestyle, taste, and budget",
+    withStyleIq: "Getting recommendations built around your actual life and preferences",
+  },
+];
+
+export const reportContentGroups = [
+  {
+    title: "Your Personal Style Analysis",
+    intro: "The personal grooming and face-based decisions that affect your first impression.",
+    items: [
+      "5 haircut recommendations",
+      "3 beard style recommendations",
+      "1 complete face shape analysis",
+      "5 eyewear recommendations",
+    ],
   },
   {
-    number: "07",
-    title: "Beard & Facial Hair Guide",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333861/ChatGPT_Image_Jul_18_2026_05_46_33_AM_8_y7eq9c.png",
-    description:
-      "Beard and facial hair guidance that balances your face shape.",
+    title: "Your Personal Color & Fit System",
+    intro: "Clear rules for colors, combinations, silhouettes, and how clothes should sit on your body.",
+    items: [
+      "15 best colors",
+      "7 go-to color combinations",
+      "5 colors to be careful with",
+      "1 complete personal fit guide",
+      "8 clothing-specific fit rules",
+      "4 best trouser and jeans fits",
+      "4 best shirt and T-shirt fits",
+    ],
   },
   {
-    number: "08",
-    title: "90-Day Action Plan",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333861/ChatGPT_Image_Jul_18_2026_05_46_33_AM_7_e9zvgv.png",
-    description:
-      "A simple 90-day plan that turns the report into daily action.",
+    title: "Your Personal Outfit System",
+    intro: "20 complete outfit ideas you can recreate for the situations you actually dress for.",
+    items: [
+      "Date nights",
+      "Work",
+      "Weekends",
+      "Dinners",
+      "Weddings",
+      "Events",
+      "Smart casual",
+      "Everyday outfits",
+    ],
   },
   {
-    number: "09",
-    title: "Perfume Recommendations",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784333861/ChatGPT_Image_Jul_18_2026_05_46_34_AM_9_bpxoxh.png",
+    title: "Your Personal Shopping Plan",
+    intro: "A practical purchase plan so you stop buying clothes that sit unused.",
+    items: [
+      "10 wardrobe gaps identified",
+      "10 buy-next recommendations",
+      "5 stop-buying recommendations",
+      "10 high-impact wardrobe pieces",
+      "5 brand and store recommendations",
+      "5 footwear recommendations",
+      "5 accessory recommendations",
+    ],
+  },
+  {
+    title: "Your Personal Style Rules",
+    intro: "The quick-reference rules that keep your decisions consistent after the report is delivered.",
+    items: [
+      "1 signature style direction",
+      "10 personal style do's",
+      "10 personal style don'ts",
+      "1 personal style cheat sheet",
+    ],
+  },
+];
+
+export const bonuses = [
+  {
+    title: "Bonus #1 - Your 90-Day Style Upgrade Plan",
     description:
-      "Perfume picks for daily wear, dates, events, and special occasions.",
+      "A step-by-step roadmap from Day 1 to Day 90, covering basics, grooming, fit, colors, wardrobe gaps, outfits, and your signature style.",
+  },
+  {
+    title: "Bonus #2 - Men's Skincare & Haircare Guide",
+    description:
+      "A straightforward guide for morning skincare, night skincare, product categories, hair washing, conditioning, styling, and common grooming mistakes.",
   },
 ];
 
 export const processSteps = [
   {
     number: "Step 1",
-    title: "Your Style Assessment",
+    title: "Tell Us About You",
     description:
-      "After payment, you send us a few photos and basic measurements of your face and body. That's all our creative stylist needs to start.",
+      "After purchase, complete your StyleIQ assessment with photos, measurements, lifestyle, preferences, budget, and the areas you want help with.",
     image: "/assets/process/assessment.webp",
     alt: "Front, side and full-body photo examples for a style assessment",
   },
   {
     number: "Step 2",
-    title: "We Run the Style Analysis Method",
+    title: "Your Stylist Builds Your StyleIQ",
     description:
-      "Your face shape, body type, and skin tone are analysed against our structured styling framework, the same depth of analysis a \u20B910,000-\u20B915,000 personal stylist session would give you.",
+      "A human stylist reviews your information and uses the StyleIQ system to connect your features, proportions, coloring, lifestyle, and preferences.",
     image: "/assets/process/analysis-v2.png",
-    alt: "Minimal face, body and colour analysis preview",
+    alt: "Minimal face, body and color analysis preview",
   },
   {
     number: "Step 3",
-    title: "Get Your Complete Report",
+    title: "Get Your Personal Style Plan",
     description:
-      "No appointment. No travel. No waiting days for a callback. Your full personalised Style Report lands in your hands within 48 hours, wherever you are.",
+      "Receive your complete personalized StyleIQ within 48 hours, with clear recommendations for hair, grooming, colors, fits, outfits, accessories, and what to buy next.",
     image: "/assets/product/style-report.png",
     alt: "Personal style report cover with analysis and outfit pages",
   },
 ];
 
+export const recapItems = [
+  "5 Haircuts",
+  "3 Beard Styles",
+  "15 Best Colors",
+  "7 Color Combinations",
+  "20 Outfit Ideas",
+  "10 Wardrobe Gaps",
+  "10 Buy-Next Recommendations",
+  "10 High-Impact Pieces",
+  "5 Brands & Stores",
+  "5 Shoes",
+  "5 Accessories",
+  "20 Personal Do's & Don'ts",
+  "1 Complete Fit System",
+  "1 Style Cheat Sheet",
+  "90-Day Action Plan",
+  "Skincare & Haircare Guide",
+];
+
 export const testimonials = [
   {
-    quote: "I thought it would be a basic style report, but it felt like a stylist had actually studied my face. The hairstyle and beard suggestions made sense for my face shape, and I could see the difference right away.",
+    quote:
+      "It felt like someone actually looked at my face and body instead of giving random tips. The haircut and color advice were instantly useful.",
     name: "Rishi",
-    meta: "Verified customer \u00B7 Pune",
+    meta: "Verified customer - Pune",
     image: "/assets/testimonials/customer-1.webp",
   },
   {
-    quote: "I used the face shape test and changed two small things in my grooming. The next day, three people noticed. That was enough for me. It felt like money well spent.",
+    quote:
+      "I did not need expensive brands. I finally understood what fits to choose and what to stop buying.",
     name: "Vikram",
-    meta: "Verified customer \u00B7 Chennai",
+    meta: "Verified customer - Chennai",
     image: "/assets/testimonials/customer-2.webp",
   },
   {
-    quote: "I always knew some clothes looked better on me than others, but I never knew why. The report explained my face shape, body type, and colours in a simple way. Now I know what to choose and what to avoid.",
+    quote:
+      "The report gave me a clear direction. I stopped saving random outfits and started knowing what actually works for me.",
     name: "Jasprit",
-    meta: "Verified customer \u00B7 Chandigarh",
+    meta: "Verified customer - Chandigarh",
     image: "/assets/testimonials/customer-3.webp",
   },
   {
-    quote: "The best part was how practical it was. I got clear guidance on colours, fits, grooming, and outfits without being told to buy expensive brands. It helped me dress better with what I already had.",
+    quote:
+      "The best part was how practical it was. Hair, beard, colors, fits, outfits, shoes - everything was connected.",
     name: "Verified customer",
     meta: "",
     image: "/assets/testimonials/customer-4.webp",
@@ -154,43 +221,51 @@ export const testimonials = [
 
 export const faqs = [
   [
-    "Is this a common guide or a personal report?",
-    "It is made for you. The advice is based on the photos and details you send.",
+    "Why pay for this when style advice online is free?",
+    "Because free advice tells you what might look good. StyleIQ tells you what is more likely to work for you based on your face, proportions, complexion, lifestyle, preferences, wardrobe, and budget.",
   ],
   [
-    "Do I need to buy new clothes?",
-    "No. We first help you use the clothes you already have. You buy only what is truly missing.",
+    "Do I need to replace my whole wardrobe?",
+    "No. You can tell us what you already own, and we help you understand what still works, what can be styled differently, and what is actually worth adding next.",
   ],
   [
-    "Will I need expensive products or brands?",
-    "No. The recommendations stay within the budget you share in the assessment.",
+    "Will you recommend things outside my budget?",
+    "No. We ask about your shopping budget before creating your StyleIQ, so recommendations can be built around what you are comfortable spending.",
   ],
   [
-    "I know nothing about style. Will I understand it?",
-    "Yes. The report uses simple words, visual examples and steps in the right order.",
+    "What information do you use to personalize my StyleIQ?",
+    "Photos, height, measurements, complexion, lifestyle, profession, style preferences, budget, wardrobe, where you usually go, and what you currently wear.",
   ],
   [
-    "Will this help if I am overweight, thin, short, or tall?",
-    "Yes. The fit advice considers your body type and proportions. We do not use one rule for every man.",
+    "Can you really personalize this from photos and measurements?",
+    "Yes, within reasonable limits. A human stylist reviews every profile and the final StyleIQ before it is delivered.",
   ],
   [
-    "What if I have thinning hair or a patchy beard?",
-    "The report can suggest neat styles that work with your current hair and beard. It cannot treat hair loss or make a beard grow.",
+    "What if I am not into fashion?",
+    "That is fine. StyleIQ is designed so you do not have to become a fashion expert. You get straightforward answers about what suits you, what to wear, and what to buy.",
   ],
   [
-    "What does the Personalized Style Report actually include?",
-    "A complete analysis of your face shape, body type, and skin tone, translated into specific recommendations: hairstyle, 16 full outfits, colors, accessories, beard style, and a 90-day plan to act on all of it. Nothing generic. Everything built around your measurements.",
+    "What if some recommendations do not feel right for me?",
+    "You get one revision, which you can request within 3 days of receiving your StyleIQ.",
   ],
   [
-    "What photos do I need to send?",
-    "You will need clear front, side and full-body photos. Simple examples will show you exactly what to send.",
+    "How quickly will I receive my StyleIQ?",
+    "Your complete personalized StyleIQ is delivered digitally within 48 hours after we receive all the information needed to create it.",
   ],
   [
-    "How long will the report take?",
-    "Your personalised report will be delivered within 48 hours after we receive your complete assessment.",
+    "How long can I access my StyleIQ?",
+    "You get lifetime access, so you can return to it whenever you shop, get a haircut, plan an outfit, or update your wardrobe.",
   ],
   [
-    "Is my data / photos kept private?",
-    "[Confirm and insert your actual data handling / privacy policy here; see note in Compliance section below.]",
+    "Will you send me links to specific clothes?",
+    "We focus on brand, store, fit, color, and product-category guidance instead of relying on individual links that can go out of stock or change price.",
+  ],
+  [
+    "Can I ask questions after I receive my report?",
+    "Yes. If something needs clarification, you can ask questions after delivery. Paid call support is also available for deeper guidance.",
+  ],
+  [
+    "Do you offer refunds?",
+    "Because each StyleIQ is created specifically for the individual customer, payments are non-refundable once analysis has begun. You can request one revision within 3 days of delivery.",
   ],
 ];

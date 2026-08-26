@@ -278,7 +278,7 @@ export function CheckoutPage() {
           <div>
             <p>Everything you need to stop guessing</p>
             <h2>The AttractiveMen Personalized Style Report</h2>
-            <strong>{"\u20B9"}1,900 + GST</strong>
+            <strong>{"\u20B9"}{BASE_PRICE.toLocaleString("en-IN")} + GST</strong>
             <ul>
               <li><Check size={17} weight="bold" /> Face, Body & Skin Tone Analysis</li>
               <li><Check size={17} weight="bold" /> 20 Head-to-Toe Outfits</li>

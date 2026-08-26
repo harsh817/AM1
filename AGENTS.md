@@ -11,7 +11,7 @@ Follow these instructions for every change in this repository unless the user ex
 - API: Vercel serverless functions under `api/`.
 - Payments: PhonePe PG V2 Standard Checkout.
 - Operations tracking: Make webhook payloads for initiated, completed, failed, and PhonePe webhook events.
-- Static output: `npm run build` writes `dist/`; `./scripts/build-standalone.ps1` regenerates `AttractiveMen.html`.
+- Static output: `npm run build` writes `dist/`; `./scripts/build-standalone.ps1` regenerates `artifacts/AttractiveMen.html`.
 
 This is a conversion-oriented production site. Reliability of checkout, payment status, tracking, and lead delivery matters more than visual experimentation.
 
@@ -50,6 +50,9 @@ public/
   terms.html                    Legacy/static legal page
 scripts/
   build-standalone.ps1          Creates self-contained HTML exports
+artifacts/
+  AttractiveMen-original.html   Archived pre-StyleIQ standalone page
+  AttractiveMen.html            Generated current standalone landing page
 src/
   pages/
     LandingPage.jsx             Landing page composition
@@ -68,7 +71,6 @@ src/
   main.jsx                      React entry point
 index.html                      Main Vite HTML entry
 checkout.html                   Checkout Vite HTML entry
-AttractiveMen.html              Generated standalone landing page
 vercel.json                     Vercel routing/build configuration
 ```
 
@@ -260,7 +262,11 @@ const saved = JSON.parse(localStorage.checkout);
 ## Styling And Frontend UX
 
 - Keep landing/legal styles in `src/styles/landing.css` and checkout/thank-you styles in `src/styles/checkout.css`.
-- Do not introduce one-off color values when an existing CSS variable works.
+- Landing/legal styles must use the four-color palette in `src/styles/landing.css`: background `#f8f9f7`, ink `#1d2426`, brand `#5f7277`, and accent `#d7c4bd`.
+- Do not introduce one-off color values. Create semantic variables, alpha values, or `color-mix()` tints from the four palette tokens.
+- Landing/legal typography, spacing, widths, radius, and transitions must use the design-system tokens in `:root`: `--text-*`, `--heading-*`, `--weight-*`, `--section-y*`, `--content-*`, `--gap-*`, `--card-*`, and `--transition-*`.
+- Section headings should be bold, use the shared heading scale, and keep supporting copy constrained to readable widths.
+- Cards, grids, FAQ rows, process steps, and CTA surfaces should use shared gaps, padding, radius, and transition tokens so the page rhythm stays coherent.
 - Keep mobile layouts explicit with stable dimensions, grid constraints, and no text overlap.
 - Use real product/report/customer imagery for conversion sections. Do not use generic fashion stock photos for the hero.
 - Preserve legal links, payment trust copy, and checkout clarity.
@@ -503,7 +509,7 @@ Before release, confirm:
 - Checkout amounts are server-calculated.
 - Legal links work on deployed routes.
 - Analytics scripts load asynchronously and do not block checkout.
-- `AttractiveMen.html` is regenerated after source changes that affect the standalone page.
+- `artifacts/AttractiveMen.html` is regenerated after source changes that affect the standalone page.
 - Mobile checkout and landing page have been visually checked.
 - Vercel routes in `vercel.json` match public URLs.
 
@@ -548,7 +554,7 @@ Bad:
 - Do not force-push `main`.
 - Do not bypass hooks with `--no-verify`.
 - Do not revert unrelated local changes.
-- Keep generated artifacts intentional. If `AttractiveMen.html` changes, explain why.
+- Keep generated artifacts intentional. If `artifacts/AttractiveMen.html` changes, explain why.
 - Do not commit `dist/`, `node_modules/`, `.vercel/`, `.env`, local screenshots, or temporary exports.
 - Keep commit messages direct and behavior-focused.
 

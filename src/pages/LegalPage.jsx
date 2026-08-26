@@ -96,7 +96,7 @@ const pageContent = {
       {
         title: "Orders, Pricing, And Payment",
         body: [
-          "The displayed price for the AttractiveMen Personalized Style Report is INR 1,900 plus applicable GST, unless a different price is clearly shown at checkout.",
+          "The displayed price for the AttractiveMen Personalized Style Report is INR 1,999 plus applicable GST, unless a different price is clearly shown at checkout.",
           "Your order is confirmed only after successful payment. Taxes, payment gateway charges, or other lawful charges may apply where shown during checkout.",
         ],
       },

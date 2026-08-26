@@ -5,7 +5,7 @@ A responsive React and Vite sales page for the AttractiveMen Personalized Style 
 ## Features
 
 - Responsive landing page for desktop and mobile
-- Personalized style report offer at INR 1,900 plus GST
+- Personalized StyleIQ report offer at INR 1,999 plus GST
 - Local before-and-after, report, process and testimonial imagery
 - Checkout form with locally saved contact and bump selections
 - Optional 20-minute style-review call with a flirting guide for INR 499
@@ -52,7 +52,7 @@ After building the project, generate the self-contained offline file with:
 ./scripts/build-standalone.ps1
 ```
 
-This creates `AttractiveMen.html` in the project root.
+This creates `artifacts/AttractiveMen.html`. The previous standalone page is archived at `artifacts/AttractiveMen-original.html`.
 
 ## Payment integration
 

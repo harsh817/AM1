@@ -6,54 +6,35 @@ import {
   CaretLeft,
   CaretRight,
   Check,
-  Palette,
-  PersonSimple,
-  UserFocus,
   ShieldCheck,
   Star,
   StarHalf,
   X,
 } from "@phosphor-icons/react";
 import {
+  bonuses,
   comparisonRows,
   faqs,
+  heroBenefits,
   processSteps,
-  reportItems,
+  recapItems,
+  reportContentGroups,
+  styleIqPillars,
   testimonials,
+  trustBadges,
 } from "../lib/landing-data.js";
 import { CHECKOUT_PATH } from "../routes.js";
 
 const CHECKOUT_TARGET = CHECKOUT_PATH;
+const PRICE_LABEL = "\u20B91,999 + GST";
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-const approachAnalysisCards = [
-  {
-    title: "Your face shape",
-    description: "down to the exact measurements",
-    Icon: UserFocus,
-    image: "/assets/approach/face-shape.png",
-    alt: "Face shape analysis showing facial measurements and proportions",
-  },
-  {
-    title: "Your skin undertone",
-    description: "so every color we recommend actually flatters you, not fights you",
-    Icon: Palette,
-    image: "/assets/approach/skin-undertone.png",
-    alt: "Skin undertone analysis with a personalised colour palette",
-  },
-  {
-    title: "Your body type",
-    description: "so every outfit is chosen to make you look taller, leaner, and sharper",
-    Icon: PersonSimple,
-    image: "/assets/approach/body-type.png",
-    alt: "Body type analysis showing proportions and fit guidance",
-  },
-];
 const transformationSlides = [
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/ankur_hhdjc8.png",
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/rahul_j5oyv6.png",
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628151/satyam_ttlk1w.png",
   "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
 ];
+
 function getTimeUntilIstMidnight() {
   const now = Date.now();
   const istNow = new Date(now + IST_OFFSET_MS);
@@ -73,6 +54,7 @@ function getTimeUntilIstMidnight() {
 }
 
 const padTimerPart = (value) => String(value).padStart(2, "0");
+
 function Brand() {
   return (
     <a className="brand" href="#top" aria-label="AttractiveMen home">
@@ -81,7 +63,7 @@ function Brand() {
   );
 }
 
-function Button({ children = "Get Your Personalized Report Now", light = false, className = "" }) {
+function Button({ children = "Show Me What Suits Me", light = false, className = "" }) {
   return (
     <a className={`button ${light ? "button-light" : ""} ${className}`} href={CHECKOUT_TARGET}>
       <span>{children}</span>
@@ -130,7 +112,7 @@ function StickyBuyBar() {
     <aside className={`sticky-buy-bar ${visible ? "visible" : ""}`} aria-hidden={!visible}>
       <div className="sticky-buy-inner">
         <div className="sticky-buy-offer">
-          <strong>{"\u20B9"}1,900 <small>+ GST</small></strong>
+          <strong>{PRICE_LABEL}</strong>
           <span>One-time payment</span>
         </div>
         <div className="sticky-buy-countdown">
@@ -142,73 +124,76 @@ function StickyBuyBar() {
     </aside>
   );
 }
-function SectionHeading({ index, eyebrow, children, intro, align = "center", id }) {
+
+function SectionHeading({ children, intro, align = "center" }) {
   return (
-    <div className={`section-heading section-heading-${align}`} id={id}>
+    <div className={`section-heading section-heading-${align}`}>
       <h2>{children}</h2>
       {intro ? <p className="section-intro">{intro}</p> : null}
     </div>
   );
 }
 
-function BeforeAfterSlider() {
+function TrustBadges() {
   return (
-    <div className="before-after" aria-label="Before and after style comparison">
-      <img
-        className="comparison-composite"
-        src="/assets/hero/before-after-square.png"
-        alt="Before and after styling transformation with grooming and fit improvements"
-      />
-      <div className="comparison-separator" aria-hidden="true" />
-      <div className="compare-label label-before">Before</div>
-      <div className="compare-label label-after">After</div>
+    <div className="trust-badges" aria-label="StyleIQ proof points">
+      {trustBadges.map((badge) => (
+        <span key={badge}>{badge}</span>
+      ))}
+    </div>
+  );
+}
+
+function StyleIqPreview() {
+  return (
+    <div className="styleiq-preview" aria-label="StyleIQ input and report preview">
+      <div className="styleiq-preview-card">
+        <div className="styleiq-preview-block">
+          <small>Your Inputs</small>
+          <strong>Face - Build - Coloring - Lifestyle</strong>
+        </div>
+        <ArrowDown size={28} weight="regular" aria-hidden="true" />
+        <div className="styleiq-preview-block">
+          <small>Your Style Plan</small>
+          <strong>Haircut - Colors - Fits - Outfits - Grooming</strong>
+        </div>
+      </div>
+      <div className="report-preview-stack" aria-hidden="true">
+        <img src="/assets/product/style-report.png" alt="" loading="eager" />
+        <img src="/assets/product/attractivemen-style-report-mockup-v2.png" alt="" loading="eager" />
+      </div>
     </div>
   );
 }
 
 function Hero() {
   return (
-    <section className="hero" id="top">
-      <div className="shell hero-shell">
+    <section className="hero styleiq-hero" id="top">
+      <div className="shell hero-shell styleiq-hero-shell">
         <div className="hero-copy">
           <Brand />
-          <h1>
-            <span className="hero-title-line hero-title-primary">Look Your Best Version</span>
-            <span className="hero-title-line hero-title-accent">Without Expensive Brands...</span>
-          </h1>
-          <div className="hero-subheading-card">
-            <h2>Random fashion Reel and YouTube videos make you look average</h2>
-          </div>
-          <div className="hero-visual">
-            <BeforeAfterSlider />
-            <Button />
-            <div className="rating-line" aria-label="Rated 4.9 out of 5 by more than 1,119 Indian men">
-              <span className="rating-stars" aria-hidden="true">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <Star key={index} size={22} weight="fill" />
-                ))}
-                <StarHalf size={22} weight="fill" />
-              </span>
-              <span><strong>4.9/5</strong> from 1,119+ Indian men who stopped guessing</span>
-            </div>
-          </div>
-          <p className="hero-reason">
-            Because the advice is not built for a <strong>face shape</strong>, <strong>body type</strong>, and <strong>skin tone</strong>.
-          </p>
-          <p className="hero-style-lead">
-            Time to get your <em>personalized style</em> that covers <em>head-to-toe transformation</em>, including:
+          <p className="hero-eyebrow">Dear Indian Men</p>
+          <h1>Stop Guessing What Actually Looks Good On You</h1>
+          <p className="hero-lead">
+            Get a personalized report for your hair, colors, fits, outfits, beard, shoes, and accessories, built around your face, body, height, skin tone, lifestyle, and preferences.
           </p>
           <ul className="hero-benefits">
-            <li><Check size={18} weight="bold" /><span>Best hair style for your <strong>face shape</strong></span></li>
-            <li><Check size={18} weight="bold" /><span>Best colors and fit for your <strong>body type</strong> and <strong>skin tone</strong></span></li>
-            <li><Check size={18} weight="bold" /><span>Best shoes and accessories that compliments your look</span></li>
+            {heroBenefits.map((benefit) => (
+              <li key={benefit}><Check size={18} weight="bold" /><span>{benefit}</span></li>
+            ))}
           </ul>
-          <p className="hero-budget-note">Without spending money on expensive clothes and accessories.</p>
+          <div className="hero-action-row">
+            <Button />
+            <span>{PRICE_LABEL}</span>
+          </div>
+          <TrustBadges />
+          <StyleIqPreview />
         </div>
       </div>
     </section>
   );
 }
+
 function TransformationShowcase() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -272,98 +257,86 @@ function TransformationShowcase() {
     </section>
   );
 }
+
 function ProblemSection() {
   return (
     <section className="section section-cool problem" id="problem">
       <div className="shell narrow-shell">
-        <SectionHeading index="02" eyebrow="The problem">
-          Here's why Reel and YouTube styling advice makes you <span>look average</span>
+        <SectionHeading intro="And somehow, figuring out what you should actually wear is still a mystery.">
+          The internet is full of random fashion advice
         </SectionHeading>
-        <p className="problem-opening">
-          You open any style Reel and the advice saying &ldquo;wear this jacket&rdquo;, &ldquo;get this haircut&rdquo;, &ldquo;try this color&rdquo;. So you try it. And it looks... fine. But, <strong>HONESTLY</strong> not the version of yourself you were hoping to see in the mirror.
-        </p>
-        <figure className="problem-visual">
-          <img src="/assets/problem/reel-vs-real.webp" alt="The same outfit looking suitable in a Reel but poorly fitted in real life" />
-        </figure>
         <div className="problem-copy">
-          <p className="problem-kicker">That&apos;s because the advice was never about you:</p>
+          <p>You copy a haircut that looked great on someone else. Save an outfit from Instagram. Buy the trousers every man is supposed to own.</p>
+          <p>Sometimes it works. Sometimes it looks terrible.</p>
           <ul className="problem-bullets">
-            <li><span><strong>A hairstyle &ldquo;trending in Bollywood right now&rdquo;</strong> is built for a completely different face shape than yours and instead of sharpening your jawline, it hides it.</span></li>
-            <li><span><strong>A &ldquo;widely popular&rdquo; color</strong> can fade out your exact skin undertone while looking amazing on someone three shades warmer or cooler than you.</span></li>
-            <li><span><strong>An outfit &ldquo;every man should own&rdquo;</strong> can add bulk in exactly the wrong place for your body type, or make you look completely bad.</span></li>
+            <li><span>Does this suit my face?</span></li>
+            <li><span>Does this fit my build?</span></li>
+            <li><span>Does this color work with my complexion?</span></li>
+            <li><span>What should I actually buy next?</span></li>
           </ul>
-          <figure className="problem-testimonial-visual">
-            <img
-              className="problem-testimonial-image"
-              src="https://res.cloudinary.com/dhjsqmejb/image/upload/v1785594161/ChatGPT_Image_Aug_1_2026_07_52_23_PM_iceryf.png"
-              alt="Before and after outfit transformation testimonial"
-              loading="lazy"
-            />
-            <div className="problem-testimonial-divider" aria-hidden="true" />
-            <span className="problem-testimonial-label problem-testimonial-label-before">Before</span>
-            <span className="problem-testimonial-label problem-testimonial-label-after">After</span>
+          <figure className="problem-visual">
+            <img src="/assets/problem/reel-vs-real.webp" alt="The same outfit looking suitable in a Reel but poorly fitted in real life" />
           </figure>
-          <p>That's why you end up spending money to look <em>more</em> generic, because the internet gives the same five tips to crores of different faces, bodies, and skin tones.</p>
-          <p>Meanwhile, Indian men are stepping onto a global stage for jobs, for opportunities, for first impressions that happen in under seven seconds while still being told to copy a celebrity&apos;s look off Instagram and hope for the best.</p>
-          <p>The only people who actually get <em>personalized</em> styling advice are the ones who can afford a stylist. And that costs {"\u20B9"}10,000-{"\u20B9"}15,000 a session.</p>
-          <strong className="until-now">Until now.</strong>
+          <p className="problem-kicker">Most style advice tells you what looks good. Not what looks good on you.</p>
         </div>
       </div>
     </section>
   );
 }
 
-function ApproachSection() {
+function WasteSection() {
   return (
-    <section className="section approach" id="approach">
-      <div className="shell approach-shell">
-        <SectionHeading index="03" eyebrow="Our approach">
-          <span className="approach-heading-line">We reverse-engineered what</span>
-          <span className="approach-heading-line approach-heading-accent">celebrity stylists actually do</span>
-          <span className="approach-heading-line">and made it affordable</span>
+    <section className="section waste-section">
+      <div className="shell split-copy">
+        <SectionHeading align="left">
+          Stop wasting money on the wrong clothes
         </SectionHeading>
-        <div className="approach-content">
-          <p>We spent months studying how professional personal stylists build a look for a client: they measure the face shape. They read the skin&apos;s undertone. They analyse body proportions. Then they build every recommendation, including hair, color, fit, and grooming, around those three fixed facts about a person&apos;s body.</p>
-          <div className="approach-method-panel">
-            <p className="approach-method-lead">WE TOOK THAT EXACT PROCESS</p>
-            <figure className="approach-gif-frame">
-              <img
-                src="https://res.cloudinary.com/dhjsqmejb/image/upload/v1785596656/1589814288149_gfergb.gif"
-                alt="Surprised reaction"
-                loading="lazy"
-              />
-            </figure>
-            <p className="approach-method">and turned it into a structured system: <strong>the Style Analysis Method. The</strong> same depth of personalization, without the {"\u20B9"}15,000 expense and the multi-week wait for an appointment.</p>
-          </div>
-          <h3>From your photos and a few basic measurements, our stylist analyses:</h3>
-          <div className="approach-analysis-grid">
-            {approachAnalysisCards.map(({ title, description, Icon, image, alt }) => (
-              <article className="report-card approach-analysis-card" key={title}>
-                <div className="report-card-visual approach-analysis-visual">
-                  {image ? (
-                    <img src={image} alt={alt} loading="lazy" />
-                  ) : (
-                    <div className="approach-image-placeholder" aria-label={`${title} image placeholder`}>
-                      <Icon size={52} weight="thin" aria-hidden="true" />
-                      <span>Image placeholder</span>
-                    </div>
-                  )}
-                </div>
-                <div className="report-card-copy approach-analysis-copy">
-                  <p><strong>{title}</strong> {description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-          <div className="approach-conclusion">
-            <p>Then we build your full report around those three things.</p>
-            <div className="approach-contrast">
-              <span>Not what&apos;s trending.</span>
-              <span>Not what worked for a Bollywood actor with completely different proportions.</span>
-              <strong>What works for your face, on your body, in your skin.</strong>
-            </div>
-          </div>
+        <div className="copy-stack">
+          <p>The shirt you liked in the store but rarely wear. The trousers that technically fit but never look like a good fit on you. The hairstyle, color combination, or shoe purchase that still leaves you thinking: what the hell do I wear?</p>
+          <p>You do not need more trial and error. You need better decisions about the clothes, grooming, and style choices you already make.</p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function YouFirstSection() {
+  return (
+    <section className="section section-cool">
+      <div className="shell split-copy">
+        <SectionHeading align="left">
+          Style advice should start with you
+        </SectionHeading>
+        <div className="copy-stack">
+          <p>Most style advice starts with a Reel or YouTube video saying: buy this, wear that, get this haircut.</p>
+          <p>Good styling starts with your features, your proportions, your coloring, your lifestyle, your taste, and your budget. Without that context, you are just guessing what might work.</p>
+          <p>With it, choosing what to wear becomes much easier.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StyleIqSystem() {
+  return (
+    <section className="section approach" id="styleiq">
+      <div className="shell approach-shell">
+        <SectionHeading intro="StyleIQ is the system our human stylists use to understand what actually suits you.">
+          Your StyleIQ
+        </SectionHeading>
+        <p className="styleiq-system-lead">
+          Your stylist reviews your photos, measurements, build, coloring, lifestyle, preferences, and budget, then turns those details into practical recommendations built around you.
+        </p>
+        <div className="styleiq-pillars">
+          {styleIqPillars.map((pillar, index) => (
+            <article className="styleiq-pillar" key={pillar.title}>
+              <small>{String(index + 1).padStart(2, "0")}</small>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.description}</p>
+            </article>
+          ))}
+        </div>
+        <p className="styleiq-judgment">StyleIQ gives your stylist the system. Your stylist gives you the judgment.</p>
       </div>
     </section>
   );
@@ -371,24 +344,22 @@ function ApproachSection() {
 
 function ComparisonSection() {
   return (
-    <section className="section section-cool comparison-section" id="comparison">
-      <div className="shell comparison-shell">
-        <SectionHeading index="04" eyebrow="See the difference" intro="See what changes when the advice is built around you.">
-          Generic advice vs. <span>your personal report</span>
+    <section className="section section-cool comparison-section">
+      <div className="shell">
+        <SectionHeading intro="See what changes when the advice is built around your features, proportions, lifestyle, and budget.">
+          Without StyleIQ vs. With StyleIQ
         </SectionHeading>
-        <div className="comparison-cards">
-          {comparisonRows.map((item) => (
-            <article className={`comparison-card ${item.title === "Cost" ? "comparison-cost" : ""}`} key={item.title}>
-              <h3>{item.title}</h3>
-              <div className="comparison-report-row">
-                <Check size={20} weight="bold" aria-hidden="true" />
-                <div><strong>Your personal report</strong><p>{item.report}</p></div>
-              </div>
+        <div className="styleiq-comparison">
+          {comparisonRows.map((row) => (
+            <article className="comparison-card" key={row.withoutStyleIq}>
               <div className="comparison-generic-row">
                 <X size={19} weight="bold" aria-hidden="true" />
-                <div><strong>Generic advice</strong><p>{item.generic}</p></div>
+                <p>{row.withoutStyleIq}</p>
               </div>
-              {item.note ? <small>{item.note}</small> : null}
+              <div className="comparison-report-row">
+                <Check size={20} weight="bold" aria-hidden="true" />
+                <p>{row.withStyleIq}</p>
+              </div>
             </article>
           ))}
         </div>
@@ -401,24 +372,42 @@ function ReportContents() {
   return (
     <section className="section report-contents" id="inside">
       <div className="shell">
-        <SectionHeading index="05" eyebrow="Inside your report" intro="Everything is built around the same three inputs: your face, body, and skin tone.">
-          What's Inside Your <span>Personalized Style Report</span>
+        <SectionHeading intro="One personalized system for what to wear, how to groom, what to buy, and what to do next.">
+          Everything You Get With StyleIQ
         </SectionHeading>
-        <div className="report-grid">
-          {reportItems.map((item) => (
-            <article className="report-card" key={item.number}>
-              <div className={`report-card-visual${item.number === "04" ? " report-card-visual--full-bleed" : ""}`}>
-                <img src={item.image} alt="" loading="lazy" />
-              </div>
-              <div className="report-card-copy">
-                <small>{item.number}</small>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
+        <div className="report-content-grid">
+          {reportContentGroups.map((group) => (
+            <article className="report-content-card" key={group.title}>
+              <h3>{group.title}</h3>
+              <p>{group.intro}</p>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item}><Check size={16} weight="bold" /><span>{item}</span></li>
+                ))}
+              </ul>
             </article>
           ))}
         </div>
-        <p className="report-closing">One report. Every part of your look covered.</p>
+      </div>
+    </section>
+  );
+}
+
+function BonusesSection() {
+  return (
+    <section className="section section-cool">
+      <div className="shell">
+        <SectionHeading>
+          Plus 2 Bonuses
+        </SectionHeading>
+        <div className="bonus-grid">
+          {bonuses.map((bonus) => (
+            <article className="bonus-card" key={bonus.title}>
+              <h3>{bonus.title}</h3>
+              <p>{bonus.description}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -426,10 +415,10 @@ function ReportContents() {
 
 function ProcessSection() {
   return (
-    <section className="section section-cool process" id="process">
+    <section className="section process" id="process">
       <div className="shell process-shell">
-        <SectionHeading eyebrow="How our method works" intro="Share a few details. We study what suits you. Your complete report arrives within 48 hours.">
-          Your Style Report, <span>Built in 3 Simple Steps</span>
+        <SectionHeading intro="No appointments. No travel. No waiting weeks for a styling consultation.">
+          Getting Your StyleIQ Report Is Simple
         </SectionHeading>
         <div className="process-list">
           {processSteps.map((step) => (
@@ -449,8 +438,8 @@ function ProcessSection() {
             </article>
           ))}
         </div>
-        <Button>Start My Style Assessment</Button>
-        <p className="process-note">No appointment. Your report arrives within 48 hours.</p>
+        <Button>Start My StyleIQ</Button>
+        <p className="process-note">Your complete StyleIQ arrives within 48 hours after we receive your assessment.</p>
       </div>
     </section>
   );
@@ -460,14 +449,15 @@ function SocialProof() {
   return (
     <section className="section proof" id="reviews">
       <div className="shell">
-        <SectionHeading index="07" eyebrow="Customer results" intro="Real experiences from men who stopped guessing and started dressing for their features.">
-          Here is what our clients say
+        <SectionHeading intro="Customers call out the same thing: the advice feels personal, practical, and affordable.">
+          What clients say
         </SectionHeading>
         <div className="testimonial-grid">
-          {testimonials.map((item, index) => (
-            <article className="testimonial-card" key={index}>
-              <div className="testimonial-rating" aria-label="Five stars">
-                {Array.from({ length: 5 }).map((_, star) => <Star key={star} size={15} weight="fill" />)}
+          {testimonials.map((item) => (
+            <article className="testimonial-card" key={item.quote}>
+              <div className="testimonial-rating" aria-label="Four and a half stars">
+                {Array.from({ length: 4 }).map((_, star) => <Star key={star} size={15} weight="fill" />)}
+                <StarHalf size={15} weight="fill" />
               </div>
               <blockquote>{item.quote}</blockquote>
               <footer>
@@ -482,35 +472,23 @@ function SocialProof() {
   );
 }
 
-function ProductIntro() {
+function RecapSection() {
   return (
-    <section className="section product-intro" id="sample">
-      <div className="shell product-shell">
-        <h2 className="product-title">The AttractiveMen <span>Personalized Style Report</span></h2>
-        <figure className="product-stack">
-          <img src="/assets/product/attractivemen-style-report-mockup-v2.png" alt="AttractiveMen personalized style report product mockup" loading="lazy" />
-          <figcaption>Personalized for you &middot; Delivered within 48 hours</figcaption>
-        </figure>
-        <div className="product-copy">
-          <p className="product-price">
-            <del>{"\u20B9"}25,000</del>
-            <span>{"\u20B9"}1,900 + GST</span>
-          </p>
-          <p className="product-saving">Save 33%- 80% affordable than a single stylist session, same depth of analysis</p>
-          <p className="product-includes">Everything included:</p>
-          <ul>
-            <li><Check size={17} weight="bold" /> Face Shape Analysis</li>
-            <li><Check size={17} weight="bold" /> Body Type Analysis</li>
-            <li><Check size={17} weight="bold" /> Skin Tone Analysis</li>
-            <li><Check size={17} weight="bold" /> Best Hairstyle Recommendation</li>
-            <li><Check size={17} weight="bold" /> 20 Head-to-Toe Outfit Recommendations</li>
-            <li><Check size={17} weight="bold" /> Accessories &amp; Footwear Suggestions</li>
-            <li><Check size={17} weight="bold" /> Beard &amp; Mustache Guide</li>
-            <li><Check size={17} weight="bold" /> 90-Day Action Plan</li>
-            <li><Check size={17} weight="bold" /> Perfume Recommendations</li>
-            <li><Check size={17} weight="bold" /> Wardrobe Essentials Checklist</li>
-          </ul>
-          <Button>Get My Personal Style Report</Button>
+    <section className="section final-recap" id="purchase">
+      <div className="shell">
+        <div className="final-offer styleiq-final-offer">
+          <div>
+            <h2>150+ personal style decisions already made easier for you</h2>
+            <p>One stylist. One analysis. One complete direction for how you look.</p>
+            <div className="recap-grid">
+              {recapItems.map((item) => (
+                <span key={item}><Check size={15} weight="bold" /> {item}</span>
+              ))}
+            </div>
+            <div className="price-line"><strong>{PRICE_LABEL}</strong><span>One-time payment</span></div>
+            <Button light>Get My Personal Style Report</Button>
+            <p className="delivery-proof"><ShieldCheck size={20} weight="regular" /> Delivered within 48 hours. Lifetime access included.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -519,12 +497,13 @@ function ProductIntro() {
 
 function FAQ() {
   const [open, setOpen] = useState(0);
+
   return (
     <section className="section section-cool faq" id="faq">
       <div className="shell faq-shell">
         <div className="faq-heading">
           <h2>Frequently asked <span>questions</span></h2>
-          <p>Simple answers about the report, recommendations and how the process works.</p>
+          <p>Simple answers about the report, personalization, delivery, revisions, and support.</p>
         </div>
         <div className="faq-list">
           {faqs.map(([question, answer], index) => {
@@ -539,15 +518,6 @@ function FAQ() {
               </article>
             );
           })}
-        </div>
-      </div>
-      <div className="shell final-offer" id="purchase">
-        <div>
-          <h2>Stop guessing before your next haircut or purchase.</h2>
-          <p>Get a complete head-to-toe plan built for your face, body, skin tone, routine and budget.</p>
-          <div className="price-line"><strong>{"\u20B9"}1,900</strong><span>One-time payment</span></div>
-          <Button light>Get Your Personalized Report Now</Button>
-          <p className="delivery-proof"><ShieldCheck size={20} weight="regular" /> Delivered within 48 hours after your assessment.</p>
         </div>
       </div>
     </section>
@@ -579,12 +549,15 @@ export function LandingPage() {
         <Hero />
         <TransformationShowcase />
         <ProblemSection />
-        <ApproachSection />
+        <WasteSection />
+        <YouFirstSection />
+        <StyleIqSystem />
         <ComparisonSection />
         <ReportContents />
+        <BonusesSection />
         <ProcessSection />
         <SocialProof />
-        <ProductIntro />
+        <RecapSection />
         <FAQ />
       </main>
       <Footer />
@@ -592,8 +565,3 @@ export function LandingPage() {
     </>
   );
 }
-
-
-
-
-

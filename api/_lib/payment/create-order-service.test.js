@@ -47,12 +47,12 @@ test("creates a checkout payment order from trusted server totals", async () => 
     phonePeOrderId: "OMO_TEST_ORDER",
     state: "PENDING",
     redirectUrl: "https://phonepe.example/pay",
-    amountPaise: 283082,
+    amountPaise: 294764,
   });
   assert.deepEqual(createdPayments, [
     {
       merchantOrderId: "AM_TEST_ORDER",
-      amountPaise: 283082,
+      amountPaise: 294764,
       redirectUrl: "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_TEST_ORDER",
       phoneNumber: "9876543210",
       metaInfo: {
@@ -67,7 +67,7 @@ test("creates a checkout payment order from trusted server totals", async () => 
   assert.equal(forwardedPayloads.length, 1);
   assert.equal(forwardedPayloads[0].event_name, "checkout.payment_initiated");
   assert.equal(forwardedPayloads[0].merchant_order_id, "AM_TEST_ORDER");
-  assert.equal(forwardedPayloads[0].amount_paise, "283082");
+  assert.equal(forwardedPayloads[0].amount_paise, "294764");
 });
 
 test("rejects invalid checkout details before provider calls", async () => {

@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StyleIQ Palette Preview - Deep Teal and Amber</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #fffdf8;
+        --ink: #161616;
+        --brand: #245f73;
+        --accent: #d99a2b;
+        --background-rgb: 255, 253, 248;
+        --ink-rgb: 22, 22, 22;
+        --brand-rgb: 36, 95, 115;
+        --accent-rgb: 217, 154, 43;
+        --surface: color-mix(in srgb, var(--background) 92%, var(--accent));
+        --surface-warm: color-mix(in srgb, var(--background) 72%, var(--accent));
+        --surface-cool: color-mix(in srgb, var(--background) 78%, var(--brand));
+        --surface-teal: color-mix(in srgb, var(--brand) 88%, var(--ink));
+        --muted: rgba(var(--ink-rgb), 0.68);
+        --border: rgba(var(--ink-rgb), 0.12);
+        --shadow: 0 24px 70px rgba(var(--ink-rgb), 0.14);
+        --shell: 1180px;
+        --section-y: clamp(64px, 7vw, 104px);
+        --gap: clamp(18px, 2.5vw, 28px);
+        --radius: 12px;
+        --ease: 260ms cubic-bezier(0.2, 0.72, 0.2, 1);
+        font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .shell {
+        width: min(calc(100% - 48px), var(--shell));
+        margin-inline: auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-top: 5px solid var(--accent);
+        background: var(--surface-teal);
+        color: var(--background);
+      }
+
+      .topbar .shell {
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .nav {
+        display: flex;
+        gap: 22px;
+        color: rgba(var(--background-rgb), 0.78);
+        font-size: 13px;
+      }
+
+      .section {
+        padding-block: var(--section-y);
+      }
+
+      .section + .section {
+        border-top: 1px solid rgba(var(--ink-rgb), 0.08);
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--brand);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 900px;
+        margin-bottom: 22px;
+        font-size: clamp(46px, 7vw, 88px);
+        font-weight: 850;
+        letter-spacing: 0;
+        line-height: 1.02;
+      }
+
+      h2 {
+        max-width: 860px;
+        margin-bottom: 18px;
+        font-size: clamp(36px, 5vw, 66px);
+        font-weight: 850;
+        letter-spacing: 0;
+        line-height: 1.06;
+      }
+
+      h3 {
+        margin-bottom: 10px;
+        font-size: clamp(21px, 2vw, 27px);
+        font-weight: 800;
+        line-height: 1.18;
+      }
+
+      .lead {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: clamp(17px, 1.5vw, 20px);
+        line-height: 1.68;
+      }
+
+      .grid {
+        display: grid;
+        gap: var(--gap);
+      }
+
+      .two {
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        align-items: center;
+      }
+
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .button {
+        min-height: 58px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 30px;
+        border: 1px solid var(--ink);
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--background);
+        font-size: 15px;
+        font-weight: 800;
+        transition: transform var(--ease), background var(--ease), color var(--ease), border-color var(--ease);
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button.accent {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--ink);
+      }
+
+      .button.light {
+        border-color: var(--background);
+        background: var(--background);
+        color: var(--ink);
+      }
+
+      .card {
+        min-height: 100%;
+        padding: clamp(22px, 3vw, 34px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: rgba(var(--background-rgb), 0.86);
+        box-shadow: 0 14px 38px rgba(var(--ink-rgb), 0.08);
+      }
+
+      .card p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .swatch {
+        min-height: 118px;
+        display: grid;
+        align-content: end;
+        gap: 6px;
+        padding: 16px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 24px rgba(var(--ink-rgb), 0.1);
+      }
+
+      .swatch strong,
+      .swatch span {
+        display: block;
+      }
+
+      .swatch strong {
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .swatch span {
+        font-size: 12px;
+        opacity: 0.74;
+      }
+
+      .swatch.background {
+        border: 1px solid var(--border);
+        background: var(--background);
+      }
+
+      .swatch.ink {
+        background: var(--ink);
+        color: var(--background);
+      }
+
+      .swatch.brand {
+        background: var(--brand);
+        color: var(--background);
+      }
+
+      .swatch.accent {
+        background: var(--accent);
+        color: var(--ink);
+      }
+
+      .hero {
+        padding-block: clamp(58px, 7vw, 104px);
+        background:
+          radial-gradient(circle at 18% 16%, rgba(var(--accent-rgb), 0.22), transparent 28%),
+          linear-gradient(135deg, rgba(var(--ink-rgb), 0.28), transparent 54%),
+          var(--surface-teal);
+        color: var(--background);
+      }
+
+      .hero .eyebrow,
+      .hero .lead {
+        color: rgba(var(--background-rgb), 0.76);
+      }
+
+      .hero h1 span {
+        color: var(--accent);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px 22px;
+        margin-top: 30px;
+      }
+
+      .price {
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 850;
+      }
+
+      .hero-panel {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(var(--background-rgb), 0.18);
+        border-radius: var(--radius);
+        background: color-mix(in srgb, var(--brand) 62%, var(--background));
+        box-shadow: var(--shadow);
+      }
+
+      .hero-panel img {
+        aspect-ratio: 1;
+        object-fit: cover;
+      }
+
+      .hero-panel figcaption {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        left: 18px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        background: rgba(var(--background-rgb), 0.92);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .band-clean {
+        background: var(--background);
+      }
+
+      .band-warm {
+        background:
+          linear-gradient(90deg, rgba(var(--accent-rgb), 0.22), transparent 54%),
+          var(--surface-warm);
+      }
+
+      .band-cool {
+        background:
+          linear-gradient(90deg, rgba(var(--brand-rgb), 0.2), transparent 56%),
+          var(--surface-cool);
+      }
+
+      .band-teal {
+        background: var(--brand);
+        color: var(--background);
+      }
+
+      .band-teal .eyebrow,
+      .band-teal .lead,
+      .band-teal .card p {
+        color: rgba(var(--background-rgb), 0.76);
+      }
+
+      .band-teal .card {
+        border-color: rgba(var(--background-rgb), 0.18);
+        background: rgba(var(--background-rgb), 0.08);
+        box-shadow: none;
+      }
+
+      .band-teal .card h3 {
+        color: var(--background);
+      }
+
+      .band-ink {
+        background:
+          radial-gradient(circle at 80% 20%, rgba(var(--accent-rgb), 0.18), transparent 34%),
+          var(--ink);
+        color: var(--background);
+      }
+
+      .band-ink .eyebrow {
+        color: var(--accent);
+      }
+
+      .band-ink .lead,
+      .band-ink .card p {
+        color: rgba(var(--background-rgb), 0.72);
+      }
+
+      .band-ink .card {
+        border-color: rgba(var(--background-rgb), 0.14);
+        background: rgba(var(--background-rgb), 0.07);
+        box-shadow: none;
+      }
+
+      .band-ink .card h3 {
+        color: var(--background);
+      }
+
+      .visual {
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: var(--background);
+        box-shadow: var(--shadow);
+      }
+
+      .visual img {
+        aspect-ratio: 1.2;
+        object-fit: cover;
+      }
+
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gap);
+      }
+
+      .wrong {
+        border-left: 6px solid var(--accent);
+      }
+
+      .right {
+        border-left: 6px solid var(--brand);
+        background: color-mix(in srgb, var(--background) 76%, var(--brand));
+      }
+
+      .mini-list {
+        display: grid;
+        gap: 12px;
+        margin: 28px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mini-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .mini-list li::before {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+        content: "";
+      }
+
+      .final {
+        text-align: center;
+      }
+
+      .final h2,
+      .final .lead {
+        margin-inline: auto;
+      }
+
+      .recap {
+        max-width: 900px;
+        margin: 34px auto;
+      }
+
+      .recap .card {
+        min-height: 94px;
+        display: grid;
+        place-items: center;
+        color: var(--background);
+        text-align: center;
+        font-weight: 850;
+      }
+
+      .footer {
+        padding: 40px 0;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        text-align: center;
+      }
+
+      @media (max-width: 900px) {
+        .nav {
+          display: none;
+        }
+
+        .two,
+        .three,
+        .four,
+        .comparison,
+        .swatches {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+          display: grid;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell">
+        <a class="brand" href="#top">AttractiveMen</a>
+        <nav class="nav" aria-label="Preview sections">
+          <a href="#palette">Palette</a>
+          <a href="#problem">Problem</a>
+          <a href="#styleiq">StyleIQ</a>
+          <a href="#purchase">Buy</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">New Palette Direction</p>
+            <h1>Deep teal, clean black, and <span>warm amber</span></h1>
+            <p class="lead">This preview replaces the dull grey-green and beige with a sharper, higher-energy palette while keeping the page premium and controlled.</p>
+            <div class="hero-actions">
+              <a class="button accent" href="#purchase">Get My StyleIQ</a>
+              <span class="price">Rs. 1,999 + GST</span>
+            </div>
+          </div>
+          <figure class="hero-panel">
+            <img src="/assets/hero/before-after-square.png" alt="Before and after personal style transformation" />
+            <figcaption>Deep teal hero creates a stronger first impression.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-clean" id="palette">
+        <div class="shell">
+          <p class="eyebrow">Four Colors</p>
+          <h2>Sharper palette, less dull, still simple</h2>
+          <p class="lead">The system still uses only four core colors. The difference is that brand and accent now have enough contrast to create real section movement.</p>
+          <div class="swatches">
+            <article class="swatch background">
+              <strong>Background</strong>
+              <span>#fffdf8</span>
+            </article>
+            <article class="swatch ink">
+              <strong>Ink</strong>
+              <span>#161616</span>
+            </article>
+            <article class="swatch brand">
+              <strong>Brand</strong>
+              <span>#245f73</span>
+            </article>
+            <article class="swatch accent">
+              <strong>Accent</strong>
+              <span>#d99a2b</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-warm">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Warm Transition</p>
+            <h2>Amber gives the page energy without looking cheap</h2>
+            <p class="lead">This is where the old beige failed. Amber works better for price, urgency, reviews, and proof sections.</p>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h3>1,119+ clients</h3>
+              <p>Proof sections feel warmer and more alive.</p>
+            </article>
+            <article class="card">
+              <h3>4.8 star rating</h3>
+              <p>The color has enough saturation to register as intentional.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-cool" id="problem">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Problem Section</p>
+            <h2>Cool teal tint feels more analytical than dull green</h2>
+            <p class="lead">The problem and process sections can use teal tints so the page feels structured, not washed out.</p>
+            <ul class="mini-list">
+              <li>Does this suit my face?</li>
+              <li>Does this fit my build?</li>
+              <li>What should I actually buy next?</li>
+            </ul>
+          </div>
+          <figure class="visual">
+            <img src="/assets/problem/reel-vs-real.webp" alt="Outfit advice looking different in reels and reality" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-teal" id="styleiq">
+        <div class="shell">
+          <p class="eyebrow">Brand Anchor</p>
+          <h2>Use deep teal as a strong middle section</h2>
+          <p class="lead">This makes StyleIQ feel like the core system of the page instead of another pale block.</p>
+          <div class="grid four">
+            <article class="card">
+              <h3>Your Features</h3>
+              <p>Hair, beard, glasses, and face shape direction.</p>
+            </article>
+            <article class="card">
+              <h3>Your Build</h3>
+              <p>Fits, proportions, silhouettes, and outfit structure.</p>
+            </article>
+            <article class="card">
+              <h3>Your Coloring</h3>
+              <p>Skin tone, undertone, contrast, and best colors.</p>
+            </article>
+            <article class="card">
+              <h3>Your Lifestyle</h3>
+              <p>Recommendations that work for your real life and budget.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-warm">
+        <div class="shell">
+          <p class="eyebrow">Comparison</p>
+          <h2>Amber and teal create a clearer with/without contrast</h2>
+          <div class="comparison">
+            <article class="card wrong">
+              <h3>Without StyleIQ</h3>
+              <p>You copy a haircut, shirt, or outfit from someone else and hope it works on your face, build, and skin tone.</p>
+            </article>
+            <article class="card right">
+              <h3>With StyleIQ</h3>
+              <p>You know which directions work for your features, proportions, coloring, lifestyle, and next purchases.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-clean">
+        <div class="shell grid two">
+          <div>
+            <p class="eyebrow">Product Inspection</p>
+            <h2>Clean off-white still gives report images room to breathe</h2>
+            <p class="lead">We do not need every section to be saturated. The stronger palette works because it alternates clean and colored bands.</p>
+          </div>
+          <figure class="visual">
+            <img src="/assets/product/attractivemen-style-report-mockup-v2.png" alt="StyleIQ report mockup" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band-cool">
+        <div class="shell">
+          <p class="eyebrow">Process</p>
+          <h2>The service flow feels sharper in teal</h2>
+          <div class="grid three">
+            <article class="card">
+              <h3>Complete your assessment</h3>
+              <p>Photos, fit preferences, lifestyle, and budget.</p>
+            </article>
+            <article class="card">
+              <h3>Stylist reviews your inputs</h3>
+              <p>Your recommendations are built from your actual context.</p>
+            </article>
+            <article class="card">
+              <h3>Receive your report</h3>
+              <p>Your full StyleIQ arrives within 48 hours.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band-ink final" id="purchase">
+        <div class="shell">
+          <p class="eyebrow">Final Offer</p>
+          <h2>Dark close, amber CTA, clean buying moment</h2>
+          <p class="lead">The final CTA becomes much more decisive with clean black and amber instead of muted grey-green and beige.</p>
+          <div class="grid four recap">
+            <article class="card">Hair</article>
+            <article class="card">Colors</article>
+            <article class="card">Fits</article>
+            <article class="card">Outfits</article>
+          </div>
+          <a class="button accent" href="#">Get My Personal Style Report</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">Palette preview artifact: #fffdf8, #161616, #245f73, #d99a2b.</div>
+    </footer>
+  </body>
+</html>
