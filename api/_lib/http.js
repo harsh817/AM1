@@ -27,6 +27,6 @@ export function getQueryParam(req, name) {
 }
 
 export function getHeader(req, name) {
-  const value = req.headers[name.toLowerCase()];
+  const value = req?.headers?.[name.toLowerCase()];
   return Array.isArray(value) ? value[0] : value || "";
 }

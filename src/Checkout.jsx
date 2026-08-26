@@ -6,6 +6,12 @@ import {
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "./checkout-config.js";
+import {
+  getCheckoutOrderTrackingPayload,
+  getCheckoutTrackingPayload,
+  rememberCheckoutOrderTracking,
+  rememberCheckoutVisit,
+} from "./checkout-tracking.js";
 import { normalizeIndianMobile } from "./phone.js";
 import "./checkout.css";
 
@@ -41,7 +47,6 @@ export function CheckoutPage() {
   const [details, setDetails] = useState(initial.details);
   const [selected, setSelected] = useState(initial.selected);
   const [errors, setErrors] = useState({});
-  const [consent, setConsent] = useState(false);
 
   const [status, setStatus] = useState("");
   const [isPaying, setIsPaying] = useState(false);
@@ -52,13 +57,24 @@ export function CheckoutPage() {
   }, [details, selected]);
 
   useEffect(() => {
+    rememberCheckoutVisit();
+  }, []);
+
+  useEffect(() => {
     const merchantOrderId = new URLSearchParams(window.location.search).get("merchantOrderId");
     if (!merchantOrderId) return undefined;
 
     let cancelled = false;
     setStatus("Checking your payment status...");
 
-    fetch(`/api/phonepe/status?merchantOrderId=${encodeURIComponent(merchantOrderId)}`)
+    fetch("/api/phonepe/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        merchantOrderId,
+        tracking: getCheckoutOrderTrackingPayload(merchantOrderId),
+      }),
+    })
       .then(async (response) => {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.message || "Payment status could not be checked.");
@@ -112,7 +128,6 @@ export function CheckoutPage() {
     if (details.name.trim().length < 2) next.name = "Please enter your full name.";
     if (!/^\S+@\S+\.\S+$/.test(details.email.trim())) next.email = "Please enter a valid email address.";
     if (!/^\d{10}$/.test(normalizeIndianMobile(details.phone))) next.phone = "Please enter a valid 10-digit mobile number.";
-    if (!consent) next.consent = "Please accept the policies before continuing.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -128,10 +143,11 @@ export function CheckoutPage() {
     setStatus("Opening secure payment...");
 
     try {
+      const tracking = getCheckoutTrackingPayload();
       const response = await fetch("/api/phonepe/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ details, selected }),
+        body: JSON.stringify({ details, selected, tracking }),
       });
       const data = await response.json().catch(() => ({}));
 
@@ -141,6 +157,7 @@ export function CheckoutPage() {
       }
       if (!data.redirectUrl) throw new Error("Payment gateway did not return a checkout URL.");
 
+      rememberCheckoutOrderTracking(data.merchantOrderId, tracking);
       window.location.assign(data.redirectUrl);
     } catch (error) {
       setIsPaying(false);
@@ -243,17 +260,7 @@ export function CheckoutPage() {
             </div>
           </section>
 
-          <section className="checkout-block checkout-payment" aria-labelledby="payment-title">
-            <div className="checkout-block-heading">
-              <span>3</span>
-              <div><h2 id="payment-title">Pay securely</h2><p>Your payment details are handled by the payment gateway.</p></div>
-            </div>
-            <label className="checkout-consent">
-              <input type="checkbox" checked={consent} onChange={(event) => { setConsent(event.target.checked); setErrors((current) => ({ ...current, consent: "" })); }} />
-              <span>I agree to the <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms &amp; Conditions</a>.</span>
-            </label>
-            {errors.consent ? <small className="checkout-error">{errors.consent}</small> : null}
-
+          <section className="checkout-block checkout-payment" aria-label="Secure payment">
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
               <LockKey size={20} weight="fill" /> {isPaying ? "Opening secure payment..." : `Proceed to secure payment \u2022 ${formatMoney(total)}`}
             </button>

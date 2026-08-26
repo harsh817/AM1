@@ -62,7 +62,7 @@ export async function getPhonePeOrderStatus(merchantOrderId) {
   const endpoints = getPhonePeEndpoints();
   const auth = await getPhonePeAccessToken();
   const statusUrl = new URL(`${endpoints.status}/${encodeURIComponent(merchantOrderId)}/status`);
-  statusUrl.searchParams.set("details", "false");
+  statusUrl.searchParams.set("details", "true");
   statusUrl.searchParams.set("errorContext", "true");
 
   const response = await fetch(statusUrl, {

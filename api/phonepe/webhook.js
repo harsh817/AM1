@@ -1,7 +1,8 @@
 import crypto from "node:crypto";
 import { getEnv } from "../_lib/env.js";
 import { getHeader, readBody, sendJson } from "../_lib/http.js";
-import { forwardMakeWebhook } from "../_lib/make.js";
+import { forwardMakeWebhookPayload } from "../_lib/make.js";
+import { buildPhonePeWebhookPayload } from "../_lib/phonepe-webhook-payload.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { message: "Invalid webhook payload." });
   }
 
-  await forwardMakeWebhook("phonepe.webhook", payload);
+  await forwardMakeWebhookPayload(buildPhonePeWebhookPayload({ payload, req }));
   return sendJson(res, 200, { received: true });
 }
 

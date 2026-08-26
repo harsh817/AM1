@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Check, LockKey, WarningCircle } from "@phosphor-icons/react";
+import { getCheckoutOrderTrackingPayload } from "./checkout-tracking.js";
 import { CHECKOUT_PATH, LANDING_PATH } from "./routes.js";
 import "./checkout.css";
 
@@ -15,7 +16,14 @@ export function ThankYouPage({ merchantOrderId = "" }) {
 
     let cancelled = false;
 
-    fetch(`/api/phonepe/status?merchantOrderId=${encodeURIComponent(merchantOrderId)}`)
+    fetch("/api/phonepe/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        merchantOrderId,
+        tracking: getCheckoutOrderTrackingPayload(merchantOrderId),
+      }),
+    })
       .then(async (response) => {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.message || "Payment status could not be checked.");

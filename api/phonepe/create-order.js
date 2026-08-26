@@ -8,7 +8,8 @@ import {
 } from "../_lib/checkout.js";
 import { getEnv } from "../_lib/env.js";
 import { readJson, sendJson } from "../_lib/http.js";
-import { forwardMakeWebhook } from "../_lib/make.js";
+import { buildCheckoutLeadPayload } from "../_lib/lead-webhook.js";
+import { forwardMakeWebhookPayload } from "../_lib/make.js";
 import { createPhonePePayment } from "../_lib/phonepe.js";
 
 export default async function handler(req, res) {
@@ -23,6 +24,7 @@ export default async function handler(req, res) {
 
     const selected = payload.selected || [];
     const details = payload.details || {};
+    const tracking = payload.tracking || {};
     const phoneNumber = normalizePhone(details.phone);
     const totals = calculateCheckoutTotals(selected);
     const merchantOrderId = createMerchantOrderId();
@@ -44,17 +46,23 @@ export default async function handler(req, res) {
       metaInfo,
     });
 
-    await forwardMakeWebhook("checkout.payment_initiated", {
-      merchantOrderId,
-      phonePeOrderId: payment.orderId,
-      state: payment.state,
-      totals,
-      details: {
-        name: sanitizeMeta(details.name),
-        email: sanitizeMeta(details.email),
-        phone: phoneNumber,
+    await forwardMakeWebhookPayload(buildCheckoutLeadPayload({
+      eventName: "checkout.payment_initiated",
+      submissionId: merchantOrderId,
+      details,
+      phoneNumber,
+      leadStatus: "payment_initiated",
+      payment: {
+        merchantOrderId,
+        phonePeOrderId: payment.orderId,
+        state: payment.state,
+        amountPaise: totals.amountPaise,
       },
-    });
+      selected,
+      totals,
+      req,
+      tracking,
+    }));
 
     return sendJson(res, 200, {
       merchantOrderId,

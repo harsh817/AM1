@@ -1,7 +1,19 @@
 import { getEnv } from "./env.js";
 
-export async function forwardMakeWebhook(event, payload) {
-  const webhookUrl = getEnv("MAKE_WEBHOOK_URL");
+export async function forwardMakeWebhook(event, payload, webhookUrlEnvName = "MAKE_WEBHOOK_URL") {
+  return postMakeWebhook({
+    event,
+    occurredAt: new Date().toISOString(),
+    payload,
+  }, webhookUrlEnvName);
+}
+
+export async function forwardMakeWebhookPayload(payload, webhookUrlEnvName = "MAKE_WEBHOOK_URL") {
+  return postMakeWebhook(payload, webhookUrlEnvName);
+}
+
+async function postMakeWebhook(payload, webhookUrlEnvName) {
+  const webhookUrl = getEnv(webhookUrlEnvName);
   if (!webhookUrl) return { sent: false };
 
   const controller = new AbortController();
@@ -11,11 +23,7 @@ export async function forwardMakeWebhook(event, payload) {
     const response = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event,
-        occurredAt: new Date().toISOString(),
-        payload,
-      }),
+      body: JSON.stringify(payload),
       signal: controller.signal,
     });
 
