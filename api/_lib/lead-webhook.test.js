@@ -163,3 +163,32 @@ test("builds checkout lead webhook payload from request and tracking context", (
     },
   });
 });
+
+test("builds safe fallback lead payloads for partial checkout context", () => {
+  const payload = buildCheckoutLeadPayload({
+    eventName: "checkout.payment_initiated",
+    submissionId: "AM_FALLBACK",
+    payment: {
+      orderId: "OMO_FALLBACK",
+      amountPaise: "invalid",
+    },
+    selected: "not-array",
+    totals: {
+      selectedBumps: "not-array",
+    },
+  });
+
+  assert.equal(payload.merchant_order_id, "AM_FALLBACK");
+  assert.equal(payload.phonepe_order_id, "OMO_FALLBACK");
+  assert.equal(payload.payment_state, "INITIATED");
+  assert.equal(payload.amount_paise, "");
+  assert.deepEqual(payload.lead.phone, {
+    country_code: "+91",
+    number: "",
+    full: "",
+  });
+  assert.equal(payload.lead.identity, "");
+  assert.deepEqual(payload.order.selected_item_ids, []);
+  assert.deepEqual(payload.order.selected_bumps, []);
+  assert.equal(payload.order.pricing.base_price, "");
+});

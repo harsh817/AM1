@@ -1,43 +1,39 @@
-import crypto from "node:crypto";
-import { getEnv } from "../_lib/env.js";
-import { getHeader, readBody, sendJson } from "../_lib/http.js";
-import { forwardMakeWebhookPayload } from "../_lib/make.js";
-import { buildPhonePeWebhookPayload } from "../_lib/phonepe-webhook-payload.js";
+import {
+  BODY_TOO_LARGE_MESSAGE,
+  isBodyTooLargeError,
+  readBody,
+  sendJson,
+} from "../_lib/http.js";
+import {
+  handlePhonePeWebhook,
+  isPhonePeWebhookPayloadError,
+  isPhonePeWebhookVerificationError,
+} from "../_lib/payment/webhook-service.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return sendJson(res, 405, { message: "Method not allowed." });
   }
 
-  const rawBody = await readBody(req);
-  const isVerified = verifyShaWebhook(req);
-  if (!isVerified) {
-    return sendJson(res, 401, { message: "Webhook verification failed." });
-  }
-
-  let payload = {};
+  let rawBody = "";
   try {
-    payload = rawBody ? JSON.parse(rawBody) : {};
-  } catch {
+    rawBody = await readBody(req);
+  } catch (error) {
+    if (isBodyTooLargeError(error)) {
+      return sendJson(res, 413, { message: BODY_TOO_LARGE_MESSAGE });
+    }
+
     return sendJson(res, 400, { message: "Invalid webhook payload." });
   }
 
-  await forwardMakeWebhookPayload(buildPhonePeWebhookPayload({ payload, req }));
-  return sendJson(res, 200, { received: true });
-}
+  try {
+    const result = await handlePhonePeWebhook({ req, rawBody });
+    return sendJson(res, 200, result);
+  } catch (error) {
+    if (isPhonePeWebhookVerificationError(error) || isPhonePeWebhookPayloadError(error)) {
+      return sendJson(res, error.statusCode, { message: error.message });
+    }
 
-function verifyShaWebhook(req) {
-  const username = getEnv("PHONEPE_WEBHOOK_USERNAME");
-  const password = getEnv("PHONEPE_WEBHOOK_PASSWORD");
-  if (!username || !password) return false;
-
-  const authorization = getHeader(req, "authorization").replace(/^sha256\s+/i, "").trim();
-  const expected = crypto.createHash("sha256").update(`${username}:${password}`).digest("hex");
-  return timingSafeEqual(authorization, expected);
-}
-
-function timingSafeEqual(actual, expected) {
-  const actualBuffer = Buffer.from(actual);
-  const expectedBuffer = Buffer.from(expected);
-  return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+    return sendJson(res, 502, { message: "Webhook could not be processed." });
+  }
 }

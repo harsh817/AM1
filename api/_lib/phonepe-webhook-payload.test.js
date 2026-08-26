@@ -89,3 +89,56 @@ test("builds a complete raw PhonePe webhook payload for sheet routing", () => {
     },
   });
 });
+
+test("extracts nested PhonePe webhook payload variants", () => {
+  const dataPayload = buildPhonePeWebhookPayload({
+    payload: {
+      data: {
+        merchantOrderId: "AM_DATA",
+        orderId: "OMO_DATA",
+        state: "FAILED",
+        amount: 224200,
+        payableAmount: 224200,
+        feeAmount: 0,
+        errorContext: {
+          code: "PAYMENT_DECLINED",
+          errorMessage: "Declined",
+        },
+      },
+    },
+    timestamp: "2026-08-11T10:20:00.000Z",
+  });
+
+  assert.equal(dataPayload.merchant_order_id, "AM_DATA");
+  assert.equal(dataPayload.phonepe_order_id, "OMO_DATA");
+  assert.equal(dataPayload.payment_state, "FAILED");
+  assert.equal(dataPayload.amount_paise, "224200");
+  assert.equal(dataPayload.payable_amount_paise, "224200");
+  assert.equal(dataPayload.fee_amount_paise, "0");
+  assert.equal(dataPayload.error_code, "PAYMENT_DECLINED");
+  assert.equal(dataPayload.error_message, "Declined");
+
+  const nestedPayload = buildPhonePeWebhookPayload({
+    payload: {
+      payload: {
+        merchantOrderId: "AM_NESTED",
+        orderId: "OMO_NESTED",
+        state: "COMPLETED",
+        amount: 0,
+        payableAmount: -1,
+        feeAmount: "invalid",
+        errorContext: {
+          errorCode: "IGNORED",
+        },
+      },
+    },
+  });
+
+  assert.equal(nestedPayload.merchant_order_id, "AM_NESTED");
+  assert.equal(nestedPayload.phonepe_order_id, "OMO_NESTED");
+  assert.equal(nestedPayload.payment_state, "COMPLETED");
+  assert.equal(nestedPayload.amount_paise, "0");
+  assert.equal(nestedPayload.payable_amount_paise, "");
+  assert.equal(nestedPayload.fee_amount_paise, "");
+  assert.equal(nestedPayload.error_code, "IGNORED");
+});

@@ -5,12 +5,12 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/600-italic.css";
-import { App } from "./App.jsx";
-import { CheckoutPage } from "./Checkout.jsx";
-import { LegalPage } from "./Legal.jsx";
-import { ThankYouPage } from "./ThankYou.jsx";
+import { CheckoutPage } from "./pages/CheckoutPage.jsx";
+import { LandingPage } from "./pages/LandingPage.jsx";
+import { LegalPage } from "./pages/LegalPage.jsx";
+import { ThankYouPage } from "./pages/ThankYouPage.jsx";
 import { getPageRoute } from "./routes.js";
-import "./styles.css";
+import "./styles/landing.css";
 
 const route = getPageRoute(window.location.pathname, window.location.search);
 
@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")).render(
     ) : route.page === "legal" ? (
       <LegalPage type={route.type} />
     ) : (
-      <App />
+      <LandingPage />
     )}
   </React.StrictMode>,
 );

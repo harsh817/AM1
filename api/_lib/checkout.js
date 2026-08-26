@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../../src/checkout-config.js";
+import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../../src/lib/checkout-config.js";
 
 const BUMP_BY_ID = new Map(CHECKOUT_BUMPS.map((bump) => [bump.id, bump]));
 

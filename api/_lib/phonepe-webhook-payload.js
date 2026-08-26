@@ -19,11 +19,11 @@ export function buildPhonePeWebhookPayload({
     payload.state || payload.data?.state || payload.payload?.state,
     64,
   );
-  const amountPaise = cleanAmount(payload.amount || payload.data?.amount || payload.payload?.amount);
+  const amountPaise = cleanAmount(payload.amount ?? payload.data?.amount ?? payload.payload?.amount);
   const payableAmountPaise = cleanAmount(
-    payload.payableAmount || payload.data?.payableAmount || payload.payload?.payableAmount,
+    payload.payableAmount ?? payload.data?.payableAmount ?? payload.payload?.payableAmount,
   );
-  const feeAmountPaise = cleanAmount(payload.feeAmount || payload.data?.feeAmount || payload.payload?.feeAmount);
+  const feeAmountPaise = cleanAmount(payload.feeAmount ?? payload.data?.feeAmount ?? payload.payload?.feeAmount);
   const errorContext = payload.errorContext || payload.data?.errorContext || payload.payload?.errorContext || {};
   const errorCode = clean(payload.errorCode || errorContext.errorCode || errorContext.code, 128);
   const errorMessage = clean(payload.errorMessage || payload.message || errorContext.errorMessage, 512);

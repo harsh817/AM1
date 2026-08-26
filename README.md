@@ -25,6 +25,17 @@ Open the local URL shown by Vite. The checkout is available at:
 /a-m-checkout
 ```
 
+## Project structure
+
+```text
+src/pages/        React page-level screens
+src/lib/          Browser/shared checkout, tracking, and content helpers
+src/styles/       Landing and checkout CSS
+api/phonepe/      Thin Vercel API route handlers
+api/_lib/         Server utilities, PhonePe client, Make payload builders
+api/_lib/payment/ Payment service layer used by the route handlers
+```
+
 ## Production build
 
 ```bash
@@ -61,6 +72,8 @@ PHONEPE_ENV
 BASE_URL
 MAKE_WEBHOOK_URL
 ```
+
+Use `.env.example` as the local template. Keep real values in `.env` or deployment environment variables only.
 
 `MAKE_WEBHOOK_URL` receives all tracking events. Every payload includes `event_name`, `event_timestamp`, and `sheet_name` so Make can route each event into a separate Google Sheet tab. Current sheet names are `payment_initiated`, `payment_completed`, `payment_failed`, and `phonepe_webhook`.
 
