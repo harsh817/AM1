@@ -4,6 +4,7 @@ import { getPageRoute } from "./routes.js";
 
 test("routes requested marketing, checkout, and thank-you URLs", () => {
   assert.deepEqual(getPageRoute("/a-m", ""), { page: "landing" });
+  assert.deepEqual(getPageRoute("/am/temp", ""), { page: "landing" });
   assert.deepEqual(getPageRoute("/a-m-checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/a-m-thankyou", "?merchantOrderId=AM_123"), {
     page: "thankyou",

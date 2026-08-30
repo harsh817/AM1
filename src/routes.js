@@ -1,10 +1,15 @@
 export const LANDING_PATH = "/a-m";
+export const TEMP_LANDING_PATH = "/am/temp";
 export const CHECKOUT_PATH = "/a-m-checkout";
 export const THANKYOU_PATH = "/a-m-thankyou";
 
 export function getPageRoute(pathname, search = "") {
   const query = new URLSearchParams(search);
   const path = normalizePath(pathname);
+
+  if (path === LANDING_PATH || path === TEMP_LANDING_PATH) {
+    return { page: "landing" };
+  }
 
   if (query.get("page") === "checkout" || path === CHECKOUT_PATH || path === "/checkout" || path === "/checkout.html") {
     return { page: "checkout" };
