@@ -1,14 +1,8 @@
 export const trustBadges = [
   "1,119+ happy clients",
-  "4.8 star rating",
+  "★★★★★ 4.8 star rating",
   "Delivered in 48 hours",
   "Lifetime access",
-];
-
-export const heroBenefits = [
-  "Personalized to your face, body, height, skin tone, lifestyle, and preferences",
-  "No expensive brands required",
-  "Practical head-to-toe recommendations",
 ];
 
 export const styleIqPillars = [
@@ -170,22 +164,22 @@ export const processSteps = [
 ];
 
 export const recapItems = [
-  "5 Haircuts",
-  "3 Beard Styles",
-  "15 Best Colors",
-  "7 Color Combinations",
+  "Recommended Haircuts",
+  "Recommended Beard Styles",
+  "Recommended Colors",
+  "Recommended Color Combinations",
   "20 Outfit Ideas",
-  "10 Wardrobe Gaps",
-  "10 Buy-Next Recommendations",
-  "10 High-Impact Pieces",
-  "5 Brands & Stores",
-  "5 Shoes",
-  "5 Accessories",
-  "20 Personal Do's & Don'ts",
-  "1 Complete Fit System",
-  "1 Style Cheat Sheet",
-  "90-Day Action Plan",
-  "Skincare & Haircare Guide",
+  "Recommended Wardrobe Gap Fixes",
+  "Recommended Buy-Next Items",
+  "Recommended High-Impact Pieces",
+  "Recommended Brands & Stores",
+  "Recommended Shoes",
+  "Recommended Accessories",
+  "Recommended Personal Do's & Don'ts",
+  "Recommended Fit System",
+  "Recommended Style Cheat Sheet",
+  "Recommended 90-Day Action Plan",
+  "Recommended Skincare & Haircare Guide",
 ];
 
 export const testimonials = [

@@ -18,18 +18,27 @@ test("calculates trusted server-side totals from selected bump ids", () => {
     selectedBumps: [],
   });
 
-  assert.deepEqual(calculateCheckoutTotals(["call"]), {
+  assert.deepEqual(calculateCheckoutTotals([
+    "style-consultation",
+    "instagram-makeover",
+    "style-consultation",
+  ]), {
     basePrice: 1999,
-    bumpsTotal: 499,
-    subtotal: 2498,
-    gst: 449.64,
-    total: 2947.64,
-    amountPaise: 294764,
+    bumpsTotal: 798,
+    subtotal: 2797,
+    gst: 503.46,
+    total: 3300.46,
+    amountPaise: 330046,
     selectedBumps: [
       {
-        id: "call",
-        title: "20-Minute Style Review Call + Flirting Guide",
+        id: "style-consultation",
+        title: "Personal Style Consultation",
         price: 499,
+      },
+      {
+        id: "instagram-makeover",
+        title: "Instagram Profile Analysis + Makeover",
+        price: 299,
       },
     ],
   });
@@ -38,7 +47,7 @@ test("calculates trusted server-side totals from selected bump ids", () => {
 test("rejects invalid contact fields and unknown bump ids", () => {
   const errors = getCheckoutValidationErrors({
     details: { name: "A", email: "bad", phone: "123" },
-    selected: ["unknown"],
+    selected: ["call"],
   });
 
   assert.equal(errors.name, "Please enter your full name.");

@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
 import {
-  ArrowDown,
   ArrowRight,
-  CaretDown,
-  CaretLeft,
-  CaretRight,
   Check,
-  ShieldCheck,
+  ClockCountdown,
+  Minus,
+  Plus,
+  SealCheck,
   Star,
-  StarHalf,
   X,
 } from "@phosphor-icons/react";
 import {
   bonuses,
   comparisonRows,
   faqs,
-  heroBenefits,
   processSteps,
   recapItems,
   reportContentGroups,
@@ -27,12 +24,29 @@ import { CHECKOUT_PATH } from "../routes.js";
 
 const CHECKOUT_TARGET = CHECKOUT_PATH;
 const PRICE_LABEL = "\u20B91,999 + GST";
+const HERO_PRICE_LABEL = `Today's Price ${PRICE_LABEL}`;
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-const transformationSlides = [
-  "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/ankur_hhdjc8.png",
-  "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/rahul_j5oyv6.png",
-  "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628151/satyam_ttlk1w.png",
-  "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
+const transformationPersonas = [
+  {
+    title: "40 year old man",
+    outcome: "looks stylish and almost 5 years younger",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/ankur_hhdjc8.png",
+  },
+  {
+    title: "30-year corporate guy",
+    outcome: "now finally looks decent for office and dates.",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/rahul_j5oyv6.png",
+  },
+  {
+    title: "25 year old skinny guy",
+    outcome: "right style that make him look classy",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628151/satyam_ttlk1w.png",
+  },
+  {
+    title: "complete makeover for this 5.6 guy",
+    outcome: "new style makes him confident.",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
+  },
 ];
 
 function getTimeUntilIstMidnight() {
@@ -55,19 +69,11 @@ function getTimeUntilIstMidnight() {
 
 const padTimerPart = (value) => String(value).padStart(2, "0");
 
-function Brand() {
-  return (
-    <a className="brand" href="#top" aria-label="AttractiveMen home">
-      AttractiveMen
-    </a>
-  );
-}
-
-function Button({ children = "Show Me What Suits Me", light = false, className = "" }) {
+function Button({ children = "Show Me What Suits Me", light = false, className = "", showIcon = true }) {
   return (
     <a className={`button ${light ? "button-light" : ""} ${className}`} href={CHECKOUT_TARGET}>
       <span>{children}</span>
-      <ArrowRight size={20} weight="regular" aria-hidden="true" />
+      {showIcon ? <ArrowRight size={20} weight="regular" aria-hidden="true" /> : null}
     </a>
   );
 }
@@ -83,12 +89,10 @@ function StickyBuyBar() {
 
   useEffect(() => {
     const hero = document.querySelector(".hero");
-    const purchase = document.getElementById("purchase");
 
     const updateVisibility = () => {
       const pastHero = hero ? hero.getBoundingClientRect().bottom <= 0 : false;
-      const finalOfferVisible = purchase ? purchase.getBoundingClientRect().top <= window.innerHeight : false;
-      setVisible(pastHero && !finalOfferVisible);
+      setVisible(pastHero);
     };
 
     updateVisibility();
@@ -111,15 +115,17 @@ function StickyBuyBar() {
   return (
     <aside className={`sticky-buy-bar ${visible ? "visible" : ""}`} aria-hidden={!visible}>
       <div className="sticky-buy-inner">
-        <div className="sticky-buy-offer">
-          <strong>{PRICE_LABEL}</strong>
-          <span>One-time payment</span>
+        <div className="sticky-buy-details">
+          <div className="sticky-buy-offer">
+            <span>Today's Price</span>
+            <strong>{PRICE_LABEL}</strong>
+          </div>
+          <div className="sticky-buy-countdown">
+            <span>Ends In</span>
+            <time aria-label={`${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>{timerText}</time>
+          </div>
         </div>
-        <div className="sticky-buy-countdown">
-          <span>Today ends in</span>
-          <time aria-label={`${remaining.hours} hours, ${remaining.minutes} minutes and ${remaining.seconds} seconds remaining`}>{timerText}</time>
-        </div>
-        <a className="sticky-buy-button" href={CHECKOUT_TARGET}>Buy Now <ArrowRight size={18} aria-hidden="true" /></a>
+        <a className="sticky-buy-button" href={CHECKOUT_TARGET}>Get My Report</a>
       </div>
     </aside>
   );
@@ -144,140 +150,113 @@ function TrustBadges() {
   );
 }
 
-function StyleIqPreview() {
-  return (
-    <div className="styleiq-preview" aria-label="StyleIQ input and report preview">
-      <div className="styleiq-preview-card">
-        <div className="styleiq-preview-block">
-          <small>Your Inputs</small>
-          <strong>Face - Build - Coloring - Lifestyle</strong>
-        </div>
-        <ArrowDown size={28} weight="regular" aria-hidden="true" />
-        <div className="styleiq-preview-block">
-          <small>Your Style Plan</small>
-          <strong>Haircut - Colors - Fits - Outfits - Grooming</strong>
-        </div>
-      </div>
-      <div className="report-preview-stack" aria-hidden="true">
-        <img src="/assets/product/style-report.png" alt="" loading="eager" />
-        <img src="/assets/product/attractivemen-style-report-mockup-v2.png" alt="" loading="eager" />
-      </div>
-    </div>
-  );
-}
-
 function Hero() {
   return (
     <section className="hero styleiq-hero" id="top">
-      <div className="shell hero-shell styleiq-hero-shell">
-        <div className="hero-copy">
-          <Brand />
-          <p className="hero-eyebrow">Dear Indian Men</p>
-          <h1>Stop Guessing What Actually Looks Good On You</h1>
-          <p className="hero-lead">
-            Get a personalized report for your hair, colors, fits, outfits, beard, shoes, and accessories, built around your face, body, height, skin tone, lifestyle, and preferences.
-          </p>
-          <ul className="hero-benefits">
-            {heroBenefits.map((benefit) => (
-              <li key={benefit}><Check size={18} weight="bold" /><span>{benefit}</span></li>
-            ))}
-          </ul>
-          <div className="hero-action-row">
-            <Button />
-            <span>{PRICE_LABEL}</span>
+      <div className="shell styleiq-page-shell">
+        <div className="styleiq-hero-shell">
+          <div className="hero-copy">
+            <p className="hero-eyebrow">Dear Men</p>
+            <h1 aria-label="Stop Guessing What Actually Looks Good On You">
+              <span className="hero-title-line">Stop Guessing</span>
+              <span className="hero-title-line">What Actually Looks</span>
+              <span className="hero-title-line">Good On You</span>
+            </h1>
+            <p className="hero-lead">
+              Get a personalized style report built around your face, body, height, skin tone, lifestyle, and preferences and start dressing better.
+            </p>
+            <figure className="hero-image">
+              <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788004059/ChatGPT_Image_Aug_29_2026_05_15_55_PM_b6cubf.webp" alt="Personal style transformation" loading="eager" />
+            </figure>
+            <div className="hero-action-row">
+              <Button showIcon={false} />
+              <span>{HERO_PRICE_LABEL}</span>
+            </div>
           </div>
-          <TrustBadges />
-          <StyleIqPreview />
         </div>
       </div>
     </section>
   );
 }
 
-function TransformationShowcase() {
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || isPaused) return undefined;
-
-    const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % transformationSlides.length);
-    }, 4000);
-
-    return () => window.clearInterval(timer);
-  }, [isPaused]);
-
-  const moveSlide = (direction) => {
-    setActiveSlide((current) => (current + direction + transformationSlides.length) % transformationSlides.length);
-  };
-
+function TrustSection() {
   return (
-    <section
-      className="transformation-showcase"
-      aria-label="Style transformations"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setIsPaused(true)}
-      onBlurCapture={() => setIsPaused(false)}
-    >
-      <div className="transformation-carousel">
-        <div className="transformation-viewport">
-          <div className="transformation-track" style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
-            {transformationSlides.map((src, index) => (
-              <figure className="transformation-slide" key={`${src}-${index}`} aria-hidden={activeSlide !== index}>
-                <img src={src} alt={`Before and after personal style transformation ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} />
-                <div className="transformation-divider" aria-hidden="true" />
-                <span className="transformation-label transformation-label-before">Before</span>
-                <span className="transformation-label transformation-label-after">After</span>
-              </figure>
-            ))}
-          </div>
-        </div>
-        <button className="transformation-arrow transformation-arrow-previous" type="button" onClick={() => moveSlide(-1)} aria-label="Show previous transformation">
-          <CaretLeft size={20} weight="bold" />
-        </button>
-        <button className="transformation-arrow transformation-arrow-next" type="button" onClick={() => moveSlide(1)} aria-label="Show next transformation">
-          <CaretRight size={20} weight="bold" />
-        </button>
-        <div className="transformation-dots" aria-label="Choose a transformation">
-          {transformationSlides.map((_, index) => (
-            <button
-              className={activeSlide === index ? "active" : ""}
-              type="button"
-              key={index}
-              onClick={() => setActiveSlide(index)}
-              aria-label={`Show transformation ${index + 1}`}
-              aria-current={activeSlide === index ? "true" : undefined}
-            />
-          ))}
-        </div>
+    <section className="trust-section">
+      <div className="shell trust-section-shell">
+        <TrustBadges />
       </div>
     </section>
+  );
+}
+
+function YouFirstTransformationStack() {
+  return (
+    <div className="you-first-transformation-stack" aria-label="Personal style transformation examples">
+      {transformationPersonas.map((persona, index) => (
+        <article className="you-first-transformation-item" key={persona.title}>
+          <div className="you-first-transformation-persona">
+            {index === 0 ? (
+              <p>
+                Look at this <b>40 year old man</b>, he <b>looks stylish and almost 5 years younger</b>.
+              </p>
+            ) : index === 1 ? (
+              <p>This <strong>{persona.title}</strong>&nbsp;{persona.outcome}</p>
+            ) : index === 2 ? (
+              <p>This <strong>{persona.title}</strong> found the <strong>{persona.outcome}</strong></p>
+            ) : index === 3 ? (
+              <p>We did the <strong>{persona.title}</strong> and <strong>{persona.outcome}</strong></p>
+            ) : (
+              <p><strong>{persona.title}</strong> - {persona.outcome}</p>
+            )}
+          </div>
+          <figure className="you-first-transformation-frame">
+            <img src={persona.image} alt={`Before and after personal style transformation for ${persona.title}`} loading={index === 0 ? "eager" : "lazy"} />
+            <div className="you-first-transformation-divider" aria-hidden="true" />
+            <span className="you-first-transformation-label you-first-transformation-label-before">Before</span>
+            <span className="you-first-transformation-label you-first-transformation-label-after">After</span>
+          </figure>
+        </article>
+      ))}
+    </div>
   );
 }
 
 function ProblemSection() {
   return (
-    <section className="section section-cool problem" id="problem">
+    <section className="section problem section-editorial-preview problem-editorial" id="problem">
       <div className="shell narrow-shell">
-        <SectionHeading intro="And somehow, figuring out what you should actually wear is still a mystery.">
-          The internet is full of random fashion advice
+        <figure className="problem-header-video">
+          <video autoPlay muted loop playsInline>
+            <source src="https://res.cloudinary.com/dm49wi6j4/video/upload/v1788007305/grooming_silence_edit_final_1_m4w53i.mp4" type="video/mp4" />
+          </video>
+        </figure>
+        <figure className="problem-header-image">
+          <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp" alt="Internet fashion advice" loading="lazy" />
+        </figure>
+        <SectionHeading>
+          THE INTERNET IS FULL OF <span>RANDOM FASHION ADVICE</span>
         </SectionHeading>
         <div className="problem-copy">
-          <p>You copy a haircut that looked great on someone else. Save an outfit from Instagram. Buy the trousers every man is supposed to own.</p>
-          <p>Sometimes it works. Sometimes it looks terrible.</p>
+          <p className="problem-intro">And somehow, figuring out what you should actually wear is still a mystery.</p>
+          <figure className="problem-visual problem-visual-expanded">
+            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787994025/internet-random-advice_cht9si.webp" alt="Random fashion advice on the internet" loading="lazy" />
+          </figure>
+          <p>You copy a <strong className="problem-emphasis problem-emphasis-caps">haircut</strong> that looked great on someone else.</p>
+          <p>You save an outfit from <em className="problem-emphasis problem-emphasis-caps problem-emphasis-italic">Instagram</em>.</p>
+          <p>You buy the <strong className="problem-emphasis problem-emphasis-caps">trousers</strong> every man is supposed to own.</p>
+          <p>Sometimes it <strong className="problem-emphasis problem-emphasis-caps">works</strong>.</p>
+          <p>Sometimes it looks <span className="problem-emphasis problem-emphasis-caps problem-emphasis-underlined">terrible</span>.</p>
           <ul className="problem-bullets">
-            <li><span>Does this suit my face?</span></li>
-            <li><span>Does this fit my build?</span></li>
-            <li><span>Does this color work with my complexion?</span></li>
-            <li><span>What should I actually buy next?</span></li>
+            <li><span>Will this suit my face?</span></li>
+            <li><span>Will this fit my build?</span></li>
+            <li><span>Will this color suit my complexion?</span></li>
+            <li><span>What should I buy next?</span></li>
           </ul>
           <figure className="problem-visual">
             <img src="/assets/problem/reel-vs-real.webp" alt="The same outfit looking suitable in a Reel but poorly fitted in real life" />
           </figure>
-          <p className="problem-kicker">Most style advice tells you what looks good. Not what looks good on you.</p>
+          <p className="problem-kicker">Most style advice tells you <span className="problem-emphasis problem-emphasis-caps problem-emphasis-underlined">what looks good</span>.</p>
+          <p className="problem-kicker">It does not tell you <strong className="problem-emphasis problem-emphasis-caps">what looks good on you</strong>.</p>
         </div>
       </div>
     </section>
@@ -286,14 +265,21 @@ function ProblemSection() {
 
 function WasteSection() {
   return (
-    <section className="section waste-section">
-      <div className="shell split-copy">
-        <SectionHeading align="left">
-          Stop wasting money on the wrong clothes
+    <section className="section waste-section section-editorial-preview waste-editorial">
+      <div className="shell narrow-shell">
+        <SectionHeading>
+          Stop wasting money on the <span>wrong clothes</span>
         </SectionHeading>
-        <div className="copy-stack">
-          <p>The shirt you liked in the store but rarely wear. The trousers that technically fit but never look like a good fit on you. The hairstyle, color combination, or shoe purchase that still leaves you thinking: what the hell do I wear?</p>
-          <p>You do not need more trial and error. You need better decisions about the clothes, grooming, and style choices you already make.</p>
+        <div className="copy-stack waste-copy">
+          <p>We know, not because every purchase is expensive.</p>
+          <p>But most of them start collecting dust because the <strong className="waste-emphasis waste-emphasis-caps">shirt</strong> you liked in the store but rarely wear.</p>
+          <p>The <strong className="waste-emphasis waste-emphasis-caps">trousers</strong> that technically fit but never look like a good fit on you</p>
+          <figure className="waste-visual">
+            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787996066/ChatGPT_Image_Aug_29_2026_03_03_27_PM_jd4kve.webp" alt="Wardrobe dilemma" loading="lazy" />
+          </figure>
+          <p>No matter how many hairstyles, color combinations, and shoes you tried, still today, when you open your wardrobe before work, a date, or an event, you&apos;re still thinking:</p>
+          <p><strong className="waste-emphasis waste-emphasis-caps waste-emphasis-underlined">&ldquo;What the hell do I wear?&rdquo;</strong></p>
+          <p>There&rsquo;s a simple solution: you don&rsquo;t need more <span className="waste-emphasis waste-emphasis-caps">trial and error</span>; you need <strong className="waste-emphasis waste-emphasis-underlined">better decisions</strong> about the clothes, grooming, and style choices you already make.</p>
         </div>
       </div>
     </section>
@@ -302,15 +288,56 @@ function WasteSection() {
 
 function YouFirstSection() {
   return (
-    <section className="section section-cool">
-      <div className="shell split-copy">
-        <SectionHeading align="left">
-          Style advice should start with you
+    <section className="section you-first-section section-editorial-preview you-first-editorial">
+      <div className="shell narrow-shell">
+        <SectionHeading>
+          You&rsquo;ve been trying to solve a <span>personal</span> problem with <span>generic</span> answers.
         </SectionHeading>
-        <div className="copy-stack">
-          <p>Most style advice starts with a Reel or YouTube video saying: buy this, wear that, get this haircut.</p>
-          <p>Good styling starts with your features, your proportions, your coloring, your lifestyle, your taste, and your budget. Without that context, you are just guessing what might work.</p>
+        <div className="copy-stack you-first-copy">
+          <p>Most style advice starts with a Reel of a YouTube Video saying:</p>
+          <div className="you-first-quote-stack">
+            <p>&ldquo;Buy this.&rdquo;</p>
+            <p>&ldquo;Wear that.&rdquo;</p>
+            <p>&ldquo;Get this haircut.&rdquo;</p>
+          </div>
+          <p>But good styling starts with <strong className="you-first-emphasis you-first-emphasis-underlined">you</strong>.</p>
+          <YouFirstTransformationStack />
+          <div className="you-first-feature-stack">
+            <p>Your features.</p>
+            <p>Your proportions.</p>
+            <p>Your coloring.</p>
+            <p>Your lifestyle, taste, and budget.</p>
+          </div>
+          <p>All these things matter because without that context, you&rsquo;re just guessing what might work.</p>
           <p>With it, choosing what to wear becomes much easier.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProfessionalStylingSection() {
+  return (
+    <section className="section professional-styling-section section-editorial-preview professional-styling-editorial">
+      <div className="shell narrow-shell">
+        <SectionHeading>
+          Professional Styling Starts With <span>YOU</span>.
+        </SectionHeading>
+        <div className="copy-stack professional-styling-copy">
+          <p>Famous celebrities rely on personal styling all the time.</p>
+          <p>It commonly considers factors such as <strong className="professional-styling-emphasis">face and body</strong> <strong className="professional-styling-emphasis">proportions, coloring, silhouettes, wardrobe needs, lifestyle, and occasion</strong> before making recommendations.</p>
+          <figure className="professional-styling-visual">
+            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787997317/ChatGPT_Image_Aug_29_2026_03_24_27_PM_pgk0dk.webp" alt="Professional styling factors" loading="lazy" />
+          </figure>
+          <p>That makes sense because.</p>
+          <div className="professional-styling-reason-stack">
+            <p>A haircut cannot be judged only by whether it is fashionable.</p>
+            <p>A color cannot be judged only by whether it is trending.</p>
+            <p>A jacket cannot be judged only by whether it looks good on the model.</p>
+          </div>
+          <p><strong className="professional-styling-emphasis professional-styling-emphasis-underlined">Personalized styling solves all these issues.</strong></p>
+          <p>Because of this, all the celebrities pay lakhs of rupees to look stylish, but you don&rsquo;t have to.</p>
+          <p>The StyleIQ is built to provide your unique, personalized makeover but completely within your budget.</p>
         </div>
       </div>
     </section>
@@ -319,21 +346,51 @@ function YouFirstSection() {
 
 function StyleIqSystem() {
   return (
-    <section className="section approach" id="styleiq">
-      <div className="shell approach-shell">
-        <SectionHeading intro="StyleIQ is the system our human stylists use to understand what actually suits you.">
-          Your StyleIQ
+    <section className="section approach section-editorial-preview styleiq-editorial" id="styleiq">
+      <div className="shell narrow-shell approach-shell">
+        <SectionHeading>
+          Your <span>StyleIQ</span>
         </SectionHeading>
-        <p className="styleiq-system-lead">
-          Your stylist reviews your photos, measurements, build, coloring, lifestyle, preferences, and budget, then turns those details into practical recommendations built around you.
-        </p>
-        <div className="styleiq-pillars">
+        <div className="copy-stack styleiq-system-copy">
+          <p>StyleIQ is the system our human stylists use to understand what actually suits you.</p>
+          <p>Your stylist reviews your photos, measurements, build, coloring, lifestyle, preferences, and budget, then turns those details into practical recommendations built around you.</p>
+        </div>
+        <div className="styleiq-subsections" aria-label="StyleIQ review inputs">
           {styleIqPillars.map((pillar, index) => (
-            <article className="styleiq-pillar" key={pillar.title}>
-              <small>{String(index + 1).padStart(2, "0")}</small>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.description}</p>
-            </article>
+            <>
+              {index === 0 && (
+                <figure className="styleiq-overview-image">
+                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_1_adbvxg.webp" alt="StyleIQ system overview" loading="lazy" />
+                </figure>
+              )}
+              {index === 1 && (
+                <figure className="styleiq-overview-image">
+                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_2_vc4kcu.webp" alt="Build and proportions styling" loading="lazy" />
+                </figure>
+              )}
+              {index === 2 && (
+                <figure className="styleiq-overview-image">
+                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_40_PM_3_uailwn.webp" alt="Personal coloring guide" loading="lazy" />
+                </figure>
+              )}
+              {index === 3 && (
+                <figure className="styleiq-overview-image">
+                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_5_cqgesu.webp" alt="Lifestyle styling guide" loading="lazy" />
+                </figure>
+              )}
+              {index === 4 && (
+                <figure className="styleiq-overview-image">
+                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_4_dbups8.webp" alt="Preferences and budget guide" loading="lazy" />
+                </figure>
+              )}
+              <article className="styleiq-subsection" key={pillar.title}>
+                <div className="styleiq-subsection-heading">
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                  <h3>{pillar.title}</h3>
+                </div>
+                <p>{pillar.description}</p>
+              </article>
+            </>
           ))}
         </div>
         <p className="styleiq-judgment">StyleIQ gives your stylist the system. Your stylist gives you the judgment.</p>
@@ -344,24 +401,41 @@ function StyleIqSystem() {
 
 function ComparisonSection() {
   return (
-    <section className="section section-cool comparison-section">
+    <section className="section comparison-section section-editorial-preview comparison-editorial">
       <div className="shell">
-        <SectionHeading intro="See what changes when the advice is built around your features, proportions, lifestyle, and budget.">
-          Without StyleIQ vs. With StyleIQ
+        <SectionHeading>
+          Without StyleIQ <span>vs. With StyleIQ</span>
         </SectionHeading>
-        <div className="styleiq-comparison">
-          {comparisonRows.map((row) => (
-            <article className="comparison-card" key={row.withoutStyleIq}>
-              <div className="comparison-generic-row">
-                <X size={19} weight="bold" aria-hidden="true" />
-                <p>{row.withoutStyleIq}</p>
-              </div>
-              <div className="comparison-report-row">
-                <Check size={20} weight="bold" aria-hidden="true" />
-                <p>{row.withStyleIq}</p>
-              </div>
-            </article>
-          ))}
+        <div className="copy-stack comparison-copy">
+          <p>See what changes when the advice is built around your features, proportions, lifestyle, and budget.</p>
+        </div>
+        <figure className="comparison-overview-image">
+          <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_20_PM_1_a6bo6i.webp" alt="StyleIQ comparison overview" loading="lazy" />
+        </figure>
+        <div className="comparison-subsections" aria-label="Without StyleIQ and With StyleIQ comparison">
+          <article className="comparison-subsection comparison-subsection-without">
+            <div className="comparison-subsection-heading">
+              <h3>Without StyleIQ</h3>
+            </div>
+            <ul className="comparison-subsection-list">
+              {comparisonRows.map((row) => (
+                <li key={row.withoutStyleIq}><X size={18} weight="bold" aria-hidden="true" /><span>{row.withoutStyleIq}</span></li>
+              ))}
+            </ul>
+          </article>
+          <article className="comparison-subsection comparison-subsection-with">
+            <div className="comparison-subsection-heading comparison-with-heading">
+              <figure className="comparison-with-image">
+                <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_21_PM_2_nbdoi9.webp" alt="With StyleIQ benefits" loading="lazy" />
+              </figure>
+              <h3>With StyleIQ</h3>
+            </div>
+            <ul className="comparison-subsection-list">
+              {comparisonRows.map((row) => (
+                <li key={row.withStyleIq}><Check size={18} weight="bold" aria-hidden="true" /><span>{row.withStyleIq}</span></li>
+              ))}
+            </ul>
+          </article>
         </div>
       </div>
     </section>
@@ -370,22 +444,39 @@ function ComparisonSection() {
 
 function ReportContents() {
   return (
-    <section className="section report-contents" id="inside">
+    <section className="section report-contents section-editorial-preview report-contents-editorial" id="inside">
       <div className="shell">
-        <SectionHeading intro="One personalized system for what to wear, how to groom, what to buy, and what to do next.">
-          Everything You Get With StyleIQ
+        <SectionHeading>
+          Everything You Get <span>With StyleIQ</span>
         </SectionHeading>
-        <div className="report-content-grid">
-          {reportContentGroups.map((group) => (
-            <article className="report-content-card" key={group.title}>
-              <h3>{group.title}</h3>
-              <p>{group.intro}</p>
-              <ul>
-                {group.items.map((item) => (
-                  <li key={item}><Check size={16} weight="bold" /><span>{item}</span></li>
-                ))}
-              </ul>
-            </article>
+        <div className="copy-stack report-contents-copy">
+          <p>One personalized system for what to wear, how to groom, what to buy, and what to do next.</p>
+        </div>
+        <div className="report-content-subsections" aria-label="Everything included in your StyleIQ report">
+          {reportContentGroups.map((group, index) => (
+            <>
+              {index === 0 && (
+                <figure className="report-overview-video">
+                  <video autoPlay muted loop playsInline>
+                    <source src="https://res.cloudinary.com/dhjsqmejb/video/upload/v1787990480/Style_Report_overview_2_sm1mmx.mp4" type="video/mp4" />
+                  </video>
+                </figure>
+              )}
+              <article className="report-content-subsection" key={group.title}>
+                <div className="report-content-subsection-heading">
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                  <h3>{group.title}</h3>
+                </div>
+                <div className="report-content-subsection-body">
+                  <p>{group.intro}</p>
+                  <ul>
+                    {group.items.map((item) => (
+                      <li key={item}><Check size={16} weight="bold" /><span>{item}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            </>
           ))}
         </div>
       </div>
@@ -395,18 +486,27 @@ function ReportContents() {
 
 function BonusesSection() {
   return (
-    <section className="section section-cool">
+    <section className="section bonuses-section section-editorial-preview bonuses-editorial">
       <div className="shell">
         <SectionHeading>
-          Plus 2 Bonuses
+          Plus 2 <span>Bonuses</span>
         </SectionHeading>
-        <div className="bonus-grid">
-          {bonuses.map((bonus) => (
-            <article className="bonus-card" key={bonus.title}>
-              <h3>{bonus.title}</h3>
-              <p>{bonus.description}</p>
-            </article>
-          ))}
+        <div className="bonus-subsections" aria-label="StyleIQ bonuses">
+          {bonuses.map((bonus, index) => {
+            const bonusTitle = bonus.title.replace(/^Bonus #\d+ - /, "");
+
+            return (
+              <article className="bonus-subsection" key={bonus.title}>
+                <div className="bonus-subsection-heading">
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                  <h3>{bonusTitle}</h3>
+                </div>
+                <div className="bonus-subsection-body">
+                  <p>{bonus.description}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -415,31 +515,32 @@ function BonusesSection() {
 
 function ProcessSection() {
   return (
-    <section className="section process" id="process">
+    <section className="section process section-editorial-preview process-editorial" id="process">
       <div className="shell process-shell">
-        <SectionHeading intro="No appointments. No travel. No waiting weeks for a styling consultation.">
-          Getting Your StyleIQ Report Is Simple
+        <SectionHeading>
+          Getting Your StyleIQ Report <span>Is Simple</span>
         </SectionHeading>
-        <div className="process-list">
-          {processSteps.map((step) => (
-            <article className="process-step" key={step.number}>
-              <p className="process-number">{step.number}</p>
-              <h3>{step.title}</h3>
-              <p className="process-description">{step.description}</p>
-              <ArrowDown className="process-arrow" size={38} weight="thin" aria-hidden="true" />
+        <div className="copy-stack process-copy">
+          <p>No appointments. No travel. No waiting weeks for a styling consultation.</p>
+        </div>
+        <div className="process-flow" aria-label="How StyleIQ report delivery works">
+          {processSteps.map((step, index) => (
+            <article className="process-step" key={step.number} aria-label={`${step.number}: ${step.title}`}>
+              <div className="process-step-heading">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{step.title}</h3>
+              </div>
               <figure>
-                <img
-                  className={step.number === "Step 2" ? "process-analysis-image" : undefined}
-                  src={step.image}
-                  alt={step.alt}
-                  loading="lazy"
-                />
+                <img src={step.image} alt={step.alt} loading="lazy" />
               </figure>
+              <p className="process-description">{step.description}</p>
             </article>
           ))}
         </div>
-        <Button>Start My StyleIQ</Button>
-        <p className="process-note">Your complete StyleIQ arrives within 48 hours after we receive your assessment.</p>
+        <div className="process-action">
+          <Button>Start My StyleIQ</Button>
+          <p className="process-note">Your complete StyleIQ arrives within 48 hours after we receive your assessment.</p>
+        </div>
       </div>
     </section>
   );
@@ -447,23 +548,27 @@ function ProcessSection() {
 
 function SocialProof() {
   return (
-    <section className="section proof" id="reviews">
+    <section className="section proof section-editorial-preview proof-editorial" id="reviews">
       <div className="shell">
-        <SectionHeading intro="Customers call out the same thing: the advice feels personal, practical, and affordable.">
-          What clients say
+        <SectionHeading>
+          What Clients <span>Say</span>
         </SectionHeading>
-        <div className="testimonial-grid">
+        <div className="testimonial-ledger" aria-label="StyleIQ customer reviews">
           {testimonials.map((item) => (
-            <article className="testimonial-card" key={item.quote}>
-              <div className="testimonial-rating" aria-label="Four and a half stars">
-                {Array.from({ length: 4 }).map((_, star) => <Star key={star} size={15} weight="fill" />)}
-                <StarHalf size={15} weight="fill" />
+            <article className="testimonial-entry" key={item.quote}>
+              <div className="testimonial-entry-content">
+                <div className="testimonial-client">
+                  <img className="testimonial-photo" src={item.image} alt={`${item.name} customer photo`} loading="lazy" />
+                  <div className="testimonial-client-copy">
+                    <strong>{item.name}</strong>
+                    {item.meta && <small>{item.meta}</small>}
+                  </div>
+                </div>
+                <div className="testimonial-rating" aria-label="Five stars">
+                  {Array.from({ length: 5 }).map((_, star) => <Star key={star} size={18} weight="fill" />)}
+                </div>
+                <blockquote>{item.quote}</blockquote>
               </div>
-              <blockquote>{item.quote}</blockquote>
-              <footer>
-                <img className="testimonial-avatar" src={item.image} alt={`${item.name}, verified customer`} loading="lazy" />
-                <div><strong>{item.name}</strong>{item.meta && <small>{item.meta}</small>}</div>
-              </footer>
             </article>
           ))}
         </div>
@@ -474,20 +579,27 @@ function SocialProof() {
 
 function RecapSection() {
   return (
-    <section className="section final-recap" id="purchase">
+    <section className="section final-recap final-offer-section section-editorial-preview" id="purchase">
       <div className="shell">
+        <SectionHeading>
+          150+ personal style decisions <span>already made easier</span> for you
+        </SectionHeading>
         <div className="final-offer styleiq-final-offer">
-          <div>
-            <h2>150+ personal style decisions already made easier for you</h2>
-            <p>One stylist. One analysis. One complete direction for how you look.</p>
-            <div className="recap-grid">
-              {recapItems.map((item) => (
-                <span key={item}><Check size={15} weight="bold" /> {item}</span>
-              ))}
-            </div>
-            <div className="price-line"><strong>{PRICE_LABEL}</strong><span>One-time payment</span></div>
-            <Button light>Get My Personal Style Report</Button>
-            <p className="delivery-proof"><ShieldCheck size={20} weight="regular" /> Delivered within 48 hours. Lifetime access included.</p>
+          <p>One stylist. One analysis. One complete direction for how you look.</p>
+          <div className="recap-grid">
+            {recapItems.map((item) => (
+              <span key={item}><Check size={15} weight="bold" /> {item}</span>
+            ))}
+          </div>
+          <div className="price-line" aria-label="StyleIQ final price">
+            <span>Today&apos;s Price</span>
+            <strong>{PRICE_LABEL}</strong>
+            <small>One-time payment</small>
+          </div>
+          <Button className="final-offer-button" showIcon={false}>Get My Personal Style Report</Button>
+          <div className="delivery-proof" aria-label="Delivery and access details">
+            <span><ClockCountdown size={26} weight="regular" /> Delivered within 48 hours</span>
+            <span><SealCheck size={26} weight="regular" /> Lifetime access included</span>
           </div>
         </div>
       </div>
@@ -499,12 +611,11 @@ function FAQ() {
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="section section-cool faq" id="faq">
+    <section className="section faq section-editorial-preview faq-editorial" id="faq">
       <div className="shell faq-shell">
-        <div className="faq-heading">
-          <h2>Frequently asked <span>questions</span></h2>
-          <p>Simple answers about the report, personalization, delivery, revisions, and support.</p>
-        </div>
+        <SectionHeading>
+          Frequently asked <span>questions</span>
+        </SectionHeading>
         <div className="faq-list">
           {faqs.map(([question, answer], index) => {
             const isOpen = open === index;
@@ -512,7 +623,11 @@ function FAQ() {
               <article className={isOpen ? "open" : ""} key={question}>
                 <button type="button" onClick={() => setOpen(isOpen ? -1 : index)} aria-expanded={isOpen}>
                   <span>{question}</span>
-                  <CaretDown size={20} weight="regular" aria-hidden="true" />
+                  {isOpen ? (
+                    <Minus size={24} weight="regular" aria-hidden="true" />
+                  ) : (
+                    <Plus size={24} weight="regular" aria-hidden="true" />
+                  )}
                 </button>
                 <div className="faq-answer" aria-hidden={!isOpen}><p>{answer}</p></div>
               </article>
@@ -547,10 +662,11 @@ export function LandingPage() {
     <>
       <main>
         <Hero />
-        <TransformationShowcase />
+        <TrustSection />
         <ProblemSection />
         <WasteSection />
         <YouFirstSection />
+        <ProfessionalStylingSection />
         <StyleIqSystem />
         <ComparisonSection />
         <ReportContents />

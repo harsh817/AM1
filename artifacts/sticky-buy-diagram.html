@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sticky Buy Bar Diagram</title>
+    <style>
+      :root {
+        --ink: #161616;
+        --hero-black: #050505;
+        --accent: #b58863;
+        --linen: #f2ece8;
+        --muted-linen: #d3c3b9;
+        --ice: #b9cbd0;
+        --clean: #ffffff;
+        --border: rgba(22, 22, 22, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--clean);
+        color: var(--ink);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      main {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 42px 0 56px;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(28px, 4vw, 48px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .intro {
+        max-width: 720px;
+        margin-top: 12px;
+        color: rgba(22, 22, 22, 0.72);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .diagram-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+        gap: 28px;
+        margin-top: 34px;
+        align-items: start;
+      }
+
+      .diagram-card {
+        border: 1px solid var(--border);
+        background: #fafafa;
+      }
+
+      .diagram-label {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        color: rgba(22, 22, 22, 0.7);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .mock-page {
+        position: relative;
+        min-height: 420px;
+        overflow: hidden;
+        background:
+          linear-gradient(#ffffff 0 0) top / 100% 78px no-repeat,
+          repeating-linear-gradient(
+            180deg,
+            #f3f0ed 0,
+            #f3f0ed 54px,
+            #ffffff 54px,
+            #ffffff 108px
+          );
+      }
+
+      .mock-content {
+        display: grid;
+        gap: 12px;
+        padding: 108px 28px 132px;
+      }
+
+      .mock-line {
+        height: 16px;
+        background: rgba(22, 22, 22, 0.12);
+      }
+
+      .mock-line:nth-child(1) {
+        width: 64%;
+        height: 34px;
+        background: rgba(22, 22, 22, 0.2);
+      }
+
+      .mock-line:nth-child(2) {
+        width: 86%;
+      }
+
+      .mock-line:nth-child(3) {
+        width: 76%;
+      }
+
+      .mock-line:nth-child(4) {
+        width: 58%;
+      }
+
+      .sticky-diagram {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: grid;
+        align-items: center;
+        gap: 18px;
+        border-top: 1px solid rgba(242, 236, 232, 0.18);
+        background: var(--hero-black);
+        color: var(--linen);
+        box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.22);
+      }
+
+      .desktop-sticky {
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+        min-height: 86px;
+        padding: 14px 28px;
+      }
+
+      .sticky-info-grid {
+        display: grid;
+        grid-template-columns: max-content max-content;
+        align-items: center;
+        gap: clamp(28px, 5vw, 64px);
+        min-width: 0;
+      }
+
+      .sticky-metric {
+        min-width: 0;
+      }
+
+      .sticky-label {
+        display: block;
+        color: var(--muted-linen);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        line-height: 1.1;
+      }
+
+      .sticky-value {
+        display: block;
+        margin-top: 6px;
+        color: var(--linen);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1;
+      }
+
+      .sticky-price {
+        font-size: 28px;
+      }
+
+      .sticky-time {
+        color: var(--accent);
+        font-size: 26px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .sticky-cta {
+        min-height: 58px;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 2px;
+        background: var(--accent);
+        color: var(--ink);
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .sticky-cta::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          110deg,
+          transparent 0 34%,
+          rgba(242, 236, 232, 0.32) 46%,
+          transparent 58% 100%
+        );
+        transform: translateX(-130%);
+        animation: shimmer 3.2s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes shimmer {
+        0%,
+        52% {
+          transform: translateX(-130%);
+        }
+
+        100% {
+          transform: translateX(130%);
+        }
+      }
+
+      .mobile-frame {
+        width: min(390px, 100%);
+        margin-inline: auto;
+      }
+
+      .mobile-frame .mock-page {
+        min-height: 640px;
+      }
+
+      .mobile-frame .mock-content {
+        padding: 96px 20px 128px;
+      }
+
+      .mobile-sticky {
+        grid-template-columns: minmax(0, 1fr) minmax(142px, 44%);
+        min-height: 106px;
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .mobile-sticky .sticky-info-grid {
+        display: block;
+      }
+
+      .mobile-sticky .sticky-label {
+        font-size: 14px;
+      }
+
+      .mobile-sticky .sticky-price {
+        margin-top: 4px;
+        font-size: clamp(20px, 5.7vw, 22px);
+        white-space: nowrap;
+      }
+
+      .mobile-sticky .sticky-metric + .sticky-metric {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .mobile-sticky .sticky-time {
+        margin-top: 0;
+        font-size: clamp(18px, 5.2vw, 20px);
+      }
+
+      .mobile-sticky .sticky-cta {
+        min-height: 78px;
+        padding-inline: 8px;
+        font-size: clamp(16px, 4.6vw, 18px);
+      }
+
+      .spec {
+        margin-top: 28px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        background: var(--linen);
+      }
+
+      .spec h2 {
+        font-size: 22px;
+        line-height: 1.15;
+      }
+
+      .spec-list {
+        display: grid;
+        gap: 12px;
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .spec-list li {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 14px;
+        color: var(--ink);
+        font-size: 17px;
+        line-height: 1.45;
+      }
+
+      .spec-list strong {
+        color: var(--hero-black);
+      }
+
+      @media (max-width: 860px) {
+        .diagram-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Sticky Buy Bar Diagram</h1>
+      <p class="intro">This is the proposed structure before changing the actual landing page: bigger text, exact labels, and a two-column mobile layout with a rectangular CTA.</p>
+
+      <section class="diagram-grid" aria-label="Sticky buy bar diagram">
+        <article class="diagram-card">
+          <div class="diagram-label">Desktop</div>
+          <div class="mock-page">
+            <div class="mock-content" aria-hidden="true">
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+            </div>
+            <div class="sticky-diagram desktop-sticky">
+              <div class="sticky-info-grid">
+                <div class="sticky-metric">
+                  <span class="sticky-label">Today's Price</span>
+                  <strong class="sticky-value sticky-price">₹1,999 + GST</strong>
+                </div>
+                <div class="sticky-metric">
+                  <span class="sticky-label">Ends In</span>
+                  <strong class="sticky-value sticky-time">08:43:48</strong>
+                </div>
+              </div>
+              <a class="sticky-cta" href="#">Get My Report</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="diagram-card mobile-frame">
+          <div class="diagram-label">Mobile</div>
+          <div class="mock-page">
+            <div class="mock-content" aria-hidden="true">
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+              <span class="mock-line"></span>
+            </div>
+            <div class="sticky-diagram mobile-sticky">
+              <div class="sticky-info-grid">
+                <div class="sticky-metric">
+                  <span class="sticky-label">Today's Price</span>
+                  <strong class="sticky-value sticky-price">₹1,999 + GST</strong>
+                </div>
+                <div class="sticky-metric">
+                  <span class="sticky-label">Ends In</span>
+                  <strong class="sticky-value sticky-time">08:43:48</strong>
+                </div>
+              </div>
+              <a class="sticky-cta" href="#">Get My Report</a>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="spec" aria-label="Implementation rules">
+        <h2>Implementation Rules</h2>
+        <ul class="spec-list">
+          <li><strong>Labels</strong><span>Use exactly "Today's Price" and "Ends In".</span></li>
+          <li><strong>Mobile layout</strong><span>Two columns only: price and inline timer on the left, wider CTA on the right.</span></li>
+          <li><strong>Button</strong><span>Rectangle with 2px to 4px radius, full-height on mobile, no arrow icon, subtle shimmer.</span></li>
+          <li><strong>Type scale</strong><span>Mobile labels 13px to 14px, price 20px to 22px, timer 18px to 20px, CTA 16px to 17px. Desktop values 26px to 28px.</span></li>
+          <li><strong>Colors</strong><span>Black bar, soft-linen labels, copper timer and CTA, black CTA text.</span></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

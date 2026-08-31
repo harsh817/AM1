@@ -19,7 +19,7 @@ test("builds checkout lead webhook payload from request and tracking context", (
       state: "PENDING",
       amountPaise: 294764,
     },
-    selected: ["call"],
+    selected: ["style-consultation"],
     totals: {
       basePrice: 1999,
       bumpsTotal: 499,
@@ -29,8 +29,8 @@ test("builds checkout lead webhook payload from request and tracking context", (
       amountPaise: 294764,
       selectedBumps: [
         {
-          id: "call",
-          title: "20-Minute Style Review Call + Flirting Guide",
+          id: "style-consultation",
+          title: "Personal Style Consultation",
           price: 499,
         },
       ],
@@ -107,11 +107,11 @@ test("builds checkout lead webhook payload from request and tracking context", (
     order: {
       currency: "INR",
       product: "AttractiveMen Personalized Style Report",
-      selected_item_ids: ["call"],
+      selected_item_ids: ["style-consultation"],
       selected_bumps: [
         {
-          id: "call",
-          title: "20-Minute Style Review Call + Flirting Guide",
+          id: "style-consultation",
+          title: "Personal Style Consultation",
           price: "499",
         },
       ],

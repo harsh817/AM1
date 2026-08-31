@@ -55,20 +55,36 @@ export function ThankYouPage({ merchantOrderId = "" }) {
   const isCompleted = state === "COMPLETED";
   const isFailed = state === "FAILED";
   const Icon = isCompleted ? Check : isFailed ? WarningCircle : LockKey;
+  const nextSteps = isCompleted
+    ? ["Complete your assessment", "Your stylist reviews your details", "Your report arrives within 48 hours"]
+    : ["Keep this order ID saved", "Retry checkout if needed", "Contact support if money was deducted"];
 
   return (
     <main className="thankyou-page">
       <section className={`thankyou-card ${state.toLowerCase()}`}>
-        <div className="thankyou-icon" aria-hidden="true">
-          <Icon size={30} weight="bold" />
+        <div className="thankyou-status-panel">
+          <div className="thankyou-icon" aria-hidden="true">
+            <Icon size={30} weight="bold" />
+          </div>
+          <p className="checkout-step">AttractiveMen order</p>
+          <h1>{isCompleted ? "Payment received" : isFailed ? "Payment failed" : "Payment pending"}</h1>
+          <p>{status}</p>
         </div>
-        <p className="checkout-step">AttractiveMen order</p>
-        <h1>{isCompleted ? "Payment received" : isFailed ? "Payment failed" : "Payment pending"}</h1>
-        <p>{status}</p>
+
         <div className="thankyou-order">
           <span>Merchant order ID</span>
           <strong>{merchantOrderId || "Unavailable"}</strong>
         </div>
+
+        <div className="thankyou-next">
+          <h2>What happens next?</h2>
+          <ul>
+            {nextSteps.map((step) => (
+              <li key={step}><Check size={17} weight="bold" aria-hidden="true" /> {step}</li>
+            ))}
+          </ul>
+        </div>
+
         <div className="thankyou-actions">
           <a className="checkout-pay thankyou-primary" href={isCompleted ? LANDING_PATH : CHECKOUT_PATH}>
             {isCompleted ? "Back to landing page" : "Retry checkout"}

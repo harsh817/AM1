@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StyleIQ Black Heading Box Options</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Inter:wght@500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f6f3f0;
+        --black: #050505;
+        --ink: #161616;
+        --cream: #f2ece8;
+        --linen: #d3c3b9;
+        --copper: #b58863;
+        --taupe: #a79e9c;
+        --slate: #3d4d55;
+        --deep: #10232a;
+        font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--page);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      .intro {
+        width: min(calc(100% - 32px), 980px);
+        margin-inline: auto;
+        padding: 34px 0 18px;
+        text-align: center;
+      }
+
+      .intro h1 {
+        max-width: 780px;
+        margin: 0 auto;
+        font-size: clamp(1.8rem, 4vw, 3.4rem);
+        font-weight: 900;
+        line-height: 1.04;
+        text-wrap: balance;
+      }
+
+      .intro p {
+        max-width: 690px;
+        margin: 10px auto 0;
+        color: rgba(22, 22, 22, 0.66);
+        font-size: 0.98rem;
+        line-height: 1.55;
+      }
+
+      .board {
+        width: min(calc(100% - 24px), 1120px);
+        margin: 0 auto 56px;
+      }
+
+      .option {
+        position: relative;
+        display: grid;
+        align-items: center;
+        min-height: 210px;
+        margin-top: 18px;
+        padding: clamp(30px, 4.5vw, 54px) clamp(18px, 5vw, 64px);
+        overflow: hidden;
+        border-radius: 0;
+        background: var(--black);
+        color: var(--cream);
+        box-shadow: 0 20px 46px rgba(22, 22, 22, 0.18);
+      }
+
+      .option-label {
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        color: rgba(242, 236, 232, 0.58);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .heading {
+        width: min(100%, 780px);
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: clamp(0.78rem, 1.2vw, 0.9rem);
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        margin: 0;
+        color: var(--cream);
+        font-size: clamp(2rem, 4.7vw, 4.85rem);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 0.98;
+        text-align: center;
+        text-wrap: balance;
+      }
+
+      h2 span {
+        color: var(--accent);
+      }
+
+      .serif-accent h2 span {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-style: italic;
+        font-weight: 700;
+      }
+
+      .support {
+        max-width: 610px;
+        margin: 10px auto 0;
+        color: rgba(242, 236, 232, 0.72);
+        font-size: clamp(0.9rem, 1.35vw, 1.02rem);
+        line-height: 1.42;
+        text-align: center;
+        text-wrap: balance;
+      }
+
+      .copper {
+        --accent: var(--copper);
+      }
+
+      .linen {
+        --accent: var(--linen);
+      }
+
+      .silver {
+        --accent: #d8dde0;
+      }
+
+      .taupe {
+        --accent: var(--taupe);
+      }
+
+      .slate {
+        --accent: #b9cbd0;
+      }
+
+      .outline {
+        --accent: var(--copper);
+      }
+
+      .outline h2 span {
+        color: transparent;
+        -webkit-text-stroke: 1.4px var(--accent);
+        text-stroke: 1.4px var(--accent);
+      }
+
+      .hairline::before,
+      .hairline::after {
+        position: absolute;
+        left: 50%;
+        width: min(calc(100% - 48px), 780px);
+        height: 1px;
+        background: rgba(242, 236, 232, 0.12);
+        content: "";
+        transform: translateX(-50%);
+      }
+
+      .hairline::before {
+        top: 24px;
+      }
+
+      .hairline::after {
+        bottom: 24px;
+      }
+
+      .accent-bar {
+        border-left: 7px solid var(--accent);
+      }
+
+      .soft-glow h2 {
+        text-shadow:
+          0 0 16px rgba(242, 236, 232, 0.13),
+          0 0 34px rgba(242, 236, 232, 0.07);
+      }
+
+      .split {
+        background:
+          linear-gradient(90deg, var(--black) 0 64%, #0e0e0e 64% 100%);
+      }
+
+      .compact {
+        min-height: 176px;
+        padding-block: clamp(24px, 3.5vw, 38px);
+      }
+
+      @media (max-width: 720px) {
+        .intro {
+          width: min(calc(100% - 24px), 980px);
+          padding: 26px 0 12px;
+        }
+
+        .board {
+          width: min(calc(100% - 16px), 1120px);
+          margin-bottom: 36px;
+        }
+
+        .option {
+          min-height: 188px;
+          margin-top: 12px;
+          padding: 34px 16px 28px;
+        }
+
+        .compact {
+          min-height: 162px;
+          padding-block: 28px;
+        }
+
+        .option-label {
+          top: 10px;
+          left: 10px;
+          font-size: 0.65rem;
+        }
+
+        .support {
+          margin-top: 8px;
+          line-height: 1.35;
+        }
+
+        .hairline::before {
+          top: 18px;
+        }
+
+        .hairline::after {
+          bottom: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="intro">
+      <h1>Plain Black Heading Box Options</h1>
+      <p>Simple rectangular black box, headline on top, dual-color white plus accent. No organic shapes.</p>
+    </header>
+
+    <main class="board">
+      <section class="option copper serif-accent soft-glow">
+        <span class="option-label">Option 01 / White + Copper Italic</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+
+      <section class="option linen serif-accent hairline">
+        <span class="option-label">Option 02 / White + Linen Italic</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+
+      <section class="option silver compact">
+        <span class="option-label">Option 03 / White + Silver Bold</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+
+      <section class="option taupe serif-accent accent-bar">
+        <span class="option-label">Option 04 / White + Taupe With Accent Bar</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+
+      <section class="option slate split soft-glow">
+        <span class="option-label">Option 05 / White + Icy Slate Split</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+
+      <section class="option outline compact hairline">
+        <span class="option-label">Option 06 / White + Copper Outline</span>
+        <div class="heading">
+          <p class="eyebrow">StyleIQ Method</p>
+          <h2>Before and after, <span>with direction</span></h2>
+          <p class="support">A cleaner look starts with better decisions for your face, build, colors, and fit.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

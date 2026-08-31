@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StyleIQ Detailed Design System Combinations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --deep: #10232a;
+        --slate: #3d4d55;
+        --taupe: #a79e9c;
+        --linen: #d3c3b9;
+        --copper: #b58863;
+        --ink: #161616;
+        --cream: #f2ece8;
+        --paper: #fffaf6;
+        --radius: 12px;
+        --shell: 1240px;
+        --ease: 240ms cubic-bezier(0.2, 0.72, 0.2, 1);
+        --shadow: 0 28px 68px rgba(22, 22, 22, 0.18);
+        --soft-shadow: 0 18px 42px rgba(22, 22, 22, 0.1);
+        font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        overflow-x: hidden;
+        background: var(--linen);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      img,
+      svg {
+        display: block;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin-top: 0;
+      }
+
+      .shell {
+        width: min(calc(100% - 40px), var(--shell));
+        margin-inline: auto;
+      }
+
+      .board-header {
+        border-top: 6px solid var(--copper);
+        background:
+          linear-gradient(115deg, rgba(181, 136, 99, 0.18), transparent 42%),
+          linear-gradient(180deg, rgba(61, 77, 85, 0.32), transparent 62%),
+          var(--deep);
+        color: var(--linen);
+        padding: 34px 0 58px;
+      }
+
+      .board-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 72px;
+      }
+
+      .brand {
+        color: inherit;
+        font-size: 26px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .brand span {
+        color: var(--copper);
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 32px;
+        font-style: italic;
+        font-weight: 700;
+      }
+
+      .jump-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .jump-nav a {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(211, 195, 185, 0.22);
+        border-radius: 999px;
+        padding: 0 14px;
+        color: rgba(211, 195, 185, 0.78);
+        font-size: 13px;
+        font-weight: 800;
+        transition: background var(--ease), border-color var(--ease), color var(--ease);
+      }
+
+      .jump-nav a:hover {
+        border-color: var(--copper);
+        background: rgba(181, 136, 99, 0.14);
+        color: var(--linen);
+      }
+
+      .board-kicker {
+        margin-bottom: 18px;
+        color: var(--copper);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .board-header h1 {
+        max-width: 980px;
+        margin-bottom: 24px;
+        font-size: clamp(44px, 7vw, 86px);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1.02;
+      }
+
+      .serif-accent,
+      .headline-accent {
+        color: var(--accent, var(--copper));
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 1.1em;
+        font-style: italic;
+        font-weight: 700;
+      }
+
+      .board-lead {
+        max-width: 780px;
+        margin-bottom: 34px;
+        color: rgba(211, 195, 185, 0.82);
+        font-size: clamp(17px, 1.55vw, 21px);
+        line-height: 1.68;
+      }
+
+      .palette-strip {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .swatch {
+        min-height: 106px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid rgba(211, 195, 185, 0.2);
+        border-radius: var(--radius);
+        padding: 14px;
+        box-shadow: var(--soft-shadow);
+      }
+
+      .swatch strong,
+      .swatch span {
+        display: block;
+      }
+
+      .swatch strong {
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .swatch span {
+        font-size: 12px;
+        font-weight: 800;
+        opacity: 0.72;
+      }
+
+      .deep {
+        background: var(--deep);
+        color: var(--linen);
+      }
+
+      .slate {
+        background: var(--slate);
+        color: var(--linen);
+      }
+
+      .taupe {
+        background: var(--taupe);
+        color: var(--ink);
+      }
+
+      .linen {
+        background: var(--linen);
+        color: var(--ink);
+      }
+
+      .copper {
+        background: var(--copper);
+        color: var(--ink);
+      }
+
+      .ink {
+        background: var(--ink);
+        color: var(--linen);
+      }
+
+      .decision-note {
+        background: var(--ink);
+        color: var(--linen);
+        padding: 20px 0;
+      }
+
+      .decision-note p {
+        margin: 0;
+        color: rgba(211, 195, 185, 0.78);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .option {
+        --page: var(--cream);
+        --page-text: var(--ink);
+        --page-muted: rgba(22, 22, 22, 0.67);
+        --nav-bg: var(--deep);
+        --nav-text: var(--linen);
+        --hero-bg: var(--deep);
+        --hero-text: var(--linen);
+        --surface: var(--paper);
+        --surface-alt: var(--linen);
+        --surface-text: var(--ink);
+        --surface-muted: rgba(22, 22, 22, 0.68);
+        --strong: var(--deep);
+        --strong-text: var(--linen);
+        --accent: var(--copper);
+        --cta: var(--copper);
+        --cta-text: var(--ink);
+        --border: rgba(22, 22, 22, 0.13);
+        --soft-border: rgba(22, 22, 22, 0.08);
+        --image-bg: var(--linen);
+        background: var(--page);
+        color: var(--page-text);
+        padding: clamp(64px, 7vw, 96px) 0;
+      }
+
+      .option + .option {
+        border-top: 1px solid rgba(22, 22, 22, 0.12);
+      }
+
+      .option-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.28fr) minmax(0, 0.72fr);
+        gap: 34px;
+        align-items: start;
+      }
+
+      .option-meta {
+        position: sticky;
+        top: 28px;
+        padding-top: 8px;
+      }
+
+      .option-number {
+        margin-bottom: 12px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .option-meta h2 {
+        margin-bottom: 16px;
+        font-size: clamp(34px, 3.5vw, 48px);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1.05;
+      }
+
+      .option-meta p {
+        margin-bottom: 18px;
+        color: var(--page-muted);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .fit-note {
+        border-left: 4px solid var(--accent);
+        background: color-mix(in srgb, var(--surface) 74%, transparent);
+        padding: 16px;
+      }
+
+      .fit-note strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .fit-note span {
+        display: block;
+        color: var(--page-muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .rhythm-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .rhythm-item {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        gap: 10px;
+        align-items: center;
+        color: var(--page-muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .rhythm-dot {
+        width: 20px;
+        height: 20px;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: var(--dot);
+      }
+
+      .preview-frame {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .page-nav {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid color-mix(in srgb, var(--nav-text) 16%, transparent);
+        background: var(--nav-bg);
+        color: var(--nav-text);
+        padding: 0 24px;
+      }
+
+      .page-brand {
+        font-size: 24px;
+        font-weight: 900;
+      }
+
+      .page-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        color: color-mix(in srgb, var(--nav-text) 78%, transparent);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .nav-cta,
+      .primary-cta,
+      .secondary-cta {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 900;
+        transition: transform var(--ease), filter var(--ease), border-color var(--ease);
+      }
+
+      .nav-cta svg,
+      .primary-cta svg,
+      .secondary-cta svg,
+      .final-cta svg {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 auto;
+      }
+
+      .nav-cta {
+        border: 1px solid var(--cta);
+        background: var(--cta);
+        color: var(--cta-text);
+        padding: 0 16px;
+      }
+
+      .nav-cta:hover,
+      .primary-cta:hover,
+      .secondary-cta:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.03);
+      }
+
+      .page-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.57fr) minmax(280px, 0.43fr);
+        gap: clamp(24px, 4vw, 44px);
+        align-items: center;
+        background: var(--hero-bg);
+        color: var(--hero-text);
+        padding: clamp(34px, 5vw, 58px);
+      }
+
+      .hero-kicker {
+        margin-bottom: 14px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .page-hero h3 {
+        max-width: 640px;
+        margin-bottom: 18px;
+        font-size: clamp(38px, 4.3vw, 62px);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1.02;
+      }
+
+      .hero-subheadline {
+        max-width: 620px;
+        margin-bottom: 24px;
+        color: color-mix(in srgb, var(--hero-text) 78%, transparent);
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .benefits {
+        display: grid;
+        gap: 10px;
+        margin: 0 0 26px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .benefits li {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 10px;
+        align-items: center;
+        color: color-mix(in srgb, var(--hero-text) 82%, transparent);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .icon-check {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--cta-text);
+        padding: 5px;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .primary-cta {
+        min-height: 56px;
+        border: 1px solid var(--cta);
+        background: var(--cta);
+        color: var(--cta-text);
+        padding: 0 22px;
+        font-size: 14px;
+      }
+
+      .secondary-cta {
+        min-height: 56px;
+        border: 1px solid color-mix(in srgb, var(--hero-text) 36%, transparent);
+        background: transparent;
+        color: var(--hero-text);
+        padding: 0 20px;
+      }
+
+      .price-chip {
+        color: color-mix(in srgb, var(--hero-text) 82%, transparent);
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .trust-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .trust-row span {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid color-mix(in srgb, var(--hero-text) 18%, transparent);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: color-mix(in srgb, var(--hero-text) 78%, transparent);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .hero-visual {
+        display: grid;
+        gap: 16px;
+      }
+
+      .report-product {
+        position: relative;
+        min-height: 440px;
+        overflow: hidden;
+        border: 1px solid color-mix(in srgb, var(--hero-text) 16%, transparent);
+        border-radius: 16px;
+        background:
+          linear-gradient(135deg, transparent 0 46%, color-mix(in srgb, var(--accent) 28%, transparent) 46% 100%),
+          var(--image-bg);
+        box-shadow: 0 28px 62px rgba(22, 22, 22, 0.24);
+      }
+
+      .report-product img {
+        position: absolute;
+        inset: 24px 20px auto auto;
+        width: min(58%, 280px);
+        max-height: 380px;
+        object-fit: contain;
+        filter: drop-shadow(0 22px 22px rgba(22, 22, 22, 0.18));
+      }
+
+      .analysis-panel {
+        position: absolute;
+        left: 22px;
+        bottom: 22px;
+        width: min(68%, 310px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--surface) 94%, transparent);
+        color: var(--surface-text);
+        padding: 18px;
+      }
+
+      .analysis-panel strong {
+        display: block;
+        margin-bottom: 14px;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .metric {
+        display: grid;
+        grid-template-columns: 78px 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .metric span {
+        color: var(--surface-muted);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .meter {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--surface-text) 11%, transparent);
+      }
+
+      .meter i {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--accent);
+      }
+
+      .device-strip {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .device-card {
+        border: 1px solid color-mix(in srgb, var(--hero-text) 18%, transparent);
+        border-radius: var(--radius);
+        background: color-mix(in srgb, var(--hero-text) 10%, transparent);
+        padding: 16px;
+      }
+
+      .device-card small {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .device-card strong {
+        color: var(--hero-text);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1.4;
+      }
+
+      .component-zone {
+        display: grid;
+        gap: 22px;
+        background: var(--surface);
+        padding: 24px;
+      }
+
+      .zone-title {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--soft-border);
+        padding-bottom: 16px;
+      }
+
+      .zone-title h4 {
+        margin: 0;
+        color: var(--surface-text);
+        font-size: 28px;
+        font-weight: 900;
+        line-height: 1.12;
+      }
+
+      .zone-title p {
+        max-width: 460px;
+        margin: 0;
+        color: var(--surface-muted);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .icon-card-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .icon-card {
+        min-height: 180px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-alt);
+        color: var(--surface-text);
+        padding: 18px;
+      }
+
+      .icon-box {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--strong);
+        color: var(--strong-text);
+        margin-bottom: 18px;
+      }
+
+      .icon-box svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .icon-card h5 {
+        margin: 0 0 9px;
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 1.2;
+      }
+
+      .icon-card p {
+        margin: 0;
+        color: var(--surface-muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-alt);
+        color: var(--surface-text);
+        padding: 22px;
+      }
+
+      .panel h5 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 14px;
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1.18;
+      }
+
+      .panel h5 svg {
+        width: 21px;
+        height: 21px;
+        color: var(--accent);
+      }
+
+      .report-items {
+        display: grid;
+        gap: 10px;
+      }
+
+      .report-item {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px;
+        align-items: start;
+        border-top: 1px solid var(--soft-border);
+        padding-top: 12px;
+      }
+
+      .report-item:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .report-item svg {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: var(--strong);
+        color: var(--strong-text);
+        padding: 8px;
+      }
+
+      .report-item strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--surface-text);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .report-item span {
+        display: block;
+        color: var(--surface-muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .compare-box {
+        min-height: 126px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+
+      .compare-box.bad {
+        background: color-mix(in srgb, var(--surface) 74%, var(--taupe));
+      }
+
+      .compare-box.good {
+        background: var(--strong);
+        color: var(--strong-text);
+      }
+
+      .compare-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .compare-label svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .compare-box p {
+        margin: 0;
+        color: inherit;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .conversion-grid {
+        display: grid;
+        grid-template-columns: 0.88fr 1.12fr;
+        gap: 18px;
+      }
+
+      .testimonial {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .testimonial img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .stars {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 8px;
+        color: var(--accent);
+      }
+
+      .stars svg {
+        width: 15px;
+        height: 15px;
+        fill: currentColor;
+      }
+
+      blockquote {
+        margin: 0 0 10px;
+        color: var(--surface-text);
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.48;
+      }
+
+      .testimonial strong,
+      .testimonial small {
+        display: block;
+      }
+
+      .testimonial strong {
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .testimonial small {
+        color: var(--surface-muted);
+        font-size: 12px;
+      }
+
+      .price-panel {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: center;
+        background: var(--strong);
+        color: var(--strong-text);
+      }
+
+      .price-panel h5 {
+        margin-bottom: 10px;
+      }
+
+      .price-panel p {
+        margin: 0;
+        color: color-mix(in srgb, var(--strong-text) 74%, transparent);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .price {
+        color: var(--accent);
+        font-size: 38px;
+        font-weight: 900;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .final-cta {
+        min-height: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 12px;
+        background: var(--cta);
+        color: var(--cta-text);
+        padding: 0 18px;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .faq-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-alt);
+        color: var(--surface-text);
+        padding: 18px 20px;
+      }
+
+      .faq-row strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .faq-row span {
+        color: var(--surface-muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .faq-row svg {
+        width: 22px;
+        height: 22px;
+        color: var(--accent);
+      }
+
+      .mobile-preview {
+        display: grid;
+        grid-template-columns: minmax(190px, 0.42fr) minmax(0, 0.58fr);
+        gap: 18px;
+        align-items: center;
+      }
+
+      .phone {
+        overflow: hidden;
+        border: 8px solid var(--ink);
+        border-radius: 30px;
+        background: var(--hero-bg);
+        color: var(--hero-text);
+        box-shadow: var(--soft-shadow);
+      }
+
+      .phone-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid color-mix(in srgb, var(--hero-text) 16%, transparent);
+        padding: 14px;
+      }
+
+      .phone-top strong {
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .phone-body {
+        padding: 18px;
+      }
+
+      .phone-body h5 {
+        margin: 0 0 12px;
+        font-size: 26px;
+        font-weight: 900;
+        line-height: 1.04;
+      }
+
+      .phone-body p {
+        margin: 0 0 16px;
+        color: color-mix(in srgb, var(--hero-text) 76%, transparent);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .phone-cta {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--cta);
+        color: var(--cta-text);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .mobile-notes {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mobile-notes div {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-alt);
+        color: var(--surface-text);
+        padding: 16px;
+      }
+
+      .mobile-notes strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .mobile-notes span {
+        color: var(--surface-muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .section-rhythm {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+
+      .rhythm-band {
+        min-height: 92px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 14px;
+        color: var(--band-text);
+        background: var(--band);
+      }
+
+      .rhythm-band strong {
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .rhythm-band span {
+        font-size: 11px;
+        font-weight: 850;
+        opacity: 0.72;
+      }
+
+      .theme-deep {
+        --page: #d3c3b9;
+        --page-text: #161616;
+        --page-muted: rgba(22, 22, 22, 0.66);
+        --nav-bg: #10232a;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(135deg, #10232a 0%, #10232a 63%, #3d4d55 63%);
+        --hero-text: #d3c3b9;
+        --surface: #f2ece8;
+        --surface-alt: #e4d7cf;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.66);
+        --strong: #10232a;
+        --strong-text: #d3c3b9;
+        --accent: #b58863;
+        --cta: #b58863;
+        --cta-text: #161616;
+        --border: rgba(22, 22, 22, 0.13);
+        --soft-border: rgba(22, 22, 22, 0.08);
+        --image-bg: #d3c3b9;
+      }
+
+      .theme-copper {
+        --page: #161616;
+        --page-text: #d3c3b9;
+        --page-muted: rgba(211, 195, 185, 0.72);
+        --nav-bg: #161616;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(135deg, #b58863 0%, #b58863 58%, #d3c3b9 58%);
+        --hero-text: #161616;
+        --surface: #d3c3b9;
+        --surface-alt: #eee3dc;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.68);
+        --strong: #161616;
+        --strong-text: #d3c3b9;
+        --accent: #10232a;
+        --cta: #10232a;
+        --cta-text: #d3c3b9;
+        --border: rgba(22, 22, 22, 0.16);
+        --soft-border: rgba(22, 22, 22, 0.09);
+        --image-bg: #e5d7ce;
+      }
+
+      .theme-slate {
+        --page: #3d4d55;
+        --page-text: #f2ece8;
+        --page-muted: rgba(242, 236, 232, 0.72);
+        --nav-bg: #3d4d55;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(135deg, #3d4d55 0%, #10232a 70%);
+        --hero-text: #d3c3b9;
+        --surface: #e7dcd5;
+        --surface-alt: #d3c3b9;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.66);
+        --strong: #3d4d55;
+        --strong-text: #f2ece8;
+        --accent: #b58863;
+        --cta: #b58863;
+        --cta-text: #161616;
+        --border: rgba(22, 22, 22, 0.14);
+        --soft-border: rgba(22, 22, 22, 0.08);
+        --image-bg: #d3c3b9;
+      }
+
+      .theme-linen {
+        --page: #f2ece8;
+        --page-text: #161616;
+        --page-muted: rgba(22, 22, 22, 0.66);
+        --nav-bg: #d3c3b9;
+        --nav-text: #161616;
+        --hero-bg: linear-gradient(135deg, #fffaf6 0%, #d3c3b9 100%);
+        --hero-text: #161616;
+        --surface: #fffaf6;
+        --surface-alt: #eee3dc;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.66);
+        --strong: #10232a;
+        --strong-text: #d3c3b9;
+        --accent: #b58863;
+        --cta: #161616;
+        --cta-text: #d3c3b9;
+        --border: rgba(22, 22, 22, 0.12);
+        --soft-border: rgba(22, 22, 22, 0.075);
+        --image-bg: #d3c3b9;
+      }
+
+      .theme-ink {
+        --page: #10232a;
+        --page-text: #d3c3b9;
+        --page-muted: rgba(211, 195, 185, 0.72);
+        --nav-bg: #161616;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(135deg, #161616 0%, #161616 62%, #10232a 62%);
+        --hero-text: #d3c3b9;
+        --surface: #161616;
+        --surface-alt: #202020;
+        --surface-text: #d3c3b9;
+        --surface-muted: rgba(211, 195, 185, 0.68);
+        --strong: #d3c3b9;
+        --strong-text: #161616;
+        --accent: #b58863;
+        --cta: #b58863;
+        --cta-text: #161616;
+        --border: rgba(211, 195, 185, 0.16);
+        --soft-border: rgba(211, 195, 185, 0.09);
+        --image-bg: #2a2a2a;
+      }
+
+      .theme-taupe {
+        --page: #a79e9c;
+        --page-text: #161616;
+        --page-muted: rgba(22, 22, 22, 0.68);
+        --nav-bg: #10232a;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(135deg, #a79e9c 0%, #d3c3b9 54%, #b58863 100%);
+        --hero-text: #161616;
+        --surface: #e7dcd5;
+        --surface-alt: #d3c3b9;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.66);
+        --strong: #10232a;
+        --strong-text: #d3c3b9;
+        --accent: #b58863;
+        --cta: #10232a;
+        --cta-text: #d3c3b9;
+        --border: rgba(22, 22, 22, 0.13);
+        --soft-border: rgba(22, 22, 22, 0.08);
+        --image-bg: #d3c3b9;
+      }
+
+      .theme-layered {
+        --page: #e7dcd5;
+        --page-text: #161616;
+        --page-muted: rgba(22, 22, 22, 0.66);
+        --nav-bg: #10232a;
+        --nav-text: #d3c3b9;
+        --hero-bg: linear-gradient(120deg, #10232a 0%, #10232a 48%, #b58863 48%, #b58863 67%, #d3c3b9 67%);
+        --hero-text: #d3c3b9;
+        --surface: #f2ece8;
+        --surface-alt: #d3c3b9;
+        --surface-text: #161616;
+        --surface-muted: rgba(22, 22, 22, 0.66);
+        --strong: #3d4d55;
+        --strong-text: #f2ece8;
+        --accent: #b58863;
+        --cta: #161616;
+        --cta-text: #d3c3b9;
+        --border: rgba(22, 22, 22, 0.13);
+        --soft-border: rgba(22, 22, 22, 0.08);
+        --image-bg: #d3c3b9;
+      }
+
+      .theme-ink .compare-box.bad {
+        background: #202020;
+      }
+
+      .theme-ink .meter {
+        background: rgba(211, 195, 185, 0.12);
+      }
+
+      .theme-ink .analysis-panel {
+        border-color: rgba(211, 195, 185, 0.18);
+      }
+
+      .choice-guide {
+        background: var(--ink);
+        color: var(--linen);
+        padding: clamp(58px, 7vw, 86px) 0;
+      }
+
+      .choice-guide h2 {
+        max-width: 860px;
+        margin-bottom: 16px;
+        font-size: clamp(36px, 4.6vw, 58px);
+        font-weight: 900;
+        line-height: 1.06;
+      }
+
+      .choice-guide p {
+        max-width: 760px;
+        margin-bottom: 30px;
+        color: rgba(211, 195, 185, 0.76);
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .choice-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .choice-card {
+        border: 1px solid rgba(211, 195, 185, 0.16);
+        border-radius: var(--radius);
+        background: rgba(211, 195, 185, 0.06);
+        padding: 16px;
+      }
+
+      .choice-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--copper);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .choice-card span {
+        display: block;
+        color: rgba(211, 195, 185, 0.75);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 1180px) {
+        .option-grid,
+        .detail-grid,
+        .conversion-grid,
+        .mobile-preview {
+          grid-template-columns: 1fr;
+        }
+
+        .option-meta {
+          position: static;
+        }
+
+        .icon-card-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .choice-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 860px) {
+        .board-top,
+        .page-nav,
+        .zone-title,
+        .price-panel {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .jump-nav,
+        .page-links {
+          justify-content: flex-start;
+        }
+
+        .page-hero {
+          grid-template-columns: 1fr;
+          padding: 30px;
+        }
+
+        .report-product {
+          min-height: 360px;
+        }
+
+        .report-product img {
+          width: min(48%, 220px);
+        }
+
+        .analysis-panel {
+          width: min(78%, 300px);
+        }
+
+        .icon-card-grid,
+        .compare-row,
+        .section-rhythm,
+        .palette-strip {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          width: 100%;
+          max-width: 390px;
+          margin-inline: 0;
+          padding-inline: 14px;
+        }
+
+        .board-header {
+          padding-top: 28px;
+        }
+
+        .board-top {
+          margin-bottom: 46px;
+        }
+
+        .jump-nav {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .jump-nav a {
+          justify-content: center;
+          min-width: 0;
+        }
+
+        .board-header h1 {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          font-size: 30px;
+          line-height: 1.08;
+        }
+
+        .board-lead {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          font-size: 16px;
+        }
+
+        .page-hero,
+        .component-zone {
+          padding: 18px;
+        }
+
+        .hero-actions,
+        .device-strip {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .primary-cta,
+        .secondary-cta,
+        .nav-cta,
+        .final-cta {
+          width: 100%;
+        }
+
+        .report-product {
+          min-height: 430px;
+        }
+
+        .report-product img {
+          inset: 18px auto auto 50%;
+          width: 66%;
+          transform: translateX(-50%);
+        }
+
+        .analysis-panel {
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+          width: auto;
+        }
+
+        .choice-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true" focusable="false">
+      <symbol id="icon-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24">
+        <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-face" viewBox="0 0 24 24">
+        <path d="M8 10a4 4 0 0 1 8 0v2a4 4 0 0 1-8 0v-2Z" fill="none" stroke="currentColor" stroke-width="2" />
+        <path d="M5 21a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-build" viewBox="0 0 24 24">
+        <path d="M7 4h10M9 4l-2 16M15 4l2 16M7 12h10M6 20h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-color" viewBox="0 0 24 24">
+        <path d="M12 3s6 6.2 6 11a6 6 0 0 1-12 0c0-4.8 6-11 6-11Z" fill="none" stroke="currentColor" stroke-width="2" />
+        <path d="M9 15a3 3 0 0 0 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-lifestyle" viewBox="0 0 24 24">
+        <path d="M8 8V6a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M5 8h14v11H5V8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        <path d="M9 13h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-budget" viewBox="0 0 24 24">
+        <path d="M4 5h9l7 7-8 8-8-8V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        <path d="M8 9h.01" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-report" viewBox="0 0 24 24">
+        <path d="M7 3h7l4 4v14H7V3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        <path d="M14 3v5h5M10 12h6M10 16h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-star" viewBox="0 0 24 24">
+        <path d="m12 3 2.6 5.4 5.9.8-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.8L12 3Z" />
+      </symbol>
+      <symbol id="icon-caret" viewBox="0 0 24 24">
+        <path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+    </svg>
+
+    <header class="board-header" id="top">
+      <div class="shell">
+        <div class="board-top">
+          <a class="brand" href="#top">Style<span>IQ</span></a>
+          <nav class="jump-nav" aria-label="Design options">
+            <a href="#deep">01 Deep</a>
+            <a href="#copper">02 Copper</a>
+            <a href="#slate">03 Slate</a>
+            <a href="#linen">04 Linen</a>
+            <a href="#ink">05 Ink</a>
+            <a href="#taupe">06 Taupe</a>
+            <a href="#layered">07 Layered</a>
+          </nav>
+        </div>
+        <p class="board-kicker">Detailed palette decision board</p>
+        <h1>Pick the full page feel,<br />not just a <span class="serif-accent">color mood</span>.</h1>
+        <p class="board-lead">
+          Each option renders the same real landing-page components: headline, subheadline, CTA states, trust badges, icon cards, report contents, comparison, testimonial, offer block, FAQ row, section rhythm, and mobile slice.
+        </p>
+        <div class="palette-strip" aria-label="Provided color palette">
+          <div class="swatch deep"><strong>#10232A</strong><span>Deep brand</span></div>
+          <div class="swatch slate"><strong>#3D4D55</strong><span>Slate tone</span></div>
+          <div class="swatch taupe"><strong>#A79E9C</strong><span>Taupe neutral</span></div>
+          <div class="swatch linen"><strong>#D3C3B9</strong><span>Linen surface</span></div>
+          <div class="swatch copper"><strong>#B58863</strong><span>Copper accent</span></div>
+          <div class="swatch ink"><strong>#161616</strong><span>Ink contrast</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="decision-note">
+      <div class="shell">
+        <p>This file is a design-selection artifact. It does not replace the live React page. After one direction is selected, the chosen system should be applied to `src/styles/landing.css`, verified in browser, and exported again.</p>
+      </div>
+    </section>
+
+    <main id="option-root"></main>
+
+    <section class="choice-guide">
+      <div class="shell">
+        <h2>Fast selection guide.</h2>
+        <p>For the actual landing page, I would shortlist 01 Deep Editorial and 07 Layered Contrast first. They solve the blandness problem while keeping the page premium and usable.</p>
+        <div class="choice-grid" id="choice-root"></div>
+      </div>
+    </section>
+
+    <script>
+      const options = [
+        {
+          slug: "deep",
+          number: "01",
+          name: "Deep Editorial",
+          className: "theme-deep",
+          summary: "A dark, premium first impression with warm reading sections and cool analytical anchors.",
+          fit: "Best default for the live page: masculine, focused, premium, and easy to extend without becoming loud.",
+          headlineBefore: "Stop guessing what actually ",
+          headlineAccent: "looks good on you",
+          headlineAfter: ".",
+          subheadline: "Get a personalized report for your hair, colors, fits, outfits, beard, shoes, and accessories, built around your face, body, height, skin tone, lifestyle, and preferences.",
+          rhythm: [
+            ["Hero", "#10232A", "#D3C3B9"],
+            ["Proof", "#D3C3B9", "#161616"],
+            ["Problem", "#3D4D55", "#D3C3B9"],
+            ["Report", "#F2ECE8", "#161616"],
+            ["Reviews", "#D3C3B9", "#161616"],
+            ["Offer", "#161616", "#D3C3B9"]
+          ],
+          dots: ["#10232A", "#D3C3B9", "#3D4D55"]
+        },
+        {
+          slug: "copper",
+          number: "02",
+          name: "Copper Authority",
+          className: "theme-copper",
+          summary: "A warmer sales-led direction where copper creates immediate energy and the dark CTA carries purchase intent.",
+          fit: "Best when we want the offer to feel bold, urgent, and commercial. It is strong, but can become heavy if every section is warm.",
+          headlineBefore: "Stop wasting money on the ",
+          headlineAccent: "wrong clothes",
+          headlineAfter: ".",
+          subheadline: "You do not need more trial and error. You need better decisions about the clothes, grooming, and style choices you already make.",
+          rhythm: [
+            ["Hero", "#B58863", "#161616"],
+            ["Proof", "#D3C3B9", "#161616"],
+            ["System", "#161616", "#D3C3B9"],
+            ["Report", "#F2ECE8", "#161616"],
+            ["FAQ", "#3D4D55", "#D3C3B9"],
+            ["Offer", "#161616", "#D3C3B9"]
+          ],
+          dots: ["#B58863", "#161616", "#D3C3B9"]
+        },
+        {
+          slug: "slate",
+          number: "03",
+          name: "Slate Studio",
+          className: "theme-slate",
+          summary: "A cooler, more analytical direction that makes StyleIQ feel like a structured product system.",
+          fit: "Best if the page should feel less like fashion content and more like a precise personal analysis product.",
+          headlineBefore: "A personal style system built around ",
+          headlineAccent: "your variables",
+          headlineAfter: ".",
+          subheadline: "Your stylist reviews your photos, measurements, build, coloring, lifestyle, preferences, and budget, then turns those details into practical recommendations.",
+          rhythm: [
+            ["Hero", "#3D4D55", "#D3C3B9"],
+            ["Problem", "#10232A", "#D3C3B9"],
+            ["Report", "#D3C3B9", "#161616"],
+            ["Process", "#3D4D55", "#F2ECE8"],
+            ["Reviews", "#E7DCD5", "#161616"],
+            ["Offer", "#B58863", "#161616"]
+          ],
+          dots: ["#3D4D55", "#10232A", "#B58863"]
+        },
+        {
+          slug: "linen",
+          number: "04",
+          name: "Linen Magazine",
+          className: "theme-linen",
+          summary: "A light editorial treatment that feels mature and readable, with dark anchors to avoid blandness.",
+          fit: "Best for a classy magazine-like feel. It needs strong dark bands every few sections to maintain momentum.",
+          headlineBefore: "Style advice should start ",
+          headlineAccent: "with you",
+          headlineAfter: ".",
+          subheadline: "Good styling starts with your features, your proportions, your coloring, your lifestyle, your taste, and your budget.",
+          rhythm: [
+            ["Hero", "#FFFaf6", "#161616"],
+            ["Proof", "#D3C3B9", "#161616"],
+            ["System", "#10232A", "#D3C3B9"],
+            ["Report", "#FFFaf6", "#161616"],
+            ["Bonus", "#B58863", "#161616"],
+            ["Offer", "#161616", "#D3C3B9"]
+          ],
+          dots: ["#D3C3B9", "#10232A", "#B58863"]
+        },
+        {
+          slug: "ink",
+          number: "05",
+          name: "Ink Luxury",
+          className: "theme-ink",
+          summary: "The highest contrast option. It feels expensive, private, and decisive.",
+          fit: "Best for luxury positioning. It needs generous spacing and fewer dense modules so the page does not feel cramped.",
+          headlineBefore: "A sharper style report for men who want ",
+          headlineAccent: "certainty",
+          headlineAfter: ".",
+          subheadline: "One stylist. One analysis. One complete direction for how you look, what to buy, and what to stop wasting money on.",
+          rhythm: [
+            ["Hero", "#161616", "#D3C3B9"],
+            ["Proof", "#10232A", "#D3C3B9"],
+            ["Report", "#D3C3B9", "#161616"],
+            ["Process", "#3D4D55", "#F2ECE8"],
+            ["FAQ", "#202020", "#D3C3B9"],
+            ["Offer", "#B58863", "#161616"]
+          ],
+          dots: ["#161616", "#10232A", "#D3C3B9"]
+        },
+        {
+          slug: "taupe",
+          number: "06",
+          name: "Taupe Tailored",
+          className: "theme-taupe",
+          summary: "A softer, mature direction. Taupe adds refinement while deep and copper keep decisions clear.",
+          fit: "Best for an approachable premium feel. It is calm, but less energetic than Deep or Layered.",
+          headlineBefore: "Dress in a way that feels ",
+          headlineAccent: "natural on you",
+          headlineAfter: ".",
+          subheadline: "Recommendations are built around where you actually go, how you actually dress, what you like wearing, and what you are comfortable spending.",
+          rhythm: [
+            ["Hero", "#A79E9C", "#161616"],
+            ["Proof", "#D3C3B9", "#161616"],
+            ["System", "#10232A", "#D3C3B9"],
+            ["Report", "#E7DCD5", "#161616"],
+            ["Reviews", "#B58863", "#161616"],
+            ["Offer", "#161616", "#D3C3B9"]
+          ],
+          dots: ["#A79E9C", "#10232A", "#B58863"]
+        },
+        {
+          slug: "layered",
+          number: "07",
+          name: "Layered Contrast",
+          className: "theme-layered",
+          summary: "The most dynamic full-palette direction. Every section gets a distinct visual job while staying coherent.",
+          fit: "Best if the current page feels flat. This creates stronger color transitions without adding random colors.",
+          headlineBefore: "From random advice to a style system ",
+          headlineAccent: "built for you",
+          headlineAfter: ".",
+          subheadline: "StyleIQ connects your features, proportions, coloring, lifestyle, preferences, and budget into practical outfit and grooming decisions.",
+          rhythm: [
+            ["Hero", "#10232A", "#D3C3B9"],
+            ["Proof", "#B58863", "#161616"],
+            ["Problem", "#3D4D55", "#F2ECE8"],
+            ["Report", "#F2ECE8", "#161616"],
+            ["Reviews", "#D3C3B9", "#161616"],
+            ["Offer", "#161616", "#D3C3B9"]
+          ],
+          dots: ["#10232A", "#B58863", "#3D4D55"]
+        }
+      ];
+
+      const iconCards = [
+        ["face", "Your Features", "Hairstyles, beard shapes, eyewear, collars, and grooming choices guided by facial characteristics."],
+        ["build", "Build & Proportions", "Fits, lengths, rises, tapers, and silhouettes chosen around your height, frame, and proportions."],
+        ["color", "Your Coloring", "Color families and combinations that work more naturally with your complexion and undertone."],
+        ["lifestyle", "Your Lifestyle", "Office, dates, weekends, weddings, and casual outings considered before recommendations are made."],
+        ["budget", "Preferences & Budget", "Advice that fits what you like wearing and what you are comfortable spending."]
+      ];
+
+      const reportItems = [
+        ["report", "Personal Style Analysis", "5 haircuts, 3 beard styles, face shape analysis, and eyewear recommendations."],
+        ["color", "Color & Fit System", "15 best colors, 7 color combinations, complete fit guide, and clothing-specific fit rules."],
+        ["lifestyle", "Personal Outfit System", "20 complete outfit ideas for work, dates, weekends, events, and everyday dressing."],
+        ["budget", "Shopping Plan", "Wardrobe gaps, buy-next recommendations, stop-buying guidance, shoes, accessories, brands, and stores."]
+      ];
+
+      const benefits = [
+        "Personalized to your face, body, height, skin tone, lifestyle, and preferences",
+        "No expensive brands required",
+        "Practical head-to-toe recommendations"
+      ];
+
+      const choices = [
+        ["01 Deep", "Safest strong direction for the real page."],
+        ["02 Copper", "Best for louder offer energy."],
+        ["03 Slate", "Best for analytical product positioning."],
+        ["04 Linen", "Best for editorial calm."],
+        ["05 Ink", "Best luxury feel, but easy to make too heavy."],
+        ["06 Taupe", "Softest and most mature, but least urgent."],
+        ["07 Layered", "Best when the page needs more movement."]
+      ];
+
+      const svg = (name, className = "") => `<svg class="${className}" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
+
+      function renderRhythm(option) {
+        return option.rhythm
+          .map(([label, bg, text]) => `
+            <div class="rhythm-band" style="--band: ${bg}; --band-text: ${text}">
+              <strong>${label}</strong>
+              <span>${bg}</span>
+            </div>
+          `)
+          .join("");
+      }
+
+      function renderOption(option) {
+        const dotMarkup = option.dots
+          .map((color, index) => `
+            <div class="rhythm-item">
+              <i class="rhythm-dot" style="--dot: ${color}"></i>
+              <span>${["Primary section tone", "Reading surface", "Accent or contrast"][index]}</span>
+            </div>
+          `)
+          .join("");
+
+        return `
+          <section class="option ${option.className}" id="${option.slug}">
+            <div class="shell option-grid">
+              <aside class="option-meta">
+                <p class="option-number">Option ${option.number}</p>
+                <h2>${option.name}</h2>
+                <p>${option.summary}</p>
+                <div class="fit-note">
+                  <strong>Where this works</strong>
+                  <span>${option.fit}</span>
+                </div>
+                <div class="rhythm-list">${dotMarkup}</div>
+              </aside>
+
+              <article class="preview-frame">
+                <header class="page-nav">
+                  <div class="page-brand">StyleIQ</div>
+                  <nav class="page-links" aria-label="${option.name} preview navigation">
+                    <span>How it works</span>
+                    <span>Inside report</span>
+                    <span>Reviews</span>
+                    <span>FAQ</span>
+                  </nav>
+                  <a class="nav-cta" href="#${option.slug}">Get My Report ${svg("arrow")}</a>
+                </header>
+
+                <section class="page-hero">
+                  <div>
+                    <p class="hero-kicker">Dear Indian Men</p>
+                    <h3>${option.headlineBefore}<span class="headline-accent">${option.headlineAccent}</span>${option.headlineAfter}</h3>
+                    <p class="hero-subheadline">${option.subheadline}</p>
+                    <ul class="benefits">
+                      ${benefits.map((benefit) => `<li>${svg("check", "icon-check")}<span>${benefit}</span></li>`).join("")}
+                    </ul>
+                    <div class="hero-actions">
+                      <a class="primary-cta" href="#${option.slug}">Show Me What Suits Me ${svg("arrow")}</a>
+                      <a class="secondary-cta" href="#${option.slug}">View Sample Report</a>
+                      <span class="price-chip">&#8377;1,999 + GST</span>
+                    </div>
+                    <div class="trust-row">
+                      <span>1,119+ happy clients</span>
+                      <span>4.8 star rating</span>
+                      <span>Delivered in 48 hours</span>
+                      <span>Lifetime access</span>
+                    </div>
+                  </div>
+
+                  <div class="hero-visual">
+                    <div class="report-product">
+                      <img src="../public/assets/product/style-report.png" alt="StyleIQ report cover preview" />
+                      <div class="analysis-panel">
+                        <strong>Personal Fit Map</strong>
+                        <div class="metric"><span>Face</span><div class="meter"><i style="width: 86%"></i></div></div>
+                        <div class="metric"><span>Build</span><div class="meter"><i style="width: 74%"></i></div></div>
+                        <div class="metric"><span>Color</span><div class="meter"><i style="width: 92%"></i></div></div>
+                      </div>
+                    </div>
+                    <div class="device-strip">
+                      <div class="device-card"><small>Your Inputs</small><strong>Face - Build - Coloring - Lifestyle</strong></div>
+                      <div class="device-card"><small>Your Style Plan</small><strong>Haircut - Colors - Fits - Outfits - Grooming</strong></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="component-zone">
+                  <div class="zone-title">
+                    <h4>Cards, icons, and content modules</h4>
+                    <p>This is the practical component test: icon cards, report cards, comparison treatment, testimonial, price CTA, FAQ row, mobile preview, and section color rhythm.</p>
+                  </div>
+
+                  <div class="icon-card-grid">
+                    ${iconCards.map(([icon, title, body]) => `
+                      <article class="icon-card">
+                        <div class="icon-box">${svg(icon)}</div>
+                        <h5>${title}</h5>
+                        <p>${body}</p>
+                      </article>
+                    `).join("")}
+                  </div>
+
+                  <div class="detail-grid">
+                    <section class="panel">
+                      <h5>${svg("report")} Everything You Get With StyleIQ</h5>
+                      <div class="report-items">
+                        ${reportItems.map(([icon, title, body]) => `
+                          <div class="report-item">
+                            ${svg(icon)}
+                            <div><strong>${title}</strong><span>${body}</span></div>
+                          </div>
+                        `).join("")}
+                      </div>
+                    </section>
+
+                    <section class="panel">
+                      <h5>${svg("check")} Without StyleIQ vs. With StyleIQ</h5>
+                      <div class="compare-row">
+                        <div class="compare-box bad">
+                          <div class="compare-label">${svg("x")} Without</div>
+                          <p>Buying colors because they look good on Instagram Reels, then wondering why they do not work on you.</p>
+                        </div>
+                        <div class="compare-box good">
+                          <div class="compare-label">${svg("check")} With</div>
+                          <p>Knowing which colors work naturally with your complexion, undertone, wardrobe, and daily use.</p>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="conversion-grid">
+                    <section class="panel testimonial">
+                      <img src="../public/assets/testimonials/customer-1.webp" alt="Verified StyleIQ customer" />
+                      <div>
+                        <div class="stars">${Array.from({ length: 5 }).map(() => svg("star")).join("")}</div>
+                        <blockquote>It felt like someone actually looked at my face and body instead of giving random tips.</blockquote>
+                        <strong>Rishi</strong>
+                        <small>Verified customer - Pune</small>
+                      </div>
+                    </section>
+
+                    <section class="panel price-panel">
+                      <div>
+                        <h5>150+ personal style decisions made easier</h5>
+                        <p>One stylist. One analysis. One complete direction for how you look, what to buy, and what to stop wasting money on.</p>
+                      </div>
+                      <div>
+                        <div class="price">&#8377;1,999</div>
+                        <a class="final-cta" href="#${option.slug}">Get My Personal Style Report ${svg("arrow")}</a>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="faq-row">
+                    <div>
+                      <strong>Why pay for this when style advice online is free?</strong>
+                      <span>Because free advice tells you what might look good. StyleIQ tells you what is more likely to work for you.</span>
+                    </div>
+                    ${svg("caret")}
+                  </div>
+
+                  <div class="mobile-preview">
+                    <div class="phone" aria-label="${option.name} mobile preview">
+                      <div class="phone-top"><strong>StyleIQ</strong><span>&#8377;1,999</span></div>
+                      <div class="phone-body">
+                        <h5>${option.headlineBefore}<span class="headline-accent">${option.headlineAccent}</span></h5>
+                        <p>${option.subheadline}</p>
+                        <a class="phone-cta" href="#${option.slug}">Show Me What Suits Me</a>
+                      </div>
+                    </div>
+                    <div class="mobile-notes">
+                      <div><strong>Mobile headline</strong><span>Checks whether the stylized phrase still reads cleanly in a narrow viewport.</span></div>
+                      <div><strong>CTA contrast</strong><span>Checks whether the primary purchase action remains obvious without relying on desktop layout.</span></div>
+                      <div><strong>Section rhythm</strong><span>Checks whether the page will have enough color movement after the hero.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="section-rhythm" aria-label="${option.name} section rhythm">
+                    ${renderRhythm(option)}
+                  </div>
+                </section>
+              </article>
+            </div>
+          </section>
+        `;
+      }
+
+      document.getElementById("option-root").innerHTML = options.map(renderOption).join("");
+      document.getElementById("choice-root").innerHTML = choices
+        .map(([label, body]) => `<div class="choice-card"><strong>${label}</strong><span>${body}</span></div>`)
+        .join("");
+
+      if (window.location.hash) {
+        window.requestAnimationFrame(() => {
+          document.querySelector(window.location.hash)?.scrollIntoView();
+        });
+      }
+    </script>
+  </body>
+</html>

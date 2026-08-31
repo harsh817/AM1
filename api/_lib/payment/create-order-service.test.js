@@ -17,7 +17,7 @@ test("creates a checkout payment order from trusted server totals", async () => 
         email: "harsh@example.com",
         phone: "+91 98765 43210",
       },
-      selected: ["call"],
+      selected: ["style-consultation"],
       tracking: {
         marketing: { source: "meta" },
       },
@@ -60,7 +60,7 @@ test("creates a checkout payment order from trusted server totals", async () => 
         udf2: "harsh@example.com",
         udf3: "9876543210",
         udf4: "AttractiveMen Personalized Style Report",
-        udf5: "call",
+        udf5: "style-consultation",
       },
     },
   ]);

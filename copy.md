@@ -2,7 +2,7 @@
 
 ## Stop Guessing What Actually Looks Good On You
 
-Get a personalized report for your hair, colors, fits, outfits, beard, shoes, and accessories, built around your face, body, height, skin tone, lifestyle, and preferences.
+Get a personalized style report built around your face, body, height, skin tone, lifestyle, and preferences and start dressing better.
 
 - ✓ Personalized to you
 - ✓ No expensive brands required

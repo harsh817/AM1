@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Check,
+  InstagramLogo,
   LockKey,
   PhoneCall,
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../lib/checkout-config.js";
+import { trustBadges } from "../lib/landing-data.js";
 import {
   getCheckoutOrderTrackingPayload,
   getCheckoutTrackingPayload,
@@ -16,11 +18,21 @@ import { normalizeIndianMobile } from "../lib/phone.js";
 import "../styles/checkout.css";
 
 const DRAFT_KEY = "attractivemen-checkout-draft";
+const VALID_BUMP_IDS = new Set(CHECKOUT_BUMPS.map((bump) => bump.id));
+const BUMP_DETAILS = {
+  "style-consultation": {
+    Icon: PhoneCall,
+    summary: "Get a private style review call to understand your report, clear your doubts, and know exactly what to do next.",
+  },
+  "instagram-makeover": {
+    Icon: InstagramLogo,
+    summary: "Get your Instagram profile reviewed for photos, outfits, bio, highlights, and first impression so it looks sharper.",
+  },
+};
 const BUMPS = CHECKOUT_BUMPS.map((bump) => ({
   ...bump,
-  Icon: PhoneCall,
-  summary: "Review your report privately with a style expert.",
-  details: ["Personal Report Walkthrough", "Fit, Hair & Grooming Q&A", "2 Outfit Photo Reviews"],
+  Icon: BUMP_DETAILS[bump.id]?.Icon ?? PhoneCall,
+  summary: BUMP_DETAILS[bump.id]?.summary ?? "",
 }));
 
 const formatMoney = (amount) =>
@@ -33,14 +45,24 @@ const formatMoney = (amount) =>
 function loadDraft() {
   try {
     const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
+    const selected = Array.isArray(saved?.selected)
+      ? [...new Set(saved.selected.filter((id) => VALID_BUMP_IDS.has(id)))]
+      : [];
     return {
       details: saved?.details ?? { name: "", email: "", phone: "" },
-      selected: Array.isArray(saved?.selected) ? saved.selected : [],
+      selected,
     };
   } catch {
     return { details: { name: "", email: "", phone: "" }, selected: [] };
   }
 }
+
+const formatAddOnPrice = (amount) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 
 export function CheckoutPage() {
   const initial = useMemo(loadDraft, []);
@@ -107,6 +129,10 @@ export function CheckoutPage() {
   const subtotal = BASE_PRICE + bumpsTotal;
   const gst = subtotal * GST_RATE;
   const total = subtotal + gst;
+  const orderItems = [
+    { id: "style-report", title: "Personalized Style Report", price: BASE_PRICE },
+    ...selectedBumps.map(({ id, title, price }) => ({ id, title, price })),
+  ];
 
   const updateDetail = (field, value) => {
     setDetails((current) => ({ ...current, [field]: value }));
@@ -167,18 +193,14 @@ export function CheckoutPage() {
 
   return (
     <div className="checkout-page">
-      <main className="checkout-main">
-        <section className="checkout-intro" aria-labelledby="checkout-title">
-          <p className="checkout-step">Checkout &nbsp;&bull;&nbsp; Assessment &nbsp;&bull;&nbsp; Your report</p>
-          <h1 id="checkout-title">Complete your order.<br /><span>Start dressing with certainty.</span></h1>
-          <p>Your recommendations will be built around your face, body, skin tone, routine and budget.</p>
-          <div className="checkout-trust-row">
-            <span><Check size={16} weight="bold" /> One-Time Payment</span>
-            <span><Check size={16} weight="bold" /> No Subscription</span>
-            <span><Check size={16} weight="bold" /> 48-Hour Delivery</span>
-          </div>
-        </section>
+      <section className="checkout-intro" aria-labelledby="checkout-title">
+        <h1 id="checkout-title">Complete Your Order for Personal Style Report</h1>
+        <div className="checkout-trust-row" aria-label="StyleIQ proof points">
+          {trustBadges.map((badge) => <span key={badge}>{badge}</span>)}
+        </div>
+      </section>
 
+      <main className="checkout-main">
         {paymentResult ? (
           <section className={`checkout-payment-result ${paymentResult.state?.toLowerCase() || ""}`} aria-live="polite">
             <strong>{paymentResult.state === "COMPLETED" ? "Payment received" : paymentResult.state === "FAILED" ? "Payment failed" : "Payment pending"}</strong>
@@ -189,8 +211,7 @@ export function CheckoutPage() {
         <form className="checkout-card" onSubmit={handleSubmit} noValidate>
           <section className="checkout-block" aria-labelledby="contact-title">
             <div className="checkout-block-heading">
-              <span>1</span>
-              <div><h2 id="contact-title">Where should we send your report?</h2></div>
+              <h2 id="contact-title">Where should we send your report?</h2>
             </div>
 
             <label className="checkout-field">
@@ -210,10 +231,12 @@ export function CheckoutPage() {
             </label>
           </section>
 
-          <section className="checkout-block" aria-label="Optional 20-minute style review call">
-
+          <section className="checkout-block checkout-addons" aria-labelledby="addons-title">
+            <div className="checkout-block-heading checkout-addons-heading">
+              <h2 id="addons-title">100X Add-Ons</h2>
+            </div>
             <div className="checkout-bumps">
-              {BUMPS.map(({ id, title, price, Icon, summary, details: benefits }) => {
+              {BUMPS.map(({ id, title, price, Icon, summary }) => {
                 const isSelected = selected.includes(id);
                 return (
                   <label className={`checkout-bump ${isSelected ? "selected" : ""}`} key={id}>
@@ -221,13 +244,10 @@ export function CheckoutPage() {
                     <span className="bump-check" aria-hidden="true">{isSelected ? <Check size={15} weight="bold" /> : null}</span>
                     <span className="bump-copy">
                       <span className="bump-title-row">
-                        <span><Icon size={21} /><strong>{title}</strong></span>
-                        <b>+{formatMoney(price)}</b>
+                        <span><Icon size={20} /><strong>{title}</strong></span>
+                        <b className="bump-price">+{formatAddOnPrice(price)} + GST</b>
                       </span>
                       <span className="bump-summary">{summary}</span>
-                      <ul className="bump-benefits">
-                        {benefits.map((benefit) => <li key={benefit}><Check size={14} weight="bold" /><span>{benefit}</span></li>)}
-                      </ul>
                     </span>
                   </label>
                 );
@@ -237,24 +257,19 @@ export function CheckoutPage() {
 
           <section className="checkout-block" aria-labelledby="order-title">
             <div className="checkout-block-heading">
-              <span>2</span>
-              <div><h2 id="order-title">Review your order</h2><p>See exactly what you are paying before continuing.</p></div>
+              <h2 id="order-title">Recap of Your Order</h2>
             </div>
 
-            <div className="checkout-product">
-              <img src="/assets/product/style-report.png" alt="AttractiveMen personalized style report" />
-              <div><strong>Personalized Style Report</strong><span>Built around your features</span><small>One-time purchase</small></div>
-              <b>{formatMoney(BASE_PRICE)}</b>
+            <div className="checkout-recap-items">
+              {orderItems.map((item) => (
+                <div className="checkout-recap-item" key={item.id}>
+                  <span>{item.title}</span>
+                  <b>{formatMoney(item.price)}</b>
+                </div>
+              ))}
             </div>
-
-            {selectedBumps.length ? (
-              <div className="checkout-selected-items">
-                {selectedBumps.map((bump) => <div key={bump.id}><span>{bump.title}</span><b>+{formatMoney(bump.price)}</b></div>)}
-              </div>
-            ) : null}
 
             <div className="checkout-totals">
-              <div><span>Subtotal</span><b>{formatMoney(subtotal)}</b></div>
               <div><span>GST (18%)</span><b>{formatMoney(gst)}</b></div>
               <div className="checkout-total"><span>Total payable</span><strong>{formatMoney(total)}</strong></div>
             </div>
@@ -262,30 +277,18 @@ export function CheckoutPage() {
 
           <section className="checkout-block checkout-payment" aria-label="Secure payment">
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
-              <LockKey size={20} weight="fill" /> {isPaying ? "Opening secure payment..." : `Proceed to secure payment \u2022 ${formatMoney(total)}`}
+              <LockKey size={20} weight="fill" /> {isPaying ? "Opening secure payment..." : "Proceed My Order"}
             </button>
             {status ? <p className="checkout-status" role="status">{status}</p> : null}
 
-            <div className="payment-confidence">
+            <div className="payment-confidence" aria-label="Checkout trust points">
+              <span><Check size={18} weight="bold" /> Completely Customized</span>
+              <span><Check size={18} weight="bold" /> One-Time Payment</span>
               <span><ShieldCheck size={18} weight="fill" /> Secure Payment</span>
-              <span><LockKey size={18} weight="fill" /> Encrypted Payment Details</span>
+              <span><LockKey size={18} weight="fill" /> Encrypted Details</span>
             </div>
           </section>
         </form>
-
-        <section className="checkout-reassurance">
-          <img src="/assets/product/attractivemen-style-report-mockup-v2.png" alt="Preview of the AttractiveMen Personalized Style Report" />
-          <div>
-            <p>Everything you need to stop guessing</p>
-            <h2>The AttractiveMen Personalized Style Report</h2>
-            <strong>{"\u20B9"}{BASE_PRICE.toLocaleString("en-IN")} + GST</strong>
-            <ul>
-              <li><Check size={17} weight="bold" /> Face, Body & Skin Tone Analysis</li>
-              <li><Check size={17} weight="bold" /> 20 Head-to-Toe Outfits</li>
-              <li><Check size={17} weight="bold" /> Hair, Beard & Accessories Guide</li>
-            </ul>
-          </div>
-        </section>
 
         <section className="checkout-next">
           <h2>What happens after payment?</h2>
