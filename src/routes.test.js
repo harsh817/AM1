@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { getPageRoute } from "./routes.js";
 
@@ -17,4 +18,16 @@ test("keeps legacy routes working", () => {
   assert.deepEqual(getPageRoute("/checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/checkout.html", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/", "?page=checkout"), { page: "checkout" });
+});
+
+test("production CSP allows bundled fonts and Cloudinary videos", () => {
+  const config = JSON.parse(
+    readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
+  );
+  const contentSecurityPolicy = config.headers
+    .flatMap((entry) => entry.headers)
+    .find((header) => header.key === "Content-Security-Policy")?.value;
+
+  assert.match(contentSecurityPolicy, /font-src 'self' data: https:\/\/fonts\.gstatic\.com/);
+  assert.match(contentSecurityPolicy, /media-src 'self' https:\/\/res\.cloudinary\.com/);
 });
