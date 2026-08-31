@@ -574,6 +574,25 @@ test("report contents section uses dark editorial subsections with consistent so
   );
 });
 
+test("landing videos use compact tap-for-sound overlays", () => {
+  assert.match(
+    css,
+    /\.problem-header-video,[\s\S]*\.report-overview-video\s*{[^}]*position: relative;/s,
+  );
+  assert.match(
+    css,
+    /\.video-sound-button\s*{[^}]*position: absolute;[^}]*top: 14px;[^}]*right: 14px;[^}]*z-index: 3;[^}]*display: inline-flex;[^}]*background: rgba\(var\(--palette-hero-black-rgb\), 0\.82\);[^}]*color: var\(--palette-soft-linen\);[^}]*font-weight: var\(--weight-bold\);/s,
+  );
+  assert.match(
+    css,
+    /\.video-sound-button-on\s*{[^}]*border-color: var\(--palette-accent\);[^}]*background: var\(--palette-accent\);[^}]*color: var\(--palette-hero-black\);/s,
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 720px\)\s*{[\s\S]*\.video-sound-button\s*{[^}]*top: 10px;[^}]*right: 10px;[^}]*min-height: 38px;[^}]*padding: 8px 10px;[^}]*font-size: 13px;/s,
+  );
+});
+
 test("bonuses section uses white editorial subsections with soft-linen bodies", () => {
   assert.match(
     css,

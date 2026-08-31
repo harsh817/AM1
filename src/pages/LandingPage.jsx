@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -6,6 +6,8 @@ import {
   Minus,
   Plus,
   SealCheck,
+  SpeakerHigh,
+  SpeakerSlash,
   Star,
   X,
 } from "@phosphor-icons/react";
@@ -75,6 +77,61 @@ function Button({ children = "Show Me What Suits Me", light = false, className =
       <span>{children}</span>
       {showIcon ? <ArrowRight size={20} weight="regular" aria-hidden="true" /> : null}
     </a>
+  );
+}
+
+function SoundVideo({ className, src, label }) {
+  const videoRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
+
+  const handleSoundToggle = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const nextSoundOn = !soundOn;
+    video.muted = !nextSoundOn;
+
+    if (!nextSoundOn) {
+      setSoundOn(false);
+      return;
+    }
+
+    video.volume = 1;
+    const playPromise = video.play();
+
+    if (playPromise?.then) {
+      playPromise
+        .then(() => setSoundOn(true))
+        .catch(() => {
+          video.muted = true;
+          setSoundOn(false);
+        });
+      return;
+    }
+
+    setSoundOn(true);
+  };
+
+  return (
+    <figure className={className}>
+      <video ref={videoRef} autoPlay muted={!soundOn} loop playsInline aria-label={label}>
+        <source src={src} type="video/mp4" />
+      </video>
+      <button
+        className={`video-sound-button ${soundOn ? "video-sound-button-on" : ""}`}
+        type="button"
+        onClick={handleSoundToggle}
+        aria-label={soundOn ? "Mute video sound" : "Play video sound"}
+        aria-pressed={soundOn}
+      >
+        {soundOn ? (
+          <SpeakerHigh size={18} weight="fill" aria-hidden="true" />
+        ) : (
+          <SpeakerSlash size={18} weight="fill" aria-hidden="true" />
+        )}
+        <span>{soundOn ? "Sound on" : "Tap for sound"}</span>
+      </button>
+    </figure>
   );
 }
 
@@ -225,11 +282,11 @@ function ProblemSection() {
   return (
     <section className="section problem section-editorial-preview problem-editorial" id="problem">
       <div className="shell narrow-shell">
-        <figure className="problem-header-video">
-          <video autoPlay muted loop playsInline>
-            <source src="https://res.cloudinary.com/dm49wi6j4/video/upload/v1788007305/grooming_silence_edit_final_1_m4w53i.mp4" type="video/mp4" />
-          </video>
-        </figure>
+        <SoundVideo
+          className="problem-header-video"
+          src="https://res.cloudinary.com/dm49wi6j4/video/upload/v1788007305/grooming_silence_edit_final_1_m4w53i.mp4"
+          label="Grooming and style direction video"
+        />
         <figure className="problem-header-image">
           <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp" alt="Internet fashion advice" loading="lazy" />
         </figure>
@@ -456,11 +513,11 @@ function ReportContents() {
           {reportContentGroups.map((group, index) => (
             <>
               {index === 0 && (
-                <figure className="report-overview-video">
-                  <video autoPlay muted loop playsInline>
-                    <source src="https://res.cloudinary.com/dhjsqmejb/video/upload/v1787990480/Style_Report_overview_2_sm1mmx.mp4" type="video/mp4" />
-                  </video>
-                </figure>
+                <SoundVideo
+                  className="report-overview-video"
+                  src="https://res.cloudinary.com/dhjsqmejb/video/upload/v1787990480/Style_Report_overview_2_sm1mmx.mp4"
+                  label="StyleIQ report overview video"
+                />
               )}
               <article className="report-content-subsection" key={group.title}>
                 <div className="report-content-subsection-heading">

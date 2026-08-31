@@ -39,6 +39,22 @@ test("sticky buy bar stays visible after the hero is scrolled past", () => {
   assert.doesNotMatch(stickyBuy[0], /finalOfferVisible|document\.getElementById\("purchase"\)|setVisible\(pastHero &&/);
 });
 
+test("landing videos expose tap for sound controls", () => {
+  const soundVideo = source.match(/function SoundVideo\(\{ className, src, label \}\) \{[\s\S]*?function StickyBuyBar\(\)/);
+
+  assert.ok(soundVideo, "missing SoundVideo source");
+  assert.match(source, /import \{ useEffect, useRef, useState \} from "react";/);
+  assert.match(soundVideo[0], /const videoRef = useRef\(null\);/);
+  assert.match(soundVideo[0], /const \[soundOn, setSoundOn\] = useState\(false\);/);
+  assert.match(soundVideo[0], /video\.muted = !nextSoundOn;/);
+  assert.match(soundVideo[0], /video\.volume = 1;/);
+  assert.match(soundVideo[0], /const playPromise = video\.play\(\);/);
+  assert.match(soundVideo[0], /aria-pressed=\{soundOn\}/);
+  assert.match(soundVideo[0], /<span>\{soundOn \? "Sound on" : "Tap for sound"\}<\/span>/);
+  assert.match(source, /<SoundVideo\s*className="problem-header-video"[\s\S]*grooming_silence_edit_final_1_m4w53i\.mp4[\s\S]*label="Grooming and style direction video"\s*\/>/);
+  assert.match(source, /<SoundVideo\s*className="report-overview-video"[\s\S]*Style_Report_overview_2_sm1mmx\.mp4[\s\S]*label="StyleIQ report overview video"\s*\/>/);
+});
+
 test("you-first transformation stack renders all moved images vertically", () => {
   const stack = source.match(/function YouFirstTransformationStack\(\) \{[\s\S]*?function ProblemSection\(\)/);
 
