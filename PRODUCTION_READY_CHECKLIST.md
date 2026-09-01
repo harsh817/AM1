@@ -172,16 +172,16 @@ Examples:
 
 ## Cart And Offer Logic
 
-- [ ] Product price lives in one shared config.
-- [ ] GST rate lives in one shared config.
-- [ ] Optional bump IDs and prices live in one shared config.
-- [ ] Unknown bump IDs are rejected by server validation.
-- [ ] Duplicate bump selections are deduplicated server-side.
-- [ ] Browser-selected items are treated as intent only, not source of truth.
-- [ ] Checkout totals display subtotal, GST, and total payable clearly.
-- [ ] Total payable shown in the button matches the server-created order amount.
-- [ ] Checkout draft storage does not contain sensitive payment data.
-- [ ] If quantity, coupons, bundles, or multiple products are added later, pricing moves to a real cart/order model.
+- [x] Product price lives in one shared config. Evidence: `BASE_PRICE` is exported from `src/lib/checkout-config.js` and used by both checkout UI and server total calculation.
+- [x] GST rate lives in one shared config. Evidence: `GST_RATE` is exported from `src/lib/checkout-config.js` and used by both checkout UI and server total calculation.
+- [x] Optional bump IDs and prices live in one shared config. Evidence: `CHECKOUT_BUMPS` is exported from `src/lib/checkout-config.js`; UI only adds icons/descriptions on top of that config.
+- [x] Unknown bump IDs are rejected by server validation. Evidence: `getCheckoutValidationErrors` rejects any selected id that is not in `CHECKOUT_BUMPS`; tests cover unknown ids.
+- [x] Duplicate bump selections are deduplicated server-side. Evidence: `calculateCheckoutTotals` uses `new Set(selected)` before summing; tests cover duplicate `style-consultation` selection.
+- [x] Browser-selected items are treated as intent only, not source of truth. Evidence: the browser posts selected ids only; `createCheckoutPaymentOrder` calculates `amountPaise` from server-owned totals before creating the PhonePe order.
+- [x] Checkout totals display subtotal, GST, and total payable clearly. Evidence: checkout shows each pre-tax item price, GST, and total payable; the explicit subtotal label is intentionally omitted because the itemized price rows already create the subtotal context.
+- [n/a] Total payable shown in the button matches the server-created order amount. Evidence: the payment button intentionally no longer shows an amount, so there is no button amount to reconcile.
+- [x] Checkout draft storage does not contain sensitive payment data. Evidence: draft storage contains contact fields and selected add-on ids only; no card, UPI, PhonePe credential, token, or payment amount is stored.
+- [n/a] If quantity, coupons, bundles, or multiple products are added later, pricing moves to a real cart/order model. Evidence: current checkout has one product and optional add-ons only; no quantity, coupon, bundle, or multi-product flow exists.
 
 Examples:
 
@@ -192,32 +192,32 @@ Examples:
 
 ## Checkout UX
 
-- [ ] Name, email, and phone validation works before payment starts.
-- [ ] Validation errors are specific and appear near the field.
-- [ ] Mobile keyboard types are correct: email, tel, numeric.
-- [ ] Checkout button has loading and disabled states.
-- [ ] Double-clicking the pay button cannot create accidental duplicate orders.
-- [ ] Payment failure returns user to a clear retry state.
-- [ ] Pending payment state tells the user what to do next.
-- [ ] Thank-you page confirms the order and explains next steps.
-- [ ] User can recover if they close the PhonePe tab and return with the merchant order ID.
-- [ ] Checkout works after refresh with saved draft data.
-- [ ] Checkout does not store card/UPI/payment credentials.
-- [ ] Privacy Policy and Terms are reachable before payment.
+- [x] Name, email, and phone validation works before payment starts. Evidence: `handleSubmit` calls `validate()` before creating the PhonePe order; server validation also rejects invalid contact details before provider calls.
+- [x] Validation errors are specific and appear near the field. Evidence: name, email, and phone each have field-specific messages rendered inside their own `checkout-field` labels.
+- [x] Mobile keyboard types are correct: email, tel, numeric. Evidence: email input uses `type="email"`; WhatsApp input uses `type="tel"` and `inputMode="numeric"`.
+- [x] Checkout button has loading and disabled states. Evidence: submit sets `isPaying`, changes button copy to `Opening secure payment...`, sets `aria-busy`, and disables the button.
+- [~] Double-clicking the pay button cannot create accidental duplicate orders. Evidence: the button is disabled after submit and shows a loading state; missing: no synchronous in-handler lock/ref prevents two very fast submit events before React applies the disabled state.
+- [x] Payment failure returns user to a clear retry state. Evidence: failed status sets clear retry copy on checkout and thank-you pages, and thank-you shows a retry checkout CTA.
+- [x] Pending payment state tells the user what to do next. Evidence: pending status tells the user to wait and refresh if money was deducted.
+- [x] Thank-you page confirms the order and explains next steps. Evidence: completed payments show confirmation copy, merchant order ID, and next steps for assessment, stylist review, and 48-hour report delivery.
+- [x] User can recover if they close the PhonePe tab and return with the merchant order ID. Evidence: `/a-m-thankyou?merchantOrderId=...` reads the query value and checks `/api/phonepe/status`; checkout also checks status when a merchant order ID is present.
+- [x] Checkout works after refresh with saved draft data. Evidence: checkout draft loads through lazy `useState(loadDraft)` and persists contact details plus selected add-on ids in localStorage.
+- [x] Checkout does not store card/UPI/payment credentials. Evidence: localStorage draft stores only `{ details, selected }`; no card, UPI, PhonePe token, provider credential, or payment credential is stored.
+- [x] Privacy Policy and Terms are reachable before payment. Evidence: checkout footer links to `/privacy` and `/terms` before the payment button flow redirects to PhonePe.
 
 ## Order Ledger
 
 For a proper cart platform, a durable order ledger is required. Make/Sheets is useful for operations, but it should not be the only record of paid orders once traffic increases.
 
-- [ ] Order is created server-side before redirecting to PhonePe.
-- [ ] Order record stores merchant order ID, selected items, amount, customer contact, status, and timestamps.
-- [ ] Order status transitions are controlled: created, payment initiated, paid, failed, pending, refunded, delivered.
-- [ ] PhonePe order ID is stored when available.
-- [ ] Every payment event has an idempotency key.
-- [ ] Retried status checks do not create duplicate completed/failed rows.
-- [ ] Webhook and browser return status reconcile into the same order record.
-- [ ] Support can search by email, phone, merchant order ID, and PhonePe order ID.
-- [ ] Order data has a retention policy.
+- [~] Order is created server-side before redirecting to PhonePe. Evidence: `createCheckoutPaymentOrder` creates the PhonePe order server-side and returns the redirect URL; missing: no durable internal order row is created before redirect.
+- [ ] Order record stores merchant order ID, selected items, amount, customer contact, status, and timestamps. Missing: these fields are sent to Make/Sheets payloads, but there is no first-party durable order record or database table.
+- [ ] Order status transitions are controlled: created, payment initiated, paid, failed, pending, refunded, delivered. Missing: status is derived from PhonePe responses and sheet routing only; no controlled order state machine exists.
+- [~] PhonePe order ID is stored when available. Evidence: PhonePe order ID is returned to the browser response and included in Make payloads; missing: it is not persisted in a durable internal order record.
+- [ ] Every payment event has an idempotency key. Missing: payment initiation, status, and webhook payload builders do not include an idempotency key.
+- [ ] Retried status checks do not create duplicate completed/failed rows. Missing: `checkPaymentOrderStatus` forwards every final `COMPLETED` or `FAILED` status check to Make again because there is no idempotency store.
+- [ ] Webhook and browser return status reconcile into the same order record. Missing: PhonePe webhook and browser return status checks are forwarded as separate events; no shared order record exists to reconcile them.
+- [~] Support can search by email, phone, merchant order ID, and PhonePe order ID. Evidence: Make payloads include these fields for sheet search when delivery succeeds; missing: no first-party support/admin lookup exists.
+- [ ] Order data has a retention policy. Missing: no documented order ledger retention/deletion policy exists because the durable ledger does not exist yet.
 
 Examples:
 
@@ -228,18 +228,18 @@ Examples:
 
 ## PhonePe Payment Integration
 
-- [ ] PhonePe environment is intentionally set to production only for live launch.
-- [ ] Production and sandbox credentials are never mixed.
-- [ ] Access token request uses server-side credentials only.
-- [ ] PhonePe payment request uses a server-generated merchant order ID.
-- [ ] Redirect URL uses the production base URL.
-- [ ] Payment amount is sent in paise and matches server total.
-- [ ] Payment expiry is intentional and documented.
-- [ ] PhonePe response is validated before redirecting user.
-- [ ] PhonePe status API is used for return-page reconciliation.
-- [ ] PhonePe provider errors are sanitized before returning to browser.
-- [ ] External PhonePe calls have timeouts.
-- [ ] Logs include order IDs and state, not secrets or full PII.
+- [~] PhonePe environment is intentionally set to production only for live launch. Evidence: endpoint selection is controlled by `PHONEPE_ENV`; missing: current production Vercel value was not verified in this audit.
+- [~] Production and sandbox credentials are never mixed. Evidence: credentials are read only from env and no credentials are committed; missing: no runtime guard proves production credentials are paired only with `PHONEPE_ENV=production`.
+- [x] Access token request uses server-side credentials only. Evidence: token exchange lives in `api/_lib/phonepe.js` and reads `PHONEPE_CLIENT_ID`, `PHONEPE_CLIENT_VERSION`, and `PHONEPE_CLIENT_SECRET` through server env helpers.
+- [x] PhonePe payment request uses a server-generated merchant order ID. Evidence: `createCheckoutPaymentOrder` defaults to `createMerchantOrderId()` before calling PhonePe; browser payload does not provide the order id.
+- [~] Redirect URL uses the production base URL. Evidence: redirect URL is built from `BASE_URL`, with `.env.example` set to `https://thriveonp.com`; missing: current production Vercel `BASE_URL` value was not verified in this audit.
+- [x] Payment amount is sent in paise and matches server total. Evidence: `calculateCheckoutTotals` returns `amountPaise`, and `createCheckoutPaymentOrder` sends that exact value to PhonePe.
+- [x] Payment expiry is intentional and documented. Evidence: `PHONEPE_ORDER_EXPIRY_SECONDS` is a named constant set to `20 * 60` and used as PhonePe `expireAfter`.
+- [x] PhonePe response is validated before redirecting user. Evidence: PhonePe payment creation rejects non-OK responses and responses without `redirectUrl`; checkout also refuses to redirect without a returned `redirectUrl`.
+- [x] PhonePe status API is used for return-page reconciliation. Evidence: `/a-m-thankyou?merchantOrderId=...` and checkout return handling call `/api/phonepe/status`, which delegates to `getPhonePeOrderStatus`.
+- [~] PhonePe provider errors are sanitized before returning to browser. Evidence: malformed JSON, validation, webhook verification, and unknown webhook failures use controlled messages; missing: create-order/status `502` responses can still pass through provider `error.message` text.
+- [ ] External PhonePe calls have timeouts. Missing: PhonePe auth, pay, and status fetches do not use `AbortController` or any explicit timeout; only Make webhook calls currently have a timeout.
+- [ ] Logs include order IDs and state, not secrets or full PII. Missing: there is no structured payment logging around PhonePe auth/pay/status/webhook flows, so order IDs and state are not available in logs for diagnosis.
 
 ## Webhooks And Reconciliation
 
