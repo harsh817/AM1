@@ -243,17 +243,17 @@ Examples:
 
 ## Webhooks And Reconciliation
 
-- [ ] PhonePe webhook route is configured in the PhonePe dashboard.
-- [ ] Webhook username/password match production PhonePe dashboard credentials.
-- [ ] Webhook verification happens before business processing.
-- [ ] Raw body parsing preserves the data needed for verification.
-- [ ] Invalid webhook authorization returns an unauthorized response.
-- [ ] Invalid webhook payload returns a bad request response.
-- [ ] Valid webhook returns a successful response quickly.
-- [ ] Webhook processing is idempotent.
-- [ ] Final payment state is taken from verified webhook or verified status API response.
-- [ ] Failed Make delivery does not lose the order state.
-- [ ] Manual reconciliation process exists for PhonePe dashboard vs internal orders.
+- [~] PhonePe webhook route is configured in the PhonePe dashboard. Evidence: source exposes `/api/phonepe/webhook` and route tests cover the handler; missing: PhonePe dashboard screenshot or live webhook delivery evidence.
+- [~] Webhook username/password match production PhonePe dashboard credentials. Evidence: code reads `PHONEPE_WEBHOOK_USERNAME` and `PHONEPE_WEBHOOK_PASSWORD` from env and verifies SHA authorization; missing: production PhonePe dashboard credential comparison.
+- [x] Webhook verification happens before business processing. Evidence: `handlePhonePeWebhook` verifies authorization before parsing payload, building Make payloads, or forwarding events.
+- [x] Raw body parsing preserves the data needed for verification. Evidence: webhook route reads the body as a raw string with `readBody` and passes it into the webhook service; current verification uses the authorization header plus configured webhook credentials before payload processing.
+- [x] Invalid webhook authorization returns an unauthorized response. Evidence: invalid webhook auth returns 401 and is covered by route tests.
+- [x] Invalid webhook payload returns a bad request response. Evidence: verified auth with malformed JSON returns 400 and is covered by route tests.
+- [~] Valid webhook returns a successful response quickly. Evidence: valid webhook returns 200 after verification, payload normalization, and Make forwarding; Make forwarding has a short timeout, but processing is not yet queued/asynchronous.
+- [ ] Webhook processing is idempotent. Missing: there is no durable idempotency key/store, so repeated valid webhooks can forward duplicate operational events.
+- [x] Final payment state is taken from verified webhook or verified status API response. Evidence: webhook state is processed only after authorization verification, and browser return reconciliation calls the PhonePe status API before building final-state payloads.
+- [ ] Failed Make delivery does not lose the order state. Missing: no durable internal order ledger exists; if Make delivery fails, the final state is only available from logs/PhonePe and is not persisted first-party.
+- [ ] Manual reconciliation process exists for PhonePe dashboard vs internal orders. Missing: no documented support/admin reconciliation procedure or searchable internal order ledger exists.
 
 ## Webhook Data Contract And Accuracy
 
@@ -269,20 +269,20 @@ Use this flow as the production truth model:
 - Final order state is reconciled once.
 - Make/CRM receives completed or failed payment outcome once.
 
-- [ ] Every outbound operational event has a documented schema.
-- [ ] Every schema has tests for required fields and field names.
-- [ ] Event names are stable: checkout payment initiated, checkout payment completed, checkout payment failed, PhonePe webhook.
-- [ ] Sheet names are stable: payment initiated, payment completed, payment failed, PhonePe webhook.
-- [ ] Every event includes event name, event timestamp, sheet name, and schema version.
-- [ ] Every payment event includes merchant order ID, PhonePe order ID, payment state, and amount fields.
-- [ ] Amount fields clearly state units: rupees vs paise.
-- [ ] Marketing fields are preserved: UTM source, UTM medium, UTM campaign, UTM content, UTM term, UTM ID, referrer.
-- [ ] Device/location/engagement fields are sanitized and size-limited before forwarding.
-- [ ] Browser tracking snapshots are tied to the merchant order ID.
-- [ ] Final payment state is recorded once even if both browser status and webhook arrive.
-- [ ] Webhook data and status API data are reconciled using the same merchant order ID.
-- [ ] Make/Sheets failures are visible to operations and do not silently erase paid orders.
-- [ ] Payloads never include PhonePe secrets, webhook credentials, or unnecessary customer PII.
+- [~] Every outbound operational event has a documented schema. Evidence: payload builders and tests document the current initiated, status, and PhonePe webhook field shapes; missing: no dedicated versioned schema document/table exists for operations.
+- [x] Every schema has tests for required fields and field names. Evidence: `lead-webhook.test.js`, `payment-status-webhook.test.js`, and `phonepe-webhook-payload.test.js` assert required operational fields and sheet-facing names.
+- [x] Event names are stable: checkout payment initiated, checkout payment completed, checkout payment failed, PhonePe webhook. Evidence: payload tests assert `checkout.payment_initiated`, `checkout.payment_completed`, `checkout.payment_failed`, and `phonepe.webhook`.
+- [x] Sheet names are stable: payment initiated, payment completed, payment failed, PhonePe webhook. Evidence: payload tests assert `payment_initiated`, `payment_completed`, `payment_failed`, and `phonepe_webhook`.
+- [~] Every event includes event name, event timestamp, sheet name, and schema version. Evidence: every current payload includes `event_name`, `event_timestamp`, and `sheet_name`; missing: no `schema_version` field is emitted.
+- [x] Every payment event includes merchant order ID, PhonePe order ID, payment state, and amount fields. Evidence: initiated, status, and raw webhook payload builders emit `merchant_order_id`, `phonepe_order_id`, `payment_state`, `amount_paise`, `payable_amount_paise`, and `fee_amount_paise` fields.
+- [~] Amount fields clearly state units: rupees vs paise. Evidence: PhonePe/payment amount fields use `_paise` suffixes and checkout pricing carries `currency: INR`; missing: rupee checkout pricing fields such as `base_price`, `gst`, and `total` do not explicitly include a rupee/unit suffix.
+- [x] Marketing fields are preserved: UTM source, UTM medium, UTM campaign, UTM content, UTM term, UTM ID, referrer. Evidence: checkout tracking and webhook payload tests cover UTM/referrer preservation through initiated and status-check payloads.
+- [x] Device/location/engagement fields are sanitized and size-limited before forwarding. Evidence: `buildTrackingFields` normalizes device, location, marketing, and engagement fields with shared length limits before payload builders forward them.
+- [x] Browser tracking snapshots are tied to the merchant order ID. Evidence: checkout stores tracking with `rememberCheckoutOrderTracking(data.merchantOrderId, tracking)` and thank-you/status checks retrieve it with `getCheckoutOrderTrackingPayload(merchantOrderId)`; tests cover storage and retrieval by order id.
+- [ ] Final payment state is recorded once even if both browser status and webhook arrive. Missing: no durable idempotency store exists, so repeated final status checks or repeated verified webhooks can create duplicate Make/Sheets rows.
+- [~] Webhook data and status API data are reconciled using the same merchant order ID. Evidence: both raw webhook and status payload builders normalize `merchant_order_id`; missing: there is no shared order record that reconciles webhook and browser-return status into one final state.
+- [ ] Make/Sheets failures are visible to operations and do not silently erase paid orders. Missing: final payment state is forwarded directly to Make/Sheets without first persisting to a durable first-party order ledger or retry queue.
+- [~] Payloads never include PhonePe secrets, webhook credentials, or unnecessary customer PII. Evidence: payload builders do not read or send PhonePe credentials or webhook secrets; missing: raw `phonepe.status` and `phonepe.webhook` provider payloads are still forwarded and need a minimization review before scale.
 
 Examples:
 
@@ -293,21 +293,21 @@ Examples:
 
 ## Make And Operations Tracking
 
-- [ ] Make webhook URL is configured in Vercel production environment variables.
-- [ ] Make scenario is active before launch.
-- [ ] Every payload includes event name, event timestamp, and sheet name.
-- [ ] Every payload includes a schema version before campaign scale.
-- [ ] Make scenario rejects or flags unknown event names instead of silently accepting malformed data.
-- [ ] Payment payloads include merchant order ID, PhonePe order ID, amount, status, error code, and error message when available.
-- [ ] UTM and referrer fields are stable across initiated/completed/failed events.
-- [ ] Meta, Google, and other ad click IDs are captured if the ad channel requires attribution.
-- [ ] Failed payment events preserve failure reason, error code, and gateway state when available.
-- [ ] Completed payment events preserve payable amount and fee/tax fields when available.
-- [ ] Payload timestamps use ISO strings and the dashboard knows the reporting timezone.
-- [ ] Make failure is logged or visible enough for operations.
-- [ ] Make retries or fallback queue exist before scaling campaigns.
-- [ ] Google Sheet tabs/columns match payload schema.
-- [ ] No payload sends unnecessary PII.
+- [x] Make webhook URL is configured in Vercel production environment variables. Evidence: `vercel env ls production` shows encrypted `MAKE_WEBHOOK_URL` on the `am1` production project.
+- [ ] Make scenario is active before launch. Missing: Make dashboard/scenario status was not verified.
+- [x] Every payload includes event name, event timestamp, and sheet name. Evidence: initiated, status, and PhonePe webhook payload builders emit `event_name`, `event_timestamp`, and `sheet_name`; payload tests assert these fields.
+- [ ] Every payload includes a schema version before campaign scale. Missing: outbound Make payloads do not currently include `schema_version`.
+- [ ] Make scenario rejects or flags unknown event names instead of silently accepting malformed data. Missing: no Make scenario/router validation evidence or unknown-event rejection test exists.
+- [x] Payment payloads include merchant order ID, PhonePe order ID, amount, status, error code, and error message when available. Evidence: payload builders emit order IDs, payment state, `_paise` amount fields, and error fields; tests cover failed and completed payloads.
+- [~] UTM and referrer fields are stable across initiated/completed/failed events. Evidence: checkout tracking preserves first-touch UTM/referrer and ties snapshots to merchant order IDs for status checks; missing: raw PhonePe webhook events cannot restore browser attribution without an internal order ledger.
+- [~] Meta, Google, and other ad click IDs are captured if the ad channel requires attribution. Evidence: `utm_id` is captured and preserved; missing: dedicated click-id fields such as `fbclid`, `gclid`, `msclkid`, or channel-specific IDs are not captured.
+- [x] Failed payment events preserve failure reason, error code, and gateway state when available. Evidence: status/webhook payload builders include `payment_state`, `error_code`, `error_message`, `error.context`, and raw provider status/webhook context.
+- [~] Completed payment events preserve payable amount and fee/tax fields when available. Evidence: completed status/webhook payloads preserve `payable_amount_paise` and `fee_amount_paise` when provided by PhonePe; missing: completed final-state payloads do not include an explicit GST/tax field reconstructed from checkout totals.
+- [~] Payload timestamps use ISO strings and the dashboard knows the reporting timezone. Evidence: payload builders use `new Date().toISOString()` / ISO timestamps; missing: Make/Sheet reporting timezone was not verified in the dashboard.
+- [ ] Make failure is logged or visible enough for operations. Missing: `forwardMakeWebhookPayload` returns `{ sent: false }` on failure, but payment services do not persist, retry, or surface Make delivery failures to operations.
+- [ ] Make retries or fallback queue exist before scaling campaigns. Missing: no retry queue, dead-letter queue, or durable fallback event store exists.
+- [~] Google Sheet tabs/columns match payload schema. Evidence: code emits stable `sheet_name` values and tests assert sheet-facing field names; missing: actual Google Sheet tab/column setup was not verified.
+- [~] No payload sends unnecessary PII. Evidence: payload builders do not send PhonePe secrets or webhook credentials; missing: raw `phonepe.status` and `phonepe.webhook` provider payloads are forwarded and may duplicate customer PII from metadata.
 
 ## Meta Pixel And Clarity
 
@@ -327,20 +327,20 @@ Required event plan:
 | Payment completed | Purchase only after verified completed status | payment completed event |
 | Payment failed | PaymentFailed | payment failed event |
 
-- [ ] Pixel base setup exists once per HTML entry and fires exactly one page view per page load.
-- [ ] Pixel ID belongs to the correct Meta Business account.
-- [ ] Clarity project ID belongs to the correct Microsoft Clarity project.
-- [ ] Pixel and Clarity are present on landing and checkout only where intended.
-- [ ] Purchase is not fired on simple thank-you page load unless payment status is verified as completed.
-- [ ] Purchase value uses server-verified total and INR.
-- [ ] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs.
-- [ ] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events.
-- [ ] Checkout form fields are masked from Clarity recording.
-- [ ] Clarity custom tags/events use low-risk values such as route, funnel step, and payment state.
-- [ ] Meta Pixel Helper or Events Manager confirms PageView and funnel events on production URLs.
-- [ ] Clarity collection requests are visible during production QA.
-- [ ] Pixel/Clarity behavior is documented when adding consent management.
-- [ ] Privacy Policy discloses Meta Pixel, Clarity, cookies, and ad attribution.
+- [~] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `src/lib/analytics.js` guards duplicate initialization and duplicate Meta `PageView`; production `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` HTML serve `index.html` with only the noscript fallback plus the app bundle. Missing: `checkout.html` still contains inline Meta and Clarity bootstraps, so the secondary HTML entry can double-bootstrap if served directly.
+- [~] Pixel ID belongs to the correct Meta Business account. Evidence: Pixel ID `2647411082380065` is present in source and production HTML fallback. Missing: ownership was not verified in Meta Events Manager.
+- [~] Clarity project ID belongs to the correct Microsoft Clarity project. Evidence: Clarity project ID `xx2rulxltt` is present in source. Missing: ownership was not verified in the Microsoft Clarity dashboard.
+- [~] Pixel and Clarity are present on landing and checkout only where intended. Evidence: production `/a-m` and `/a-m-checkout` load the app bundle that initializes analytics. Missing: `initializeAnalytics()` currently runs for every React route, including thank-you and legal pages; `checkout.html` also still has inline analytics snippets.
+- [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: no Meta `Purchase` event is fired anywhere today; thank-you checks PhonePe status and only renders the payment state.
+- [ ] Purchase value uses server-verified total and INR. Missing: no verified Meta `Purchase` event exists yet.
+- [ ] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Missing: funnel events and event deduplication IDs are not implemented.
+- [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: current analytics sends only Meta `PageView` and Clarity page/session collection; no custom analytics event sends checkout PII or payment credentials.
+- [ ] Checkout form fields are masked from Clarity recording. Missing: checkout inputs do not have Clarity masking attributes or an equivalent masking configuration.
+- [~] Clarity custom tags/events use low-risk values such as route, funnel step, and payment state. Evidence: no risky custom Clarity tags/events exist today. Missing: low-risk funnel tags/events are not implemented.
+- [ ] Meta Pixel Helper or Events Manager confirms PageView and funnel events on production URLs. Missing: production dashboard/browser-extension verification has not been captured, and funnel events beyond `PageView` do not exist yet.
+- [ ] Clarity collection requests are visible during production QA. Missing: browser network or Clarity dashboard verification has not been captured.
+- [ ] Pixel/Clarity behavior is documented when adding consent management. Missing: consent-management behavior and analytics gating are not documented.
+- [ ] Privacy Policy discloses Meta Pixel, Clarity, cookies, and ad attribution. Missing: the privacy page mentions technical information and service providers, but does not explicitly disclose Meta Pixel, Microsoft Clarity, cookies, or ad attribution.
 
 Examples:
 
