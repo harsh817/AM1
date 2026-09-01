@@ -151,17 +151,17 @@ Examples:
 
 ## Frontend Optimization
 
-- [ ] Critical hero content is visible without waiting on analytics scripts.
-- [ ] Meta Pixel and Clarity scripts load asynchronously and never block React rendering.
-- [ ] Above-the-fold images are compressed, dimensioned, and intentionally eager/lazy.
-- [ ] Below-the-fold images use lazy loading.
-- [ ] Repeated icons come from the approved icon library, not copied inline everywhere.
-- [ ] Long lists are data-driven from the landing data file where practical.
-- [ ] Heavy visual experiments live in artifacts before being moved into production source.
-- [ ] CSS uses shared tokens for spacing, width, radius, transitions, and color.
-- [ ] No section-level CSS creates layout shift on hover, timer updates, or sticky bar visibility.
-- [ ] Bundle size is reviewed after adding libraries.
-- [ ] Production build output is checked for unexpected asset or CSS growth.
+- [x] Critical hero content is visible without waiting on analytics scripts. Evidence: `index.html` no longer bootstraps Meta Pixel or Clarity before the React entry, and analytics initializes from a post-render React effect.
+- [x] Meta Pixel and Clarity scripts load asynchronously and never block React rendering. Evidence: `src/lib/analytics.js` inserts both third-party scripts with async loading after mount and guards duplicate initialization.
+- [x] Above-the-fold images are compressed, dimensioned, and intentionally eager/lazy. Evidence: the hero image uses Cloudinary `f_auto,q_auto,c_limit,w_900`, `loading="eager"`, `fetchPriority="high"`, `decoding="async"`, and explicit width/height.
+- [x] Below-the-fold images use lazy loading. Evidence: landing image source tests verify all production image tags have loading, decoding, width, and height, with only the hero image eager-loaded.
+- [x] Repeated icons come from the approved icon library, not copied inline everywhere. Evidence: source uses `@phosphor-icons/react`; no inline SVG elements were found in `src`.
+- [x] Long lists are data-driven from the landing data file where practical. Evidence: trust badges, transformation personas, StyleIQ pillars, comparison rows, report contents, bonuses, process steps, recap items, testimonials, and FAQs live in `src/lib/landing-data.js`.
+- [x] Heavy visual experiments live in artifacts before being moved into production source. Evidence: design palette, heading backdrop, sticky-buy, and style-direction previews exist under `artifacts/`.
+- [x] CSS uses shared tokens for spacing, width, radius, transitions, and color. Evidence: landing CSS imports shared token chunks and tests verify palette, type, spacing, and motion tokens.
+- [~] No section-level CSS creates layout shift on hover, timer updates, or sticky bar visibility. Evidence: source tests verify stable image ratios and sticky timer width with tabular numbers; missing: no automated browser CLS/layout-shift measurement exists yet.
+- [n/a] Bundle size is reviewed after adding libraries. Evidence: no new dependency was added in this audit.
+- [x] Production build output is checked for unexpected asset or CSS growth. Evidence: `npm run build` passed and `npm run check:bundle` passed with JS 90.17 kB gzip / 100 kB budget and CSS 16.68 kB gzip / 25 kB budget.
 
 Examples:
 
@@ -504,7 +504,7 @@ Based on the current project shape, prioritize these before scaling paid traffic
 - [ ] Add explicit timeouts to PhonePe API calls.
 - [ ] Add production smoke tests for public routes and checkout API health.
 - [ ] Add a support/admin process to look up orders by email, phone, and merchant order ID.
-- [ ] Add an analytics helper for Meta Pixel and Clarity instead of inline event calls.
+- [x] Add an analytics helper for Meta Pixel and Clarity instead of inline event calls.
 - [ ] Add Pixel funnel events: checkout view, payment started, verified purchase, payment failed.
 - [ ] Add Clarity masking on checkout form surfaces and low-risk funnel events.
 - [ ] Add schema version and idempotency keys to Make payloads.

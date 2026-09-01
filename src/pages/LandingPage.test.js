@@ -13,6 +13,7 @@ const sources = {
   editorial: readSource("./landing/EditorialSections.jsx"),
   offer: readSource("./landing/OfferSections.jsx"),
   social: readSource("./landing/SocialProofSections.jsx"),
+  data: readSource("../lib/landing-data.js"),
 };
 const allLandingSource = Object.values(sources).join("\n\n");
 
@@ -53,15 +54,43 @@ test("hero, trust strip, sticky buy bar, and video sound controls keep the appro
 
 test("you-first transformation stack renders the moved images vertically", () => {
   assert.match(sources.editorial, /className="you-first-transformation-stack"/);
+  assert.doesNotMatch(sources.editorial, /const transformationPersonas = \[/);
+  assert.match(sources.editorial, /from "\.\.\/\.\.\/lib\/landing-data\.js"/);
+  assert.match(sources.data, /export const transformationPersonas = \[/);
   assert.match(sources.editorial, /transformationPersonas\.map\(\(persona, index\) =>/);
   assert.match(sources.editorial, /className="you-first-transformation-item"/);
   assert.match(sources.editorial, /Look at this <b>40 year old man<\/b>, he <b>looks stylish and almost 5 years younger<\/b>\./);
   assert.match(sources.editorial, /<p>This <strong>\{persona\.title\}<\/strong>&nbsp;\{persona\.outcome\}<\/p>/);
   assert.match(sources.editorial, /src=\{persona\.image\}/);
-  assert.match(sources.editorial, /loading=\{index === 0 \? "eager" : "lazy"\}/);
+  assert.match(sources.editorial, /loading="lazy"/);
+  assert.match(sources.editorial, /width=\{persona\.imageWidth\}/);
+  assert.match(sources.editorial, /height=\{persona\.imageHeight\}/);
   assert.match(sources.editorial, /you-first-transformation-label you-first-transformation-label-before">Before<\/span>/);
   assert.match(sources.editorial, /you-first-transformation-label you-first-transformation-label-after">After<\/span>/);
   assert.doesNotMatch(sources.editorial, /avatar:|lines: \[/);
+});
+
+test("landing images use optimized loading and stable dimensions", () => {
+  const imageTags = allLandingSource.match(/<img[\s\S]*?\/>/g) || [];
+  const eagerImages = imageTags.filter((tag) => tag.includes('loading="eager"'));
+  const cloudinaryImages = allLandingSource.match(/https:\/\/res\.cloudinary\.com\/[^"]+\/image\/upload\/[^"]+/g) || [];
+
+  assert.equal(eagerImages.length, 1);
+  assert.match(eagerImages[0], /fetchPriority="high"/);
+  assert.match(eagerImages[0], /decoding="async"/);
+
+  for (const tag of imageTags) {
+    assert.match(tag, /loading=/);
+    assert.match(tag, /decoding="async"/);
+    assert.match(tag, /width=/);
+    assert.match(tag, /height=/);
+  }
+
+  for (const url of cloudinaryImages) {
+    assert.match(url, /\/image\/upload\/f_auto,q_auto,c_limit,w_\d+\//);
+  }
+
+  assert.match(sources.editorial, /src="\/assets\/problem\/reel-vs-real\.webp"[\s\S]*loading="lazy"/);
 });
 
 test("editorial sections keep approved headings and skimmable copy markers", () => {
@@ -92,7 +121,7 @@ test("offer sections use subsection structures instead of old cards", () => {
 
 test("social proof, FAQ, and footer keep final conversion structure", () => {
   assert.match(sources.social, /className="section proof section-editorial-preview proof-editorial"/);
-  assert.match(sources.social, /<img className="testimonial-photo" src=\{item\.image\}/);
+  assert.match(sources.social, /className="testimonial-photo"[\s\S]*src=\{item\.image\}[\s\S]*width=\{item\.imageWidth\}[\s\S]*height=\{item\.imageHeight\}/);
   assert.match(sources.social, /<div className="testimonial-rating" aria-label="Five stars">/);
   assert.match(sources.social, /<blockquote>\{item\.quote\}<\/blockquote>/);
   assert.match(sources.social, /className="section faq section-editorial-preview faq-editorial"/);

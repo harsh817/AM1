@@ -26,27 +26,62 @@ export function StyleIqSystem() {
             <Fragment key={pillar.title}>
               {index === 0 && (
                 <figure className="styleiq-overview-image">
-                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_1_adbvxg.webp" alt="StyleIQ system overview" loading="lazy" />
+                  <img
+                    src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_1_adbvxg.webp"
+                    alt="StyleIQ system overview"
+                    loading="lazy"
+                    decoding="async"
+                    width="1000"
+                    height="563"
+                  />
                 </figure>
               )}
               {index === 1 && (
                 <figure className="styleiq-overview-image">
-                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_2_vc4kcu.webp" alt="Build and proportions styling" loading="lazy" />
+                  <img
+                    src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_2_vc4kcu.webp"
+                    alt="Build and proportions styling"
+                    loading="lazy"
+                    decoding="async"
+                    width="1000"
+                    height="563"
+                  />
                 </figure>
               )}
               {index === 2 && (
                 <figure className="styleiq-overview-image">
-                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_40_PM_3_uailwn.webp" alt="Personal coloring guide" loading="lazy" />
+                  <img
+                    src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_40_PM_3_uailwn.webp"
+                    alt="Personal coloring guide"
+                    loading="lazy"
+                    decoding="async"
+                    width="1000"
+                    height="563"
+                  />
                 </figure>
               )}
               {index === 3 && (
                 <figure className="styleiq-overview-image">
-                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_5_cqgesu.webp" alt="Lifestyle styling guide" loading="lazy" />
+                  <img
+                    src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_5_cqgesu.webp"
+                    alt="Lifestyle styling guide"
+                    loading="lazy"
+                    decoding="async"
+                    width="1000"
+                    height="563"
+                  />
                 </figure>
               )}
               {index === 4 && (
                 <figure className="styleiq-overview-image">
-                  <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_4_dbups8.webp" alt="Preferences and budget guide" loading="lazy" />
+                  <img
+                    src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_4_dbups8.webp"
+                    alt="Preferences and budget guide"
+                    loading="lazy"
+                    decoding="async"
+                    width="1000"
+                    height="563"
+                  />
                 </figure>
               )}
               <article className="styleiq-subsection" key={pillar.title}>
@@ -76,7 +111,14 @@ export function ComparisonSection() {
           <p>See what changes when the advice is built around your features, proportions, lifestyle, and budget.</p>
         </div>
         <figure className="comparison-overview-image">
-          <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_20_PM_1_a6bo6i.webp" alt="StyleIQ comparison overview" loading="lazy" />
+          <img
+            src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_20_PM_1_a6bo6i.webp"
+            alt="StyleIQ comparison overview"
+            loading="lazy"
+            decoding="async"
+            width="900"
+            height="900"
+          />
         </figure>
         <div className="comparison-subsections" aria-label="Without StyleIQ and With StyleIQ comparison">
           <article className="comparison-subsection comparison-subsection-without">
@@ -92,7 +134,14 @@ export function ComparisonSection() {
           <article className="comparison-subsection comparison-subsection-with">
             <div className="comparison-subsection-heading comparison-with-heading">
               <figure className="comparison-with-image">
-                <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_21_PM_2_nbdoi9.webp" alt="With StyleIQ benefits" loading="lazy" />
+                <img
+                  src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_21_PM_2_nbdoi9.webp"
+                  alt="With StyleIQ benefits"
+                  loading="lazy"
+                  decoding="async"
+                  width="900"
+                  height="900"
+                />
               </figure>
               <h3>With StyleIQ</h3>
             </div>
@@ -197,7 +246,14 @@ export function ProcessSection() {
                 <h3>{step.title}</h3>
               </div>
               <figure>
-                <img src={step.image} alt={step.alt} loading="lazy" />
+                <img
+                  src={step.image}
+                  alt={step.alt}
+                  loading="lazy"
+                  decoding="async"
+                  width={step.imageWidth}
+                  height={step.imageHeight}
+                />
               </figure>
               <p className="process-description">{step.description}</p>
             </article>

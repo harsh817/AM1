@@ -85,14 +85,17 @@
 
 .hero-image {
   width: min(100%, 360px);
+  aspect-ratio: 1 / 1;
   margin: 24px auto 0;
   overflow: hidden;
+  background: var(--palette-image-bg);
 }
 
 .hero-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .hero-before-after-frame {

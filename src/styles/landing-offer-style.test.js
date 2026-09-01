@@ -4,10 +4,13 @@ import { css } from "./landing-test-utils.js";
 
 test("StyleIQ and comparison sections use editorial subsection rules", () => {
   assert.match(css, /\.styleiq-editorial \.styleiq-system-copy\s*{[^}]*font-size: var\(--hero-subheadline-size\);[^}]*line-height: 1\.38;[^}]*text-align: left;/s);
+  assert.match(css, /\.styleiq-overview-image\s*{[^}]*aspect-ratio: 1000 \/ 563;/s);
   assert.match(css, /\.styleiq-subsection-heading\s*{[^}]*justify-content: center;[^}]*background: var\(--palette-hero-black\);/s);
   assert.match(css, /\.styleiq-subsection-heading small\s*{[^}]*color: var\(--palette-accent\);[^}]*font-size: clamp\(22px, 4vw, 28px\);/s);
   assert.match(css, /\.styleiq-subsection p\s*{[^}]*font-size: var\(--hero-subheadline-size\);[^}]*text-align: left;/s);
   assert.match(css, /\.comparison-subsections\s*{[^}]*grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, 330px\), 1fr\)\);/s);
+  assert.match(css, /\.comparison-overview-image\s*{[^}]*aspect-ratio: 1 \/ 1;/s);
+  assert.match(css, /\.comparison-with-image\s*{[^}]*aspect-ratio: 1 \/ 1;/s);
   assert.match(css, /\.comparison-subsection-without\s*{[^}]*background: var\(--palette-soft-linen\);/s);
   assert.match(css, /\.comparison-subsection-with\s*{[^}]*background: var\(--palette-brand\);[^}]*color: var\(--palette-soft-linen\);/s);
   assert.match(css, /\.comparison-subsection-list li\s*{[^}]*font-size: var\(--hero-subheadline-size\);[^}]*text-align: left;/s);

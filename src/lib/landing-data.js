@@ -1,8 +1,34 @@
-export const trustBadges = [
-  "1,119+ happy clients",
-  "★★★★★ 4.8 star rating",
-  "Delivered in 48 hours",
-  "Lifetime access",
+export const trustBadges = ["1,119+ happy clients", "★★★★★ 4.8 star rating", "Delivered in 48 hours", "Lifetime access"];
+
+export const transformationPersonas = [
+  {
+    title: "40 year old man",
+    outcome: "looks stylish and almost 5 years younger",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/ankur_hhdjc8.png",
+    imageWidth: 900,
+    imageHeight: 900,
+  },
+  {
+    title: "30-year corporate guy",
+    outcome: "now finally looks decent for office and dates.",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/rahul_j5oyv6.png",
+    imageWidth: 900,
+    imageHeight: 900,
+  },
+  {
+    title: "25 year old skinny guy",
+    outcome: "right style that make him look classy",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628151/satyam_ttlk1w.png",
+    imageWidth: 900,
+    imageHeight: 900,
+  },
+  {
+    title: "complete makeover for this 5.6 guy",
+    outcome: "new style makes him confident.",
+    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
+    imageWidth: 900,
+    imageHeight: 900,
+  },
 ];
 
 export const styleIqPillars = [
@@ -143,6 +169,8 @@ export const processSteps = [
     description:
       "After purchase, complete your StyleIQ assessment with photos, measurements, lifestyle, preferences, budget, and the areas you want help with.",
     image: "/assets/process/assessment.webp",
+    imageWidth: 550,
+    imageHeight: 320,
     alt: "Front, side and full-body photo examples for a style assessment",
   },
   {
@@ -151,6 +179,8 @@ export const processSteps = [
     description:
       "A human stylist reviews your information and uses the StyleIQ system to connect your features, proportions, coloring, lifestyle, and preferences.",
     image: "/assets/process/analysis-v2.png",
+    imageWidth: 1645,
+    imageHeight: 956,
     alt: "Minimal face, body and color analysis preview",
   },
   {
@@ -159,6 +189,8 @@ export const processSteps = [
     description:
       "Receive your complete personalized StyleIQ within 48 hours, with clear recommendations for hair, grooming, colors, fits, outfits, accessories, and what to buy next.",
     image: "/assets/product/style-report.png",
+    imageWidth: 1555,
+    imageHeight: 1012,
     alt: "Personal style report cover with analysis and outfit pages",
   },
 ];
@@ -189,6 +221,8 @@ export const testimonials = [
     name: "Rishi",
     meta: "Verified customer - Pune",
     image: "/assets/testimonials/customer-1.webp",
+    imageWidth: 1254,
+    imageHeight: 1254,
   },
   {
     quote:
@@ -196,6 +230,8 @@ export const testimonials = [
     name: "Vikram",
     meta: "Verified customer - Chennai",
     image: "/assets/testimonials/customer-2.webp",
+    imageWidth: 1254,
+    imageHeight: 1254,
   },
   {
     quote:
@@ -203,6 +239,8 @@ export const testimonials = [
     name: "Jasprit",
     meta: "Verified customer - Chandigarh",
     image: "/assets/testimonials/customer-3.webp",
+    imageWidth: 1254,
+    imageHeight: 1254,
   },
   {
     quote:
@@ -210,6 +248,8 @@ export const testimonials = [
     name: "Verified customer",
     meta: "",
     image: "/assets/testimonials/customer-4.webp",
+    imageWidth: 1254,
+    imageHeight: 1254,
   },
 ];
 

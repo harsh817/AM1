@@ -16,7 +16,15 @@ export function Hero() {
               Get a personalized style report built around your face, body, height, skin tone, lifestyle, and preferences and start dressing better.
             </p>
             <figure className="hero-image">
-              <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788004059/ChatGPT_Image_Aug_29_2026_05_15_55_PM_b6cubf.webp" alt="Personal style transformation" loading="eager" />
+              <img
+                src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788004059/ChatGPT_Image_Aug_29_2026_05_15_55_PM_b6cubf.webp"
+                alt="Personal style transformation"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                width="900"
+                height="900"
+              />
             </figure>
             <div className="hero-action-row">
               <Button showIcon={false} />

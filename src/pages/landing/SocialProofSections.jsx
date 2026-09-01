@@ -15,7 +15,15 @@ export function SocialProof() {
             <article className="testimonial-entry" key={item.quote}>
               <div className="testimonial-entry-content">
                 <div className="testimonial-client">
-                  <img className="testimonial-photo" src={item.image} alt={`${item.name} customer photo`} loading="lazy" />
+                  <img
+                    className="testimonial-photo"
+                    src={item.image}
+                    alt={`${item.name} customer photo`}
+                    loading="lazy"
+                    decoding="async"
+                    width={item.imageWidth}
+                    height={item.imageHeight}
+                  />
                   <div className="testimonial-client-copy">
                     <strong>{item.name}</strong>
                     {item.meta && <small>{item.meta}</small>}

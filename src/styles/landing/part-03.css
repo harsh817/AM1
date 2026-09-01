@@ -160,7 +160,9 @@
 }
 
 .problem-visual img {
+  display: block;
   width: 100%;
+  height: auto;
 }
 .problem-copy {
   max-width: var(--content-narrow);

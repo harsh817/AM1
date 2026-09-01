@@ -86,6 +86,7 @@
 }
 
 .problem-editorial .problem-visual {
+  aspect-ratio: 750 / 680;
   margin: var(--gap-section) auto var(--gap-grid) 0;
   border: 1px solid rgba(var(--palette-ink-rgb), 0.12);
   background: var(--palette-image-bg);
@@ -94,6 +95,7 @@
 
 .problem-editorial .problem-visual-expanded {
   width: 100%;
+  aspect-ratio: 1000 / 563;
   margin: var(--gap-section) 0 var(--gap-section);
   border: none;
   background: transparent;
@@ -118,14 +120,16 @@
 
 .problem-header-image {
   width: 100%;
+  aspect-ratio: 760 / 1404;
   margin: 0 0 var(--gap-section) 0;
   overflow: hidden;
 }
 
 .problem-header-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .problem-editorial .problem-emphasis {

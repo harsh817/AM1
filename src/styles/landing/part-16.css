@@ -118,6 +118,7 @@
 }
 
 .sticky-buy-countdown {
+  min-width: 8ch;
   text-align: right;
 }
 
@@ -130,7 +131,9 @@
 
 .sticky-buy-countdown time {
   color: var(--palette-accent);
+  min-width: 8ch;
   margin-top: 6px;
+  text-align: right;
   font-size: 26px;
   font-weight: 900;
   line-height: 1;

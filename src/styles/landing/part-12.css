@@ -17,14 +17,16 @@
 
 .professional-styling-section .professional-styling-visual {
   width: 100%;
+  aspect-ratio: 760 / 1350;
   margin: var(--gap-section) 0 var(--gap-grid);
   overflow: hidden;
 }
 
 .professional-styling-section .professional-styling-visual img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .styleiq-editorial {
@@ -69,14 +71,16 @@
 
 .styleiq-overview-image {
   width: 100%;
+  aspect-ratio: 1000 / 563;
   margin: 0 0 var(--gap-section) 0;
   overflow: hidden;
 }
 
 .styleiq-overview-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .styleiq-subsection {
@@ -170,14 +174,16 @@
 
 .comparison-overview-image {
   width: 100%;
+  aspect-ratio: 1 / 1;
   margin: var(--gap-section) 0 0 0;
   overflow: hidden;
 }
 
 .comparison-overview-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .comparison-subsections {
@@ -223,14 +229,16 @@
 
 .comparison-with-image {
   width: 100%;
+  aspect-ratio: 1 / 1;
   margin: 0;
   overflow: hidden;
 }
 
 .comparison-with-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .comparison-with-heading h3 {

@@ -1,27 +1,5 @@
+import { transformationPersonas } from "../../lib/landing-data.js";
 import { SectionHeading, SoundVideo } from "./shared.jsx";
-
-const transformationPersonas = [
-  {
-    title: "40 year old man",
-    outcome: "looks stylish and almost 5 years younger",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/ankur_hhdjc8.png",
-  },
-  {
-    title: "30-year corporate guy",
-    outcome: "now finally looks decent for office and dates.",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628150/rahul_j5oyv6.png",
-  },
-  {
-    title: "25 year old skinny guy",
-    outcome: "right style that make him look classy",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628151/satyam_ttlk1w.png",
-  },
-  {
-    title: "complete makeover for this 5.6 guy",
-    outcome: "new style makes him confident.",
-    image: "https://res.cloudinary.com/dhjsqmejb/image/upload/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
-  },
-];
 
 function YouFirstTransformationStack() {
   return (
@@ -44,7 +22,14 @@ function YouFirstTransformationStack() {
             )}
           </div>
           <figure className="you-first-transformation-frame">
-            <img src={persona.image} alt={`Before and after personal style transformation for ${persona.title}`} loading={index === 0 ? "eager" : "lazy"} />
+            <img
+              src={persona.image}
+              alt={`Before and after personal style transformation for ${persona.title}`}
+              loading="lazy"
+              decoding="async"
+              width={persona.imageWidth}
+              height={persona.imageHeight}
+            />
             <div className="you-first-transformation-divider" aria-hidden="true" />
             <span className="you-first-transformation-label you-first-transformation-label-before">Before</span>
             <span className="you-first-transformation-label you-first-transformation-label-after">After</span>
@@ -65,7 +50,14 @@ export function ProblemSection() {
           label="Grooming and style direction video"
         />
         <figure className="problem-header-image">
-          <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp" alt="Internet fashion advice" loading="lazy" />
+          <img
+            src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp"
+            alt="Internet fashion advice"
+            loading="lazy"
+            decoding="async"
+            width="760"
+            height="1404"
+          />
         </figure>
         <SectionHeading>
           THE INTERNET IS FULL OF <span>RANDOM FASHION ADVICE</span>
@@ -73,7 +65,14 @@ export function ProblemSection() {
         <div className="problem-copy">
           <p className="problem-intro">And somehow, figuring out what you should actually wear is still a mystery.</p>
           <figure className="problem-visual problem-visual-expanded">
-            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787994025/internet-random-advice_cht9si.webp" alt="Random fashion advice on the internet" loading="lazy" />
+            <img
+              src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787994025/internet-random-advice_cht9si.webp"
+              alt="Random fashion advice on the internet"
+              loading="lazy"
+              decoding="async"
+              width="1000"
+              height="563"
+            />
           </figure>
           <p>You copy a <strong className="problem-emphasis problem-emphasis-caps">haircut</strong> that looked great on someone else.</p>
           <p>You save an outfit from <em className="problem-emphasis problem-emphasis-caps problem-emphasis-italic">Instagram</em>.</p>
@@ -87,7 +86,14 @@ export function ProblemSection() {
             <li><span>What should I buy next?</span></li>
           </ul>
           <figure className="problem-visual">
-            <img src="/assets/problem/reel-vs-real.webp" alt="The same outfit looking suitable in a Reel but poorly fitted in real life" />
+            <img
+              src="/assets/problem/reel-vs-real.webp"
+              alt="The same outfit looking suitable in a Reel but poorly fitted in real life"
+              loading="lazy"
+              decoding="async"
+              width="750"
+              height="680"
+            />
           </figure>
           <p className="problem-kicker">Most style advice tells you <span className="problem-emphasis problem-emphasis-caps problem-emphasis-underlined">what looks good</span>.</p>
           <p className="problem-kicker">It does not tell you <strong className="problem-emphasis problem-emphasis-caps">what looks good on you</strong>.</p>
@@ -109,7 +115,14 @@ export function WasteSection() {
           <p>But most of them start collecting dust because the <strong className="waste-emphasis waste-emphasis-caps">shirt</strong> you liked in the store but rarely wear.</p>
           <p>The <strong className="waste-emphasis waste-emphasis-caps">trousers</strong> that technically fit but never look like a good fit on you</p>
           <figure className="waste-visual">
-            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787996066/ChatGPT_Image_Aug_29_2026_03_03_27_PM_jd4kve.webp" alt="Wardrobe dilemma" loading="lazy" />
+            <img
+              src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787996066/ChatGPT_Image_Aug_29_2026_03_03_27_PM_jd4kve.webp"
+              alt="Wardrobe dilemma"
+              loading="lazy"
+              decoding="async"
+              width="760"
+              height="1013"
+            />
           </figure>
           <p>No matter how many hairstyles, color combinations, and shoes you tried, still today, when you open your wardrobe before work, a date, or an event, you&apos;re still thinking:</p>
           <p><strong className="waste-emphasis waste-emphasis-caps waste-emphasis-underlined">&ldquo;What the hell do I wear?&rdquo;</strong></p>
@@ -161,7 +174,14 @@ export function ProfessionalStylingSection() {
           <p>Famous celebrities rely on personal styling all the time.</p>
           <p>It commonly considers factors such as <strong className="professional-styling-emphasis">face and body</strong> <strong className="professional-styling-emphasis">proportions, coloring, silhouettes, wardrobe needs, lifestyle, and occasion</strong> before making recommendations.</p>
           <figure className="professional-styling-visual">
-            <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1787997317/ChatGPT_Image_Aug_29_2026_03_24_27_PM_pgk0dk.webp" alt="Professional styling factors" loading="lazy" />
+            <img
+              src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787997317/ChatGPT_Image_Aug_29_2026_03_24_27_PM_pgk0dk.webp"
+              alt="Professional styling factors"
+              loading="lazy"
+              decoding="async"
+              width="760"
+              height="1350"
+            />
           </figure>
           <p>That makes sense because.</p>
           <div className="professional-styling-reason-stack">
