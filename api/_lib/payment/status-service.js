@@ -1,8 +1,9 @@
 import { forwardMakeWebhookPayload } from "../make.js";
 import { buildPaymentStatusPayload } from "../payment-status-webhook.js";
 import { getPhonePeOrderStatus } from "../phonepe.js";
+import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
 
-const MERCHANT_ORDER_ID_PATTERN = /^[A-Za-z0-9_-]{1,63}$/;
+const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
 
 export class InvalidMerchantOrderIdError extends Error {
   constructor() {
@@ -16,6 +17,13 @@ export function isInvalidMerchantOrderIdError(error) {
   return error instanceof InvalidMerchantOrderIdError;
 }
 
+/**
+ * Checks PhonePe order status and forwards final states to Make.
+ *
+ * @param {object} input - Merchant order id, request, tracking, and injectable dependencies.
+ * @returns {Promise<object>} Raw PhonePe status response.
+ * @throws {InvalidMerchantOrderIdError} When the merchant order id is missing or unsafe.
+ */
 export async function checkPaymentOrderStatus({
   merchantOrderId,
   req,

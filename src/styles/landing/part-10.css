@@ -1,0 +1,256 @@
+.faq-editorial .faq-shell {
+  width: min(calc(100% - 48px), var(--content-medium));
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.faq-editorial .section-heading {
+  width: 100%;
+  margin-bottom: var(--gap-section);
+}
+
+.faq-editorial .section-heading h2 {
+  color: var(--palette-soft-linen);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.faq-editorial .section-heading h2 span {
+  color: var(--palette-ice-slate);
+}
+
+.faq-editorial .faq-list {
+  width: 100%;
+  margin: 0 auto;
+  border-top: 1px solid rgba(var(--palette-soft-linen-rgb), 0.18);
+}
+
+.faq-editorial .faq-list article {
+  border-bottom: 1px solid rgba(var(--palette-soft-linen-rgb), 0.18);
+}
+
+.faq-editorial .faq-list button {
+  min-height: auto;
+  padding: clamp(18px, 3vw, 24px) 0;
+  color: var(--palette-soft-linen);
+}
+
+.faq-editorial .faq-list button span {
+  color: var(--palette-soft-linen);
+  font-size: var(--hero-subheadline-size);
+  font-weight: var(--weight-bold);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.faq-editorial .faq-list button svg {
+  width: 24px;
+  height: 24px;
+  color: rgba(var(--palette-soft-linen-rgb), 0.74);
+  transition: color var(--ease), transform var(--ease);
+  transform: none;
+}
+
+.faq-editorial .faq-list article.open button span,
+.faq-editorial .faq-list article.open button svg {
+  color: var(--palette-accent);
+}
+
+.faq-editorial .faq-list article.open button svg {
+  transform: none;
+}
+
+.faq-editorial .faq-answer p {
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+  background: var(--palette-clean);
+  color: var(--palette-hero-black);
+  font-size: var(--hero-subheadline-size);
+  font-weight: var(--weight-regular);
+  line-height: 1.38;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.faq-editorial .faq-list article.open .faq-answer p {
+  margin: 0 0 clamp(18px, 3vw, 24px);
+  padding: clamp(18px, 3vw, 24px) clamp(18px, 4vw, 28px);
+  border-left: 4px solid var(--palette-accent);
+}
+
+.approach .styleiq-pillar,
+.bonuses-section .bonus-card {
+  background: rgba(var(--palette-soft-linen-rgb), 0.08);
+  border-color: rgba(var(--palette-soft-linen-rgb), 0.14);
+  color: var(--palette-soft-linen);
+  box-shadow: 0 18px 42px rgba(var(--palette-ink-rgb), 0.14);
+}
+
+.approach .styleiq-pillar p,
+.bonuses-section .bonus-card p {
+  color: rgba(var(--palette-soft-linen-rgb), 0.72);
+}
+
+.comparison-section .comparison-card,
+.report-contents .report-content-card,
+.proof .testimonial-card {
+  background: color-mix(in srgb, var(--palette-background) 88%, var(--palette-soft-linen));
+  border-color: rgba(var(--palette-ink-rgb), 0.12);
+}
+
+.comparison-section .comparison-report-row {
+  background: var(--palette-brand);
+  color: var(--palette-accent);
+}
+
+.comparison-section .comparison-report-row p {
+  color: var(--palette-background);
+}
+
+.comparison-section .comparison-generic-row {
+  background: color-mix(in srgb, var(--palette-background) 86%, var(--palette-slate));
+  color: var(--palette-slate);
+}
+
+.comparison-section .comparison-generic-row p,
+.report-contents .report-content-card li {
+  color: var(--palette-ink);
+}
+
+.process .process-step figure {
+  background: var(--palette-image-bg);
+  border-color: rgba(var(--palette-soft-linen-rgb), 0.16);
+}
+
+.process .button {
+  border-color: var(--palette-accent);
+  background: var(--palette-accent);
+  color: var(--palette-ink);
+}
+
+.sticky-buy-bar {
+  border-top-color: rgba(var(--palette-background-rgb), 0.18);
+  background: var(--palette-ink);
+  color: var(--palette-background);
+}
+
+.sticky-buy-button {
+  background: var(--palette-accent);
+  color: var(--palette-ink);
+}
+
+.section-editorial-preview {
+  --ink: var(--palette-ink);
+  --muted: rgba(var(--palette-ink-rgb), 0.68);
+  --border: rgba(var(--palette-ink-rgb), 0.12);
+  --border-soft: rgba(var(--palette-ink-rgb), 0.075);
+  padding-block: var(--section-y);
+  padding-inline: 0;
+  background: var(--palette-clean);
+  color: var(--palette-ink);
+}
+
+.section-editorial-preview .section-heading {
+  position: relative;
+  width: min(100%, var(--content-wide));
+  margin-bottom: var(--gap-section);
+  padding: 22px clamp(18px, 5vw, 58px);
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--palette-hero-black) 0 64%, var(--palette-heading-split) 64% 100%);
+  color: var(--palette-soft-linen);
+  box-shadow: 0 20px 46px rgba(var(--palette-ink-rgb), 0.18);
+}
+
+.section-editorial-preview .section-heading h2 {
+  color: var(--palette-soft-linen);
+  font-size: var(--hero-headline-size);
+  font-weight: var(--weight-bold);
+  line-height: 1.08;
+  text-shadow:
+    0 0 16px rgba(var(--palette-soft-linen-rgb), 0.13),
+    0 0 34px rgba(var(--palette-soft-linen-rgb), 0.07);
+}
+
+.section-editorial-preview .section-heading h2 span {
+  color: var(--palette-ice-slate);
+}
+
+.section-editorial-preview .section-intro {
+  color: rgba(var(--palette-soft-linen-rgb), 0.72);
+}
+
+.waste-section {
+  color: var(--palette-hero-black);
+}
+
+.waste-section:not(.section-editorial-preview) .section-heading h2 {
+  color: var(--palette-hero-black);
+}
+
+.problem-editorial + .waste-editorial {
+  margin-top: -1px;
+}
+
+.waste-editorial + .you-first-editorial {
+  margin-top: -1px;
+}
+
+.you-first-editorial + .professional-styling-editorial {
+  margin-top: -1px;
+}
+
+.professional-styling-editorial + .styleiq-editorial {
+  margin-top: -1px;
+}
+
+.styleiq-editorial + .comparison-editorial {
+  margin-top: -1px;
+}
+
+.comparison-editorial + .report-contents-editorial {
+  margin-top: -1px;
+}
+
+.report-contents-editorial + .bonuses-editorial {
+  margin-top: -1px;
+}
+
+.bonuses-editorial + .process-editorial {
+  margin-top: -1px;
+}
+
+.process-editorial + .proof-editorial {
+  margin-top: -1px;
+}
+
+.waste-editorial {
+  border-top: 0;
+  background: var(--palette-clean);
+  color: var(--palette-hero-black);
+  box-shadow: none;
+}
+
+.waste-editorial .section-heading h2 {
+  color: var(--palette-soft-linen);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.waste-editorial .section-heading h2 span {
+  color: var(--palette-ice-slate);
+}
+
+.waste-section .copy-stack {
+  max-width: var(--content-narrow);
+  gap: 18px;
+  color: var(--palette-hero-black);
+  font-size: var(--hero-subheadline-size);
+  line-height: 1.38;
+}
+
+.waste-editorial .copy-stack {
+  margin-inline: auto;
+  text-align: left;
+}

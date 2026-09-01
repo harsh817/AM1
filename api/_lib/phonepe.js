@@ -1,3 +1,8 @@
+import {
+  PHONEPE_FALLBACK_TOKEN_LIFETIME_SECONDS,
+  PHONEPE_ORDER_EXPIRY_SECONDS,
+  PHONEPE_TOKEN_REFRESH_BUFFER_SECONDS,
+} from "./constants.js";
 import { getEnv, requireEnv } from "./env.js";
 
 const ENDPOINTS = {
@@ -27,7 +32,7 @@ export async function createPhonePePayment({
   const payload = {
     merchantOrderId,
     amount: amountPaise,
-    expireAfter: 1200,
+    expireAfter: PHONEPE_ORDER_EXPIRY_SECONDS,
     paymentFlow: {
       type: "PG_CHECKOUT",
       merchantUrls: {
@@ -83,7 +88,7 @@ export async function getPhonePeOrderStatus(merchantOrderId) {
 
 async function getPhonePeAccessToken() {
   const now = Math.floor(Date.now() / 1000);
-  if (cachedToken && cachedToken.expiresAt > now + 300) return cachedToken;
+  if (cachedToken && cachedToken.expiresAt > now + PHONEPE_TOKEN_REFRESH_BUFFER_SECONDS) return cachedToken;
 
   const endpoints = getPhonePeEndpoints();
   const body = new URLSearchParams({
@@ -107,7 +112,7 @@ async function getPhonePeAccessToken() {
   cachedToken = {
     accessToken: data.access_token,
     tokenType: data.token_type || "O-Bearer",
-    expiresAt: Number(data.expires_at || now + 1800),
+    expiresAt: Number(data.expires_at || now + PHONEPE_FALLBACK_TOKEN_LIFETIME_SECONDS),
   };
 
   return cachedToken;

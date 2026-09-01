@@ -1,5 +1,17 @@
+import {
+  DEFAULT_TEXT_MAX_LENGTH,
+  EVENT_TIMESTAMP_MAX_LENGTH,
+  LONG_TEXT_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
+} from "./constants.js";
 import { buildTrackingFields } from "./tracking-webhook.js";
 
+/**
+ * Builds the Make payload for a PhonePe status check result.
+ *
+ * @param {object} input - Merchant order id, PhonePe status response, request, and tracking context.
+ * @returns {object} Sheet-ready payment status payload.
+ */
 export function buildPaymentStatusPayload({
   merchantOrderId,
   status = {},
@@ -7,16 +19,16 @@ export function buildPaymentStatusPayload({
   timestamp = new Date().toISOString(),
   tracking = {},
 } = {}) {
-  const eventTimestamp = clean(timestamp, 64);
-  const merchantOrderIdClean = clean(merchantOrderId, 128);
-  const paymentState = clean(status.state, 64);
+  const eventTimestamp = clean(timestamp, EVENT_TIMESTAMP_MAX_LENGTH);
+  const merchantOrderIdClean = clean(merchantOrderId, SHORT_TEXT_MAX_LENGTH);
+  const paymentState = clean(status.state, EVENT_TIMESTAMP_MAX_LENGTH);
   const eventName = getPaymentEventName(paymentState);
   const sheetName = getPaymentSheetName(paymentState);
   const metaInfo = status.metaInfo || status.meta_info || {};
   const errorContext = status.errorContext || {};
-  const errorCode = clean(status.errorCode || errorContext.errorCode || errorContext.code, 128);
-  const errorMessage = clean(status.message || errorContext.errorMessage || errorContext.description, 512);
-  const phonePeOrderId = clean(status.orderId, 128);
+  const errorCode = clean(status.errorCode || errorContext.errorCode || errorContext.code, SHORT_TEXT_MAX_LENGTH);
+  const errorMessage = clean(status.message || errorContext.errorMessage || errorContext.description, LONG_TEXT_MAX_LENGTH);
+  const phonePeOrderId = clean(status.orderId, SHORT_TEXT_MAX_LENGTH);
   const amountPaise = cleanAmount(status.amount);
 
   return {
@@ -78,7 +90,7 @@ function buildOrder(metaInfo = {}) {
     product: clean(metaInfo.udf4),
     selected_item_ids: clean(metaInfo.udf5)
       .split(",")
-      .map((id) => clean(id, 128))
+      .map((id) => clean(id, SHORT_TEXT_MAX_LENGTH))
       .filter(Boolean),
   };
 }
@@ -104,6 +116,6 @@ function cleanPhone(value) {
   return String(value ?? "").replace(/\D/g, "").slice(-10);
 }
 
-function clean(value, maxLength = 256) {
+function clean(value, maxLength = DEFAULT_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }

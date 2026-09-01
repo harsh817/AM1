@@ -1,6 +1,16 @@
 const TRACKING_KEY = "attractivemen-checkout-tracking";
 const ORDER_TRACKING_KEY = "attractivemen-checkout-order-tracking";
+const BOOLEAN_TEXT_MAX_LENGTH = 8;
+const DEFAULT_TRACKING_TEXT_MAX_LENGTH = 256;
+const LONG_TRACKING_TEXT_MAX_LENGTH = 512;
+const ORDER_TRACKING_ID_MAX_LENGTH = 128;
 
+/**
+ * Records a checkout page visit while preserving the first marketing touch.
+ *
+ * @param {object} context - Browser-like context for tests or runtime globals.
+ * @returns {object} Persisted marketing and engagement counters.
+ */
 export function rememberCheckoutVisit(context = getBrowserContext()) {
   const state = readTracking(context.storage);
   const marketing = mergeFirstTouchMarketing(
@@ -18,6 +28,12 @@ export function rememberCheckoutVisit(context = getBrowserContext()) {
   return next;
 }
 
+/**
+ * Builds the tracking payload sent with a checkout payment initiation.
+ *
+ * @param {object} context - Browser-like context for tests or runtime globals.
+ * @returns {object} Device, marketing, and engagement fields.
+ */
 export function getCheckoutTrackingPayload(context = getBrowserContext()) {
   const state = readTracking(context.storage);
   const next = {
@@ -38,21 +54,42 @@ export function getCheckoutTrackingPayload(context = getBrowserContext()) {
   };
 }
 
+/**
+ * Stores tracking by merchant order id so thank-you status checks can include it.
+ *
+ * @param {string} merchantOrderId - Server-generated merchant order id.
+ * @param {object} tracking - Tracking payload captured before redirect.
+ * @param {object} context - Browser-like context for tests or runtime globals.
+ * @returns {void}
+ */
 export function rememberCheckoutOrderTracking(merchantOrderId, tracking, context = getBrowserContext()) {
   const orderTracking = readOrderTracking(context.storage);
-  const orderId = clean(merchantOrderId, 128);
+  const orderId = clean(merchantOrderId, ORDER_TRACKING_ID_MAX_LENGTH);
   if (!orderId) return;
 
   orderTracking[orderId] = normalizeTrackingPayload(tracking);
   writeOrderTracking(context.storage, orderTracking);
 }
 
+/**
+ * Retrieves normalized tracking for a merchant order id or falls back to a live snapshot.
+ *
+ * @param {string} merchantOrderId - Server-generated merchant order id.
+ * @param {object} context - Browser-like context for tests or runtime globals.
+ * @returns {object} Device, marketing, and engagement fields.
+ */
 export function getCheckoutOrderTrackingPayload(merchantOrderId, context = getBrowserContext()) {
-  const orderId = clean(merchantOrderId, 128);
+  const orderId = clean(merchantOrderId, ORDER_TRACKING_ID_MAX_LENGTH);
   const orderTracking = readOrderTracking(context.storage);
   return normalizeTrackingPayload(orderTracking[orderId] || getCheckoutTrackingSnapshot(context));
 }
 
+/**
+ * Captures the current browser tracking context without mutating storage.
+ *
+ * @param {object} context - Browser-like context for tests or runtime globals.
+ * @returns {object} Device, marketing, and engagement fields.
+ */
 export function getCheckoutTrackingSnapshot(context = getBrowserContext()) {
   const state = readTracking(context.storage);
 
@@ -111,7 +148,7 @@ function normalizeMarketing(marketing = {}) {
     content: clean(marketing.content),
     term: clean(marketing.term),
     id: clean(marketing.id),
-    referrer: clean(marketing.referrer, 512),
+    referrer: clean(marketing.referrer, LONG_TRACKING_TEXT_MAX_LENGTH),
   };
 }
 
@@ -133,9 +170,9 @@ function normalizeDevice(device = {}) {
     browser: clean(device.browser),
     screen_resolution: clean(device.screen_resolution),
     viewport: clean(device.viewport),
-    is_mobile: clean(device.is_mobile, 8),
-    touch_enabled: clean(device.touch_enabled, 8),
-    user_agent: clean(device.user_agent, 512),
+    is_mobile: clean(device.is_mobile, BOOLEAN_TEXT_MAX_LENGTH),
+    touch_enabled: clean(device.touch_enabled, BOOLEAN_TEXT_MAX_LENGTH),
+    user_agent: clean(device.user_agent, LONG_TRACKING_TEXT_MAX_LENGTH),
   };
 }
 
@@ -158,7 +195,7 @@ function buildDevice(context) {
     viewport: dimensions(viewport.width, viewport.height),
     is_mobile: String(isMobile),
     touch_enabled: String(touchEnabled),
-    user_agent: clean(userAgent, 512),
+    user_agent: clean(userAgent, LONG_TRACKING_TEXT_MAX_LENGTH),
   };
 }
 
@@ -229,7 +266,7 @@ function positiveCount(value) {
   return Number.isFinite(count) && count > 0 ? count : 0;
 }
 
-function clean(value, maxLength = 256) {
+function clean(value, maxLength = DEFAULT_TRACKING_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 

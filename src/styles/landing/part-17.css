@@ -1,0 +1,256 @@
+@media (max-width: 720px) {
+  .shell {
+    width: min(calc(100% - 36px), var(--shell));
+  }
+
+  .section {
+    padding-block: var(--section-y-compact);
+  }
+
+  .section-heading {
+    margin-bottom: var(--gap-grid);
+  }
+
+  .video-sound-button {
+    top: 10px;
+    right: 10px;
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .section-heading h2,
+  .product-title,
+  .faq-heading h2 {
+    font-size: var(--heading-section);
+    line-height: var(--line-heading);
+  }
+
+  .section-intro,
+  .faq-heading > p:last-child {
+    margin-top: 20px;
+    font-size: var(--text-body);
+    line-height: var(--line-body);
+  }
+
+  .site-header {
+    position: relative;
+  }
+
+  .styleiq-page-shell {
+    width: min(calc(100% - 24px), var(--shell));
+    border-radius: 0 0 14px 14px;
+  }
+
+  .header-inner {
+    min-height: 66px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .header-inner nav {
+    display: none;
+  }
+
+  .header-cta {
+    min-height: 38px;
+    padding-inline: 16px;
+    font-size: 12px;
+  }
+
+  .hero {
+    padding-top: 40px;
+  }
+
+  .hero-shell {
+    gap: 28px;
+  }
+
+  .hero-copy {
+    text-align: center;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    margin-inline: auto;
+    font-size: clamp(30px, 8.4vw, 40px);
+  }
+
+  .styleiq-hero h1 {
+    max-width: 100%;
+    color: var(--palette-soft-linen);
+    font-size: var(--hero-headline-size);
+    line-height: 1.08;
+  }
+
+  .styleiq-hero-shell {
+    padding: 34px 18px 28px;
+  }
+
+  .styleiq-hero .hero-lead {
+    margin-top: 18px;
+  }
+
+  .hero-action-row {
+    display: grid;
+    justify-items: center;
+    gap: var(--gap-card);
+  }
+
+  .hero-action-row > span {
+    font-size: var(--hero-subheadline-size);
+  }
+
+  .trust-badges {
+    width: min(100%, 340px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 160px));
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .trust-badges span {
+    min-height: 50px;
+    padding-inline: 12px;
+    border-radius: var(--control-radius);
+    font-size: clamp(0.875rem, 3.6vw, 1rem);
+  }
+
+  .hero-before-after {
+    width: min(100%, 300px);
+    margin-top: 22px;
+  }
+
+  .split-copy {
+    gap: var(--gap-grid);
+  }
+
+  .copy-stack,
+  .styleiq-system-lead,
+  .styleiq-judgment {
+    font-size: var(--text-body);
+    line-height: var(--line-body);
+  }
+
+  .styleiq-pillars {
+    grid-template-columns: 1fr;
+    gap: var(--gap-card);
+  }
+
+  .styleiq-pillar {
+    padding: var(--card-padding);
+  }
+
+  .report-content-card,
+  .bonus-card {
+    padding: var(--card-padding);
+  }
+
+  .recap-grid {
+    grid-template-columns: 1fr;
+    gap: var(--gap-card);
+  }
+
+  .hero h1 + .hero-subheading-card {
+    margin-top: 28px;
+  }
+
+  .hero-subheading-card {
+    padding: 16px;
+  }
+
+  .hero-subheading-card h2 {
+    margin-inline: auto;
+    font-size: 18px;
+  }
+
+  .hero-copy > p {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  .hero {
+    padding-top: 22px;
+    padding-bottom: 16px;
+  }
+
+  .styleiq-hero {
+    padding-block: 0;
+  }
+
+  .hero-shell {
+    gap: 24px;
+  }
+
+  .hero h1 .hero-title-primary {
+    font-size: clamp(30px, 8.5vw, 35px);
+  }
+
+  .hero h1 .hero-title-accent {
+    font-size: clamp(25px, 7.2vw, 30px);
+  }
+
+  .hero h1 + .hero-subheading-card {
+    margin-top: 20px;
+  }
+
+  .button {
+    width: 100%;
+    min-height: var(--button-height);
+    padding-inline: 20px;
+    font-size: var(--text-small);
+  }
+
+  .rating-line {
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    margin-top: 16px;
+    font-size: clamp(11px, 3.05vw, 12px);
+    line-height: 1.35;
+  }
+
+  .rating-stars {
+    gap: 1px;
+  }
+
+  .problem {
+    padding-top: 28px;
+  }
+
+  .problem-opening,
+  .problem-explanation,
+  .problem-spend {
+    font-size: 16px;
+  }
+
+  .problem-copy {
+    gap: var(--gap-card);
+    font-size: var(--text-body);
+    line-height: var(--line-body);
+  }
+
+  .problem-rhythm p {
+    font-size: 16px;
+  }
+
+  .problem-visual {
+    margin-top: 30px;
+    border-radius: 12px;
+  }
+
+  .problem-consequences {
+    gap: 14px;
+    margin: 24px auto 18px;
+  }
+
+  .problem-consequences p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .problem-close h3 {
+    font-size: 43px;
+  }
+}

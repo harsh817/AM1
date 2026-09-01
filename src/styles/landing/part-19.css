@@ -1,0 +1,258 @@
+@media (max-width: 720px) {
+
+  .approach-rule {
+    margin-top: -12px;
+  }
+  .approach-content {
+    gap: 17px;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .approach-method-panel {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+
+  .approach-method {
+    font-size: clamp(21px, 6.2vw, 25px);
+  }
+
+  .approach-gif-frame {
+    width: 100%;
+    margin-block: 22px;
+    border-radius: 11px;
+  }
+
+  .approach-content > h3 {
+    font-size: 17px;
+  }
+
+  .approach-analysis-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .approach-analysis-copy p {
+    font-size: 15px;
+    line-height: 1.48;
+  }
+
+  .approach-conclusion {
+    padding: 20px 0;
+  }
+
+  .approach-lead {
+    margin-bottom: 22px;
+    font-size: 16px;
+  }
+
+  .approach-flow p {
+    font-size: 16px;
+  }
+
+  .approach-statement {
+    margin: 26px 0 24px;
+    padding: 22px 0;
+  }
+
+  .approach-statement p {
+    font-size: 16px;
+  }
+
+  .approach-statement strong {
+    font-size: 22px;
+  }
+
+  .approach-no-list {
+    font-size: 18px;
+  }
+
+  .approach-final {
+    font-size: 22px;
+  }
+
+  .comparison-card {
+    padding: var(--card-padding);
+  }
+
+  .comparison-card h3 {
+    font-size: 22px;
+  }
+
+  .comparison-report-row,
+  .comparison-generic-row {
+    padding: var(--gap-card);
+  }
+
+  .comparison-card p {
+    font-size: 15px;
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .report-card-copy {
+    padding: 14px 17px 16px;
+  }
+
+  .report-card-copy h3 {
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  .report-card-copy p {
+    font-size: 15px;
+    line-height: 1.48;
+  }
+
+  .process-list {
+    gap: var(--section-y-compact);
+  }
+
+  .process-step h3 {
+    font-size: var(--heading-card);
+  }
+
+  .process-description {
+    font-size: var(--text-body);
+  }
+
+  .process-step figure img {
+    aspect-ratio: 1.55;
+  }
+
+  .process-step figure .process-analysis-image {
+    aspect-ratio: auto;
+  }
+
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-card {
+    min-height: 270px;
+  }
+
+  .product-copy > p:not(.eyebrow) {
+    font-size: 16px;
+  }
+
+  .product-copy > p.product-price {
+    gap: 9px;
+    font-size: 34px;
+    line-height: 1.1;
+  }
+
+  .product-stack {
+    padding: 22px 14px;
+  }
+
+  .faq-list button {
+    min-height: 68px;
+  }
+
+  .faq-list button span {
+    font-size: 14px;
+  }
+
+  .faq-editorial .faq-shell {
+    width: min(calc(100% - 36px), var(--content-medium));
+  }
+
+  .faq-editorial .faq-list button span,
+  .faq-editorial .faq-answer p {
+    font-size: var(--hero-subheadline-size);
+  }
+
+  .faq-editorial .faq-list button {
+    min-height: auto;
+    padding-block: 18px;
+  }
+
+  .faq-editorial .faq-list article.open .faq-answer p {
+    margin-bottom: 18px;
+    padding: 18px;
+  }
+
+  .final-offer-section .styleiq-final-offer {
+    width: min(100%, var(--content-medium));
+    padding: 0;
+    gap: var(--gap-grid);
+  }
+
+  .final-offer-section .styleiq-final-offer > p:not(.delivery-proof) {
+    font-size: var(--hero-subheadline-size);
+    line-height: 1.38;
+  }
+
+  .final-offer-section .recap-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .final-offer-section .final-offer-button {
+    font-size: var(--hero-subheadline-size);
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .site-footer {
+    padding-bottom: 0;
+  }
+
+  .legal-hero {
+    padding: 28px 18px 42px;
+  }
+
+  .legal-brand {
+    margin-bottom: 34px;
+  }
+
+  .legal-hero h1 {
+    font-size: 42px;
+  }
+
+  .legal-shell {
+    width: calc(100% - 28px);
+    padding: 26px 20px;
+  }
+
+  .legal-intro {
+    font-size: 16px;
+  }
+
+  .legal-section h2,
+  .legal-contact-card h2 {
+    font-size: 21px;
+  }
+
+  .sticky-buy-bar {
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .sticky-buy-inner {
+    width: calc(100% - 12px);
+    min-height: 90px;
+    grid-template-columns: minmax(0, 1fr) minmax(142px, 44%);
+    gap: 6px;
+  }
+
+  .sticky-buy-details {
+    display: block;
+  }
+
+  .sticky-buy-offer strong {
+    margin-top: 4px;
+    font-size: clamp(20px, 5.7vw, 22px);
+    white-space: nowrap;
+  }
+
+  .sticky-buy-offer strong small,
+  .sticky-buy-offer span {
+    font-size: 14px;
+  }
+}

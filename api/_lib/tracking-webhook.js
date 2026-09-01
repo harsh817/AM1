@@ -1,5 +1,20 @@
+import {
+  BOOLEAN_TEXT_MAX_LENGTH,
+  COUNTRY_CODE_MAX_LENGTH,
+  DEFAULT_TEXT_MAX_LENGTH,
+  IP_ADDRESS_MAX_LENGTH,
+  LONG_TEXT_MAX_LENGTH,
+} from "./constants.js";
 import { getHeader } from "./http.js";
 
+/**
+ * Builds normalized request, device, marketing, and engagement fields for Make.
+ *
+ * @param {object} input
+ * @param {object} input.req - Incoming API request with headers/socket metadata.
+ * @param {object} input.tracking - Browser-provided tracking snapshot.
+ * @returns {object} Tracking fields duplicated into sheet-friendly UTM columns.
+ */
 export function buildTrackingFields({ req, tracking = {} } = {}) {
   const marketing = buildMarketing(tracking.marketing);
 
@@ -21,7 +36,7 @@ export function buildTrackingFields({ req, tracking = {} } = {}) {
 function buildLocation(req) {
   const countryCode = clean(
     getHeader(req, "x-vercel-ip-country") || getHeader(req, "cf-ipcountry"),
-    2,
+    COUNTRY_CODE_MAX_LENGTH,
   ).toUpperCase();
 
   return {
@@ -29,7 +44,7 @@ function buildLocation(req) {
     country_code: countryCode,
     state: clean(decodeHeader(getHeader(req, "x-vercel-ip-country-region"))),
     city: clean(decodeHeader(getHeader(req, "x-vercel-ip-city"))),
-    ip: clean(getClientIp(req), 64),
+    ip: clean(getClientIp(req), IP_ADDRESS_MAX_LENGTH),
   };
 }
 
@@ -40,14 +55,14 @@ function buildDevice(device = {}) {
     browser: clean(device.browser),
     screen_resolution: clean(device.screen_resolution),
     viewport: clean(device.viewport),
-    is_mobile: clean(device.is_mobile, 8),
-    touch_enabled: clean(device.touch_enabled, 8),
-    user_agent: clean(device.user_agent, 512),
+    is_mobile: clean(device.is_mobile, BOOLEAN_TEXT_MAX_LENGTH),
+    touch_enabled: clean(device.touch_enabled, BOOLEAN_TEXT_MAX_LENGTH),
+    user_agent: clean(device.user_agent, LONG_TEXT_MAX_LENGTH),
   };
 }
 
 function buildMarketing(marketing = {}) {
-  const referrer = clean(marketing.referrer, 512);
+  const referrer = clean(marketing.referrer, LONG_TEXT_MAX_LENGTH);
   const referrerMarketing = readMarketingFromUrl(referrer);
 
   return {
@@ -122,6 +137,6 @@ function cleanCount(value) {
   return Number.isFinite(count) && count > 0 ? String(count) : "0";
 }
 
-function clean(value, maxLength = 256) {
+function clean(value, maxLength = DEFAULT_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }

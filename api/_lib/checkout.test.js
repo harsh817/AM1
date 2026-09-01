@@ -6,6 +6,7 @@ import {
   createMerchantOrderId,
   getCheckoutValidationErrors,
 } from "./checkout.js";
+import { MERCHANT_ORDER_ID_MAX_LENGTH } from "./constants.js";
 
 test("calculates trusted server-side totals from selected bump ids", () => {
   assert.deepEqual(calculateCheckoutTotals([]), {
@@ -64,5 +65,5 @@ test("builds PhonePe-safe redirect and merchant order ids", () => {
 
   const id = createMerchantOrderId();
   assert.match(id, /^AM_[A-Za-z0-9_-]+$/);
-  assert.ok(id.length <= 63);
+  assert.ok(id.length <= MERCHANT_ORDER_ID_MAX_LENGTH);
 });

@@ -28,6 +28,14 @@ export function isPhonePeWebhookPayloadError(error) {
   return error instanceof PhonePeWebhookPayloadError;
 }
 
+/**
+ * Verifies a PhonePe webhook, normalizes the raw payload, and forwards it to Make.
+ *
+ * @param {object} input - Request, raw body, optional credentials, and injectable webhook sender.
+ * @returns {Promise<object>} A receipt showing the webhook was accepted.
+ * @throws {PhonePeWebhookVerificationError} When authorization verification fails.
+ * @throws {PhonePeWebhookPayloadError} When the raw body is not valid JSON.
+ */
 export async function handlePhonePeWebhook({
   req,
   rawBody = "",
@@ -44,6 +52,13 @@ export async function handlePhonePeWebhook({
   return { received: true };
 }
 
+/**
+ * Validates PhonePe's SHA-256 authorization header against webhook credentials.
+ *
+ * @param {object} req - Incoming webhook request.
+ * @param {object} credentials - Optional username/password override for tests.
+ * @returns {boolean} Whether the request is authorized.
+ */
 export function verifyPhonePeWebhookRequest(req, credentials = {}) {
   const username = credentials.username ?? getEnv("PHONEPE_WEBHOOK_USERNAME");
   const password = credentials.password ?? getEnv("PHONEPE_WEBHOOK_PASSWORD");
@@ -55,6 +70,14 @@ export function verifyPhonePeWebhookRequest(req, credentials = {}) {
   return timingSafeEqualString(authorization, expected);
 }
 
+/**
+ * Creates the expected PhonePe webhook SHA-256 signature.
+ *
+ * @param {object} input
+ * @param {string} input.username - PhonePe webhook username.
+ * @param {string} input.password - PhonePe webhook password.
+ * @returns {string} Hex-encoded SHA-256 signature.
+ */
 export function createWebhookSignature({ username, password }) {
   return crypto.createHash("sha256").update(`${username}:${password}`).digest("hex");
 }

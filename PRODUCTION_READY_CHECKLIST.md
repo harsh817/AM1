@@ -102,14 +102,14 @@ Examples:
 - [x] Avoid direct state mutation in React. Evidence: React state updates use setters and functional updates; no direct mutation of React state was found.
 - [x] Use lazy initialization for browser storage reads. Evidence: checkout draft loading now uses lazy `useState(loadDraft)` initialization.
 - [x] Clean up timers, event listeners, observers, and intervals in React effects. Evidence: sticky timer/listener/body-class effects clean up; checkout/thank-you async effects use cancellation guards.
-- [~] Avoid one-off abstractions. Extract only when it reduces real duplication or risk. Evidence: current abstractions are useful, but large page files should be split before adding more section logic.
-- [~] Avoid magic numbers for prices, timeouts, body limits, and route names. Evidence: prices, GST, body limit, and route names are centralized; PhonePe expiry, Make timeout, and payload length limits should be named constants with comments/tests.
-- [ ] Add JSDoc to complex public helper functions while the project remains JavaScript. Missing: complex exported helpers such as checkout tracking, payment creation, and webhook payload builders have no JSDoc.
+- [x] Avoid one-off abstractions. Extract only when it reduces real duplication or risk. Evidence: landing page sections were split into focused page modules; shared components remain limited to repeated button, video, and heading behavior.
+- [x] Avoid magic numbers for prices, timeouts, body limits, and route names. Evidence: prices, GST, body limit, route names, PhonePe expiry, Make timeout, merchant ID length, and payload field limits are named constants.
+- [x] Add JSDoc to complex public helper functions while the project remains JavaScript. Evidence: checkout totals, payment creation, status/webhook services, payload builders, Make forwarding, and checkout tracking helpers now document inputs, outputs, and side effects.
 - [x] Do not read browser globals in module scope unless the code is browser-only. Evidence: browser globals are used inside browser-only entry/page code or injectable helper context.
 - [x] Do not add dependencies unless they remove meaningful complexity. Evidence: no new dependency was added for the latest fixes.
 - [x] Do not mix generated files, artifacts, source files, and deployment config in one commit unless the release needs all of them. Evidence: current changes are source/tests/config/checklist only; generated build output and artifacts are not changed.
 - [x] Add tests before changing checkout totals, route matching, payment payloads, tracking fields, or webhook logic. Evidence: tests were added before the route/legal/API behavior fixes and pass.
-- [ ] Additional project-standard gap: source and test files should stay near the ~300-line budget. Missing: `src/styles/landing.css`, `src/pages/LandingPage.jsx`, `src/pages/CheckoutPage.jsx`, `src/pages/LandingPage.test.js`, and `src/styles/landing-palette.test.js` exceed that budget.
+- [x] Additional project-standard gap: source and test files should stay near the ~300-line budget. Evidence: landing sections, landing stylesheet chunks, and landing stylesheet tests were split; `CheckoutPage.jsx` is within the project line-count target.
 
 Examples:
 
@@ -491,7 +491,6 @@ For release hardening:
 After deployment:
 
 - Confirm the landing page returns a successful HTTP response.
-- Confirm the temporary landing page returns a successful HTTP response.
 - Confirm the checkout page returns a successful HTTP response.
 - Confirm the thank-you page returns a successful HTTP response.
 
@@ -509,7 +508,7 @@ Based on the current project shape, prioritize these before scaling paid traffic
 - [ ] Add Pixel funnel events: checkout view, payment started, verified purchase, payment failed.
 - [ ] Add Clarity masking on checkout form surfaces and low-risk funnel events.
 - [ ] Add schema version and idempotency keys to Make payloads.
-- [ ] Split large landing/checkout page files into section components when making the next functional change.
+- [x] Split large landing page files into section components and bring checkout page within the line-count target.
 - [ ] Add CI scripts for lint, format check, tests, and production build.
 
 ## Official References

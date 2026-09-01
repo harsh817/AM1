@@ -1,5 +1,17 @@
+import {
+  DEFAULT_TEXT_MAX_LENGTH,
+  EVENT_TIMESTAMP_MAX_LENGTH,
+  PHONE_NUMBER_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
+} from "./constants.js";
 import { buildTrackingFields } from "./tracking-webhook.js";
 
+/**
+ * Builds the Make payload for a checkout payment initiation event.
+ *
+ * @param {object} input - Checkout, payment, totals, request, and tracking context.
+ * @returns {object} Sheet-ready payload for the payment_initiated workflow.
+ */
 export function buildCheckoutLeadPayload({
   eventName,
   timestamp = new Date().toISOString(),
@@ -15,11 +27,11 @@ export function buildCheckoutLeadPayload({
 } = {}) {
   const name = clean(details.name);
   const email = clean(details.email);
-  const phone = clean(phoneNumber, 20);
+  const phone = clean(phoneNumber, PHONE_NUMBER_MAX_LENGTH);
   const event = {
     name: clean(eventName),
-    timestamp: clean(timestamp, 64),
-    submission_id: clean(submissionId, 128),
+    timestamp: clean(timestamp, EVENT_TIMESTAMP_MAX_LENGTH),
+    submission_id: clean(submissionId, SHORT_TEXT_MAX_LENGTH),
   };
   const paymentPayload = buildPayment(submissionId, payment);
 
@@ -60,10 +72,10 @@ function buildOrder(selected = [], totals = {}) {
   return {
     currency: "INR",
     product: "AttractiveMen Personalized Style Report",
-    selected_item_ids: selectedIds.map((id) => clean(id, 128)),
+    selected_item_ids: selectedIds.map((id) => clean(id, SHORT_TEXT_MAX_LENGTH)),
     selected_bumps: selectedBumps.map((bump) => ({
-      id: clean(bump.id, 128),
-      title: clean(bump.title, 256),
+      id: clean(bump.id, SHORT_TEXT_MAX_LENGTH),
+      title: clean(bump.title, DEFAULT_TEXT_MAX_LENGTH),
       price: cleanMoney(bump.price),
     })),
     pricing: {
@@ -79,9 +91,9 @@ function buildOrder(selected = [], totals = {}) {
 
 function buildPayment(submissionId, payment = {}) {
   return {
-    merchant_order_id: clean(payment.merchantOrderId || submissionId, 128),
-    phonepe_order_id: clean(payment.phonePeOrderId || payment.orderId, 128),
-    state: clean(payment.state || "INITIATED", 64),
+    merchant_order_id: clean(payment.merchantOrderId || submissionId, SHORT_TEXT_MAX_LENGTH),
+    phonepe_order_id: clean(payment.phonePeOrderId || payment.orderId, SHORT_TEXT_MAX_LENGTH),
+    state: clean(payment.state || "INITIATED", EVENT_TIMESTAMP_MAX_LENGTH),
     amount_paise: cleanPaymentAmount(payment.amountPaise),
   };
 }
@@ -96,6 +108,6 @@ function cleanMoney(value) {
   return Number.isFinite(amount) && amount >= 0 ? String(amount) : "";
 }
 
-function clean(value, maxLength = 256) {
+function clean(value, maxLength = DEFAULT_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }

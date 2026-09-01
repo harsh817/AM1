@@ -1,0 +1,6 @@
+@media (max-width: 720px) {
+
+  .problem-close > p {
+    font-size: 16px;
+  }
+}

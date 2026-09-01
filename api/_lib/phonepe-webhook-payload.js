@@ -1,23 +1,35 @@
+import {
+  DEFAULT_TEXT_MAX_LENGTH,
+  EVENT_TIMESTAMP_MAX_LENGTH,
+  LONG_TEXT_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
+} from "./constants.js";
 import { buildTrackingFields } from "./tracking-webhook.js";
 
+/**
+ * Normalizes raw PhonePe webhook variants into the Make webhook sheet format.
+ *
+ * @param {object} input - Raw PhonePe payload, request context, timestamp, and browser tracking.
+ * @returns {object} Sheet-ready raw webhook payload.
+ */
 export function buildPhonePeWebhookPayload({
   payload = {},
   req,
   timestamp = new Date().toISOString(),
   tracking = {},
 } = {}) {
-  const eventTimestamp = clean(timestamp, 64);
+  const eventTimestamp = clean(timestamp, EVENT_TIMESTAMP_MAX_LENGTH);
   const merchantOrderId = clean(
     payload.merchantOrderId || payload.data?.merchantOrderId || payload.payload?.merchantOrderId,
-    128,
+    SHORT_TEXT_MAX_LENGTH,
   );
   const phonePeOrderId = clean(
     payload.orderId || payload.data?.orderId || payload.payload?.orderId,
-    128,
+    SHORT_TEXT_MAX_LENGTH,
   );
   const paymentState = clean(
     payload.state || payload.data?.state || payload.payload?.state,
-    64,
+    EVENT_TIMESTAMP_MAX_LENGTH,
   );
   const amountPaise = cleanAmount(payload.amount ?? payload.data?.amount ?? payload.payload?.amount);
   const payableAmountPaise = cleanAmount(
@@ -25,8 +37,8 @@ export function buildPhonePeWebhookPayload({
   );
   const feeAmountPaise = cleanAmount(payload.feeAmount ?? payload.data?.feeAmount ?? payload.payload?.feeAmount);
   const errorContext = payload.errorContext || payload.data?.errorContext || payload.payload?.errorContext || {};
-  const errorCode = clean(payload.errorCode || errorContext.errorCode || errorContext.code, 128);
-  const errorMessage = clean(payload.errorMessage || payload.message || errorContext.errorMessage, 512);
+  const errorCode = clean(payload.errorCode || errorContext.errorCode || errorContext.code, SHORT_TEXT_MAX_LENGTH);
+  const errorMessage = clean(payload.errorMessage || payload.message || errorContext.errorMessage, LONG_TEXT_MAX_LENGTH);
 
   return {
     event_name: "phonepe.webhook",
@@ -70,6 +82,6 @@ function cleanAmount(value) {
   return Number.isFinite(amount) && amount >= 0 ? String(amount) : "";
 }
 
-function clean(value, maxLength = 256) {
+function clean(value, maxLength = DEFAULT_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }

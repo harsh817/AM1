@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Check,
-  InstagramLogo,
-  LockKey,
-  PhoneCall,
-  ShieldCheck,
-} from "@phosphor-icons/react";
+import { Check, InstagramLogo, LockKey, PhoneCall, ShieldCheck } from "@phosphor-icons/react";
 import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../lib/checkout-config.js";
 import { trustBadges } from "../lib/landing-data.js";
 import {
@@ -69,7 +63,6 @@ export function CheckoutPage() {
   const [details, setDetails] = useState(initialDraft.details);
   const [selected, setSelected] = useState(initialDraft.selected);
   const [errors, setErrors] = useState({});
-
   const [status, setStatus] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);

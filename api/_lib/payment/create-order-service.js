@@ -26,6 +26,13 @@ export function isCheckoutValidationError(error) {
   return error instanceof CheckoutValidationError;
 }
 
+/**
+ * Creates a PhonePe checkout order from validated browser input and server totals.
+ *
+ * @param {object} input - Checkout payload, request, base URL, and injectable side-effect functions.
+ * @returns {Promise<object>} Merchant order id, PhonePe order id, state, redirect URL, and amount in paise.
+ * @throws {CheckoutValidationError} When contact details or add-on ids are invalid.
+ */
 export async function createCheckoutPaymentOrder({
   payload = {},
   req,
@@ -81,6 +88,12 @@ export async function createCheckoutPaymentOrder({
   };
 }
 
+/**
+ * Builds PhonePe UDF metadata used later to reconstruct lead/order context.
+ *
+ * @param {object} input - Checkout details, normalized phone number, and calculated totals.
+ * @returns {object} PhonePe metaInfo object.
+ */
 export function buildPhonePeMetaInfo({ details = {}, phoneNumber = "", totals = {} } = {}) {
   const selectedBumps = Array.isArray(totals.selectedBumps) ? totals.selectedBumps : [];
 
