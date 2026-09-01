@@ -23,6 +23,10 @@ export default async function handler(req, res) {
       return sendJson(res, 413, { message: BODY_TOO_LARGE_MESSAGE });
     }
 
+    if (error instanceof SyntaxError) {
+      return sendJson(res, 400, { message: "Invalid checkout payload." });
+    }
+
     if (isCheckoutValidationError(error)) {
       return sendJson(res, 400, { message: error.message, errors: error.errors });
     }

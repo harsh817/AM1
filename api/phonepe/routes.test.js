@@ -39,6 +39,15 @@ test("create-order returns validation errors before provider calls", async () =>
   });
 });
 
+test("create-order returns 400 for malformed JSON", async () => {
+  const res = createJsonResponse();
+
+  await createOrderHandler(createRequest({ method: "POST", body: "{" }), res);
+
+  assert.equal(res.statusCode, 400);
+  assert.deepEqual(res.json(), { message: "Invalid checkout payload." });
+});
+
 test("status returns 400 for invalid JSON and invalid merchant order ids", async () => {
   const invalidJsonResponse = createJsonResponse();
   await statusHandler(createRequest({ method: "POST", body: "{" }), invalidJsonResponse);

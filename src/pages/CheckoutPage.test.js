@@ -22,6 +22,8 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.doesNotMatch(checkoutSource, /A human stylist will review your details and build a personalized style report/);
   assert.doesNotMatch(checkoutSource, /checkout-summary-line|Today's Price \{BASE_PRICE_LABEL\}|BASE_PRICE_LABEL/);
   assert.match(checkoutSource, /<form className="checkout-card" onSubmit=\{handleSubmit\} noValidate>/);
+  assert.match(checkoutSource, /const \[initialDraft\] = useState\(loadDraft\);/);
+  assert.doesNotMatch(checkoutSource, /useMemo\(loadDraft/);
   assert.match(checkoutSource, /<h2 id="contact-title">Where should we send your report\?<\/h2>/);
   assert.match(checkoutSource, /<h2 id="addons-title">100X Add-Ons<\/h2>/);
   assert.match(checkoutSource, /CHECKOUT_BUMPS\.map\(\(bump\) =>/);
@@ -56,6 +58,9 @@ test("thank-you page uses the same status and next-step treatment", () => {
   assert.match(thankyouSource, /Complete your assessment/);
   assert.match(thankyouSource, /Your report arrives within 48 hours/);
   assert.match(thankyouSource, /Keep this order ID saved/);
+  assert.match(thankyouSource, /className="thankyou-legal"/);
+  assert.match(thankyouSource, /href="\/privacy"/);
+  assert.match(thankyouSource, /href="\/terms"/);
 });
 
 test("checkout stylesheet follows the approved Ink Luxury tokens", () => {

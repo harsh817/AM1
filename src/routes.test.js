@@ -5,7 +5,6 @@ import { getPageRoute } from "./routes.js";
 
 test("routes requested marketing, checkout, and thank-you URLs", () => {
   assert.deepEqual(getPageRoute("/a-m", ""), { page: "landing" });
-  assert.deepEqual(getPageRoute("/am/temp", ""), { page: "landing" });
   assert.deepEqual(getPageRoute("/a-m-checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/a-m-thankyou", "?merchantOrderId=AM_123"), {
     page: "thankyou",
@@ -30,4 +29,14 @@ test("production CSP allows bundled fonts and Cloudinary videos", () => {
 
   assert.match(contentSecurityPolicy, /font-src 'self' data: https:\/\/fonts\.gstatic\.com/);
   assert.match(contentSecurityPolicy, /media-src 'self' https:\/\/res\.cloudinary\.com/);
+});
+
+test("production rewrites expose only current AM1 public routes", () => {
+  const config = JSON.parse(
+    readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
+  );
+  const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
+
+  assert.deepEqual(rewriteSources, ["/a-m", "/a-m-checkout", "/a-m-thankyou"]);
+  assert.ok(!rewriteSources.includes("/am/temp"));
 });

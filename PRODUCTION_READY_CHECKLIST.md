@@ -1,13 +1,12 @@
 # Production Ready Checklist
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
 Scope: AttractiveMen landing pages, cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
 
 Use this before every release that affects:
 
 - /a-m
-- /am/temp
 - /a-m-checkout
 - /a-m-thankyou
 - /api/phonepe/create-order
@@ -32,36 +31,37 @@ Status legend:
 
 | Field | Value |
 | --- | --- |
-| Release date | |
-| Owner | |
-| Git commit | |
-| Vercel deployment URL | |
-| Production URL tested | |
-| PhonePe mode | sandbox / production |
-| Make scenario tested | yes / no |
-| Rollback deployment | |
+| Release date | 2026-09-01 |
+| Owner | Pending owner signoff |
+| Git commit | Pending commit for current fixes; previous production commit was 3a70009 |
+| Vercel deployment URL | Current production still needs redeploy after this checklist update; previous AM1 production: https://am1-7fprvxoda-harsh817s-projects.vercel.app |
+| Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou |
+| PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
+| Make scenario tested | Not verified in Make dashboard during this run |
+| Rollback deployment | AM1 previous: https://am1-lhd03zro5-harsh817s-projects.vercel.app; wrapper previous: https://pg-thriveonp-go2ksxkt2-harsh817s-projects.vercel.app |
 
 ## P0 Go/No-Go Gates
 
-- [ ] Local test suite passes.
-- [ ] Production build passes.
-- [ ] Production Vercel deployment is Ready.
-- [ ] Public routes return successful responses: /a-m, /am/temp, /a-m-checkout, /a-m-thankyou.
-- [ ] Root domain and www DNS point to Vercel correctly.
-- [ ] Required Vercel environment variables exist for production.
-- [ ] No env files, API keys, webhook URLs, credentials, or private tokens are committed.
-- [ ] Checkout amount is calculated on the server, not trusted from the browser.
-- [ ] PhonePe production credentials are intentionally selected when taking live payments.
-- [ ] PhonePe webhook credentials are configured and verified.
-- [ ] Webhook/event payload contract is documented and tested.
-- [ ] Duplicate payment completion/failure events cannot create duplicate operational records.
-- [ ] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts.
-- [ ] Pixel and Clarity events are verified on production URLs, not only local preview.
-- [ ] Payment success, failure, and pending states are tested end to end.
-- [ ] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads.
-- [ ] Legal links work from landing, checkout, and thank-you pages.
-- [ ] Mobile checkout has been tested on a real phone or device emulation.
-- [ ] Rollback plan is known before launch.
+- [x] Local test suite passes. Evidence: `npm test` passed, 80/80 tests.
+- [x] Production build passes. Evidence: `npm run build` passed.
+- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment `am1-7fprvxoda` is Ready for commit `3a70009`; current local fixes need a new production deployment.
+- [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
+- [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
+- [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
+- [x] No env files, API keys, webhook URLs, credentials, or private tokens are committed. Evidence: `.env` is gitignored, only `.env.example` is tracked, and tracked-source secret scan outside generated artifacts returned no hits.
+- [x] Checkout amount is calculated on the server, not trusted from the browser. Evidence: `api/_lib/payment/create-order-service.js` calculates totals from `src/lib/checkout-config.js`, and tests cover trusted server totals.
+- [~] PhonePe production credentials are intentionally selected when taking live payments. Evidence: `PHONEPE_ENV` exists in Vercel production and owner reports real success/failure tests were already done; screenshot/log evidence still needs to be attached.
+- [~] PhonePe webhook credentials are configured and verified. Evidence: current code supports SHA webhook verification through `PHONEPE_WEBHOOK_USERNAME` and `PHONEPE_WEBHOOK_PASSWORD`; if PhonePe dashboard uses HMAC/API-key-style verification, update the code and env naming to match that method.
+- [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
+- [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
+- [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
+- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML; browser-network or dashboard verification was not completed, and no funnel-specific Pixel events exist beyond PageView.
+- [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; pending-state evidence and reproducible proof were not captured in this run.
+- [~] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads. Evidence: code/tests cover forwarding and `MAKE_WEBHOOK_URL` exists; actual Make/CRM receipt was not verified in the dashboard.
+- [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are now added and local tests pass; production verification needs redeploy.
+- [x] Mobile checkout has been tested on a real phone or device emulation. Evidence: Playwright MCP using installed Edge channel verified 390x844 mobile checkout and thank-you routes locally.
+- [x] Rollback plan is known before launch. Evidence: previous Ready deployments are listed in Release Signoff.
+- [~] Additional API gate: malformed JSON to `POST /api/phonepe/create-order` should return 400. Evidence: fixed locally and covered by tests; production needs redeploy.
 
 ## Project Structure And File Ownership
 
@@ -96,19 +96,20 @@ Examples:
 
 ## Programming Practices
 
-- [ ] Use descriptive names for variables, functions, and components.
-- [ ] Keep route files thin: validate method, parse input, call service, return JSON.
-- [ ] Keep pure logic in helpers that can be tested without a browser.
-- [ ] Avoid direct state mutation in React.
-- [ ] Use lazy initialization for browser storage reads.
-- [ ] Clean up timers, event listeners, observers, and intervals in React effects.
-- [ ] Avoid one-off abstractions. Extract only when it reduces real duplication or risk.
-- [ ] Avoid magic numbers for prices, timeouts, body limits, and route names.
-- [ ] Add JSDoc to complex public helper functions while the project remains JavaScript.
-- [ ] Do not read browser globals in module scope unless the code is browser-only.
-- [ ] Do not add dependencies unless they remove meaningful complexity.
-- [ ] Do not mix generated files, artifacts, source files, and deployment config in one commit unless the release needs all of them.
-- [ ] Add tests before changing checkout totals, route matching, payment payloads, tracking fields, or webhook logic.
+- [x] Use descriptive names for variables, functions, and components. Evidence: checkout, route, payment, tracking, and webhook modules use domain-specific names.
+- [x] Keep route files thin: validate method, parse input, call service, return JSON. Evidence: PhonePe route handlers delegate payment/status/webhook logic to service helpers.
+- [x] Keep pure logic in helpers that can be tested without a browser. Evidence: checkout totals, route matching, tracking payloads, PhonePe payloads, and webhook verification have unit tests.
+- [x] Avoid direct state mutation in React. Evidence: React state updates use setters and functional updates; no direct mutation of React state was found.
+- [x] Use lazy initialization for browser storage reads. Evidence: checkout draft loading now uses lazy `useState(loadDraft)` initialization.
+- [x] Clean up timers, event listeners, observers, and intervals in React effects. Evidence: sticky timer/listener/body-class effects clean up; checkout/thank-you async effects use cancellation guards.
+- [~] Avoid one-off abstractions. Extract only when it reduces real duplication or risk. Evidence: current abstractions are useful, but large page files should be split before adding more section logic.
+- [~] Avoid magic numbers for prices, timeouts, body limits, and route names. Evidence: prices, GST, body limit, and route names are centralized; PhonePe expiry, Make timeout, and payload length limits should be named constants with comments/tests.
+- [ ] Add JSDoc to complex public helper functions while the project remains JavaScript. Missing: complex exported helpers such as checkout tracking, payment creation, and webhook payload builders have no JSDoc.
+- [x] Do not read browser globals in module scope unless the code is browser-only. Evidence: browser globals are used inside browser-only entry/page code or injectable helper context.
+- [x] Do not add dependencies unless they remove meaningful complexity. Evidence: no new dependency was added for the latest fixes.
+- [x] Do not mix generated files, artifacts, source files, and deployment config in one commit unless the release needs all of them. Evidence: current changes are source/tests/config/checklist only; generated build output and artifacts are not changed.
+- [x] Add tests before changing checkout totals, route matching, payment payloads, tracking fields, or webhook logic. Evidence: tests were added before the route/legal/API behavior fixes and pass.
+- [ ] Additional project-standard gap: source and test files should stay near the ~300-line budget. Missing: `src/styles/landing.css`, `src/pages/LandingPage.jsx`, `src/pages/CheckoutPage.jsx`, `src/pages/LandingPage.test.js`, and `src/styles/landing-palette.test.js` exceed that budget.
 
 Examples:
 

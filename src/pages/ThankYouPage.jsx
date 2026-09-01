@@ -93,6 +93,11 @@ export function ThankYouPage({ merchantOrderId = "" }) {
             Contact support
           </a>
         </div>
+
+        <nav className="thankyou-legal" aria-label="Legal links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
+        </nav>
       </section>
     </main>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   InstagramLogo,
@@ -65,9 +65,9 @@ const formatAddOnPrice = (amount) =>
   }).format(amount);
 
 export function CheckoutPage() {
-  const initial = useMemo(loadDraft, []);
-  const [details, setDetails] = useState(initial.details);
-  const [selected, setSelected] = useState(initial.selected);
+  const [initialDraft] = useState(loadDraft);
+  const [details, setDetails] = useState(initialDraft.details);
+  const [selected, setSelected] = useState(initialDraft.selected);
   const [errors, setErrors] = useState({});
 
   const [status, setStatus] = useState("");

@@ -4,7 +4,6 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/a-m", "destination": "/" },
-    { "source": "/am/temp", "destination": "/" },
     { "source": "/a-m-checkout", "destination": "/" },
     { "source": "/a-m-thankyou", "destination": "/" }
   ],
