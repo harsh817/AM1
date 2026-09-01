@@ -45,6 +45,11 @@ test("forwards Make payloads only for final payment states", async () => {
   });
 
   assert.equal(completed.state, "COMPLETED");
+  assert.equal(completed.merchantOrderId, "AM_123");
+  assert.equal(completed.phonePeOrderId, "OMO_123");
+  assert.equal(completed.amountPaise, 224200);
+  assert.equal(completed.payableAmountPaise, 224200);
+  assert.equal(completed.currency, "INR");
   assert.equal(pending.state, "PENDING");
   assert.equal(forwardedPayloads.length, 1);
   assert.equal(forwardedPayloads[0].event_name, "checkout.payment_completed");

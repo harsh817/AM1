@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Check, LockKey, WarningCircle } from "@phosphor-icons/react";
+import { initializeAnalytics, trackPaymentCompleted, trackPaymentFailed } from "../lib/analytics.js";
 import { getCheckoutOrderTrackingPayload } from "../lib/checkout-tracking.js";
-import { CHECKOUT_PATH, LANDING_PATH } from "../routes.js";
+import { CHECKOUT_PATH, LANDING_PATH, THANKYOU_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
 export function ThankYouPage({ merchantOrderId = "" }) {
@@ -34,9 +35,23 @@ export function ThankYouPage({ merchantOrderId = "" }) {
         setPaymentResult(data);
 
         if (data.state === "COMPLETED") {
+          initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
+          trackPaymentCompleted({
+            merchantOrderId,
+            amountPaise: getVerifiedStatusAmountPaise(data),
+            currency: data.currency,
+            route: THANKYOU_PATH,
+          });
           localStorage.removeItem("attractivemen-checkout-draft");
           setStatus("Payment received. Your report order is confirmed.");
         } else if (data.state === "FAILED") {
+          initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
+          trackPaymentFailed({
+            merchantOrderId,
+            amountPaise: getVerifiedStatusAmountPaise(data),
+            currency: data.currency,
+            route: THANKYOU_PATH,
+          });
           setStatus("Payment was not completed. You can retry checkout.");
         } else {
           setStatus("Payment is pending. If money was deducted, wait a moment and refresh this page.");
@@ -101,4 +116,8 @@ export function ThankYouPage({ merchantOrderId = "" }) {
       </section>
     </main>
   );
+}
+
+function getVerifiedStatusAmountPaise(data) {
+  return data?.payableAmountPaise ?? data?.amountPaise ?? data?.payableAmount ?? data?.amount ?? "";
 }

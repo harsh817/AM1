@@ -4,6 +4,9 @@ import test from "node:test";
 
 const checkoutSource = readFileSync(new URL("./CheckoutPage.jsx", import.meta.url), "utf8");
 const thankyouSource = readFileSync(new URL("./ThankYouPage.jsx", import.meta.url), "utf8");
+const landingSource = readFileSync(new URL("./LandingPage.jsx", import.meta.url), "utf8");
+const legalSource = readFileSync(new URL("./LegalPage.jsx", import.meta.url), "utf8");
+const mainSource = readFileSync(new URL("../main.jsx", import.meta.url), "utf8");
 const checkoutCss = readFileSync(new URL("../styles/checkout.css", import.meta.url), "utf8");
 const checkoutConfigSource = readFileSync(new URL("../lib/checkout-config.js", import.meta.url), "utf8");
 
@@ -21,7 +24,8 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.doesNotMatch(checkoutSource, /<p className="checkout-step">Secure checkout<\/p>|No Subscription/);
   assert.doesNotMatch(checkoutSource, /A human stylist will review your details and build a personalized style report/);
   assert.doesNotMatch(checkoutSource, /checkout-summary-line|Today's Price \{BASE_PRICE_LABEL\}|BASE_PRICE_LABEL/);
-  assert.match(checkoutSource, /<form className="checkout-card" onSubmit=\{handleSubmit\} noValidate>/);
+  assert.match(checkoutSource, /<form className="checkout-card" onSubmit=\{handleSubmit\} noValidate data-clarity-mask="true">/);
+  assert.match(checkoutSource, /data-clarity-mask="true"/);
   assert.match(checkoutSource, /const \[initialDraft\] = useState\(loadDraft\);/);
   assert.doesNotMatch(checkoutSource, /useMemo\(loadDraft/);
   assert.match(checkoutSource, /<h2 id="contact-title">Where should we send your report\?<\/h2>/);
@@ -46,6 +50,19 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.doesNotMatch(checkoutSource, /className="bump-benefits"/);
 });
 
+test("funnel pages own analytics side effects by route", () => {
+  assert.doesNotMatch(mainSource, /initializeAnalytics|trackLandingView|trackCheckoutView|trackPayment/);
+  assert.match(landingSource, /import \{ useEffect \} from "react";/);
+  assert.match(landingSource, /initializeAnalytics\(\{ route: LANDING_PATH \}\);/);
+  assert.match(landingSource, /trackLandingView\(\{ route: LANDING_PATH \}\);/);
+  assert.match(checkoutSource, /initializeAnalytics\(\{ route: CHECKOUT_PATH \}\);/);
+  assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
+  assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
+  assert.match(thankyouSource, /initializeAnalytics\(\{ trackPageView: false, route: THANKYOU_PATH \}\);/);
+  assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
+  assert.match(thankyouSource, /trackPaymentFailed\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
+});
+
 test("checkout add-ons use the approved shared config", () => {
   assert.match(checkoutConfigSource, /id: "style-consultation",[\s\S]*title: "Personal Style Consultation",[\s\S]*price: 499,/);
   assert.match(checkoutConfigSource, /id: "instagram-makeover",[\s\S]*title: "Instagram Profile Analysis \+ Makeover",[\s\S]*price: 299,/);
@@ -61,6 +78,14 @@ test("thank-you page uses the same status and next-step treatment", () => {
   assert.match(thankyouSource, /className="thankyou-legal"/);
   assert.match(thankyouSource, /href="\/privacy"/);
   assert.match(thankyouSource, /href="\/terms"/);
+});
+
+test("privacy page explicitly discloses analytics and ad attribution", () => {
+  assert.match(legalSource, /Meta Pixel/);
+  assert.match(legalSource, /Microsoft Clarity/);
+  assert.match(legalSource, /cookies and local storage/);
+  assert.match(legalSource, /ad attribution/);
+  assert.match(legalSource, /session recordings/);
 });
 
 test("checkout stylesheet follows the approved Ink Luxury tokens", () => {

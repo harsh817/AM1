@@ -7,6 +7,7 @@ import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
 const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
 const STATUS_ROUTE = "/api/phonepe/status";
 const STATUS_OPERATION = "phonepe.payment.status";
+const PAYMENT_CURRENCY = "INR";
 
 export class InvalidMerchantOrderIdError extends Error {
   constructor() {
@@ -71,7 +72,7 @@ export async function checkPaymentOrderStatus({
     }));
   }
 
-  return status;
+  return buildClientStatusResponse(status, normalizedOrderId);
 }
 
 export function normalizeMerchantOrderId(value) {
@@ -85,4 +86,20 @@ export function isValidMerchantOrderId(value) {
 export function isFinalPaymentState(value) {
   const state = String(value ?? "").trim().toUpperCase();
   return state === "COMPLETED" || state === "FAILED";
+}
+
+function buildClientStatusResponse(status = {}, merchantOrderId = "") {
+  return {
+    ...status,
+    merchantOrderId: status.merchantOrderId || merchantOrderId,
+    phonePeOrderId: status.phonePeOrderId || status.orderId || "",
+    amountPaise: normalizeAmountPaise(status.amountPaise ?? status.amount),
+    payableAmountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.payableAmount ?? status.amount),
+    currency: status.currency || PAYMENT_CURRENCY,
+  };
+}
+
+function normalizeAmountPaise(value) {
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount >= 0 ? Math.round(amount) : "";
 }

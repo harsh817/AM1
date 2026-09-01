@@ -43,6 +43,13 @@ const pageContent = {
         ],
       },
       {
+        title: "Analytics, Cookies, And Ads",
+        body: [
+          "We may use Meta Pixel and Microsoft Clarity to understand page visits, checkout behavior, ad attribution, and website performance.",
+          "These tools may use cookies and local storage, collect device and browser information, and create session recordings or heatmaps. We do not intentionally send raw payment credentials to these analytics tools.",
+        ],
+      },
+      {
         title: "Sharing Of Information",
         body: [
           "We do not sell your personal information. We may share limited information with service providers who help us operate the website, process payments, deliver reports, manage customer support, or meet legal requirements.",

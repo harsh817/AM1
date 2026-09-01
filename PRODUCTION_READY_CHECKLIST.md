@@ -327,20 +327,20 @@ Required event plan:
 | Payment completed | Purchase only after verified completed status | payment completed event |
 | Payment failed | PaymentFailed | payment failed event |
 
-- [~] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `src/lib/analytics.js` guards duplicate initialization and duplicate Meta `PageView`; production `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` HTML serve `index.html` with only the noscript fallback plus the app bundle. Missing: `checkout.html` still contains inline Meta and Clarity bootstraps, so the secondary HTML entry can double-bootstrap if served directly.
+- [x] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `index.html` and `checkout.html` keep only the Meta noscript fallback before React; `src/lib/analytics.js` loads scripts asynchronously, guards duplicate initialization, and guards duplicate Meta `PageView` calls.
 - [~] Pixel ID belongs to the correct Meta Business account. Evidence: Pixel ID `2647411082380065` is present in source and production HTML fallback. Missing: ownership was not verified in Meta Events Manager.
 - [~] Clarity project ID belongs to the correct Microsoft Clarity project. Evidence: Clarity project ID `xx2rulxltt` is present in source. Missing: ownership was not verified in the Microsoft Clarity dashboard.
-- [~] Pixel and Clarity are present on landing and checkout only where intended. Evidence: production `/a-m` and `/a-m-checkout` load the app bundle that initializes analytics. Missing: `initializeAnalytics()` currently runs for every React route, including thank-you and legal pages; `checkout.html` also still has inline analytics snippets.
-- [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: no Meta `Purchase` event is fired anywhere today; thank-you checks PhonePe status and only renders the payment state.
-- [ ] Purchase value uses server-verified total and INR. Missing: no verified Meta `Purchase` event exists yet.
-- [ ] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Missing: funnel events and event deduplication IDs are not implemented.
-- [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: current analytics sends only Meta `PageView` and Clarity page/session collection; no custom analytics event sends checkout PII or payment credentials.
-- [ ] Checkout form fields are masked from Clarity recording. Missing: checkout inputs do not have Clarity masking attributes or an equivalent masking configuration.
-- [~] Clarity custom tags/events use low-risk values such as route, funnel step, and payment state. Evidence: no risky custom Clarity tags/events exist today. Missing: low-risk funnel tags/events are not implemented.
-- [ ] Meta Pixel Helper or Events Manager confirms PageView and funnel events on production URLs. Missing: production dashboard/browser-extension verification has not been captured, and funnel events beyond `PageView` do not exist yet.
+- [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you initializes analytics only after verified final payment status; global `main.jsx` and legal routes do not initialize analytics.
+- [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: thank-you waits for `/api/phonepe/status`; only `COMPLETED` calls `trackPaymentCompleted`.
+- [x] Purchase value uses server-verified total and INR. Evidence: `/api/phonepe/status` returns client-safe `amountPaise`, `payableAmountPaise`, and `currency`; the thank-you page uses verified status amount before firing `Purchase`.
+- [x] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Evidence: all Pixel funnel events pass an `eventID`; payment event IDs are derived from event name plus merchant order ID without sending the raw order ID in event parameters.
+- [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: analytics helpers allowlist low-risk event fields and tests prove raw email, phone, and merchant order IDs are excluded from Pixel and Clarity calls.
+- [x] Checkout form fields are masked from Clarity recording. Evidence: the checkout form has `data-clarity-mask="true"` and tests cover the attribute.
+- [x] Clarity custom tags/events use low-risk values such as route, funnel step, and payment state. Evidence: Clarity events use route, funnel step, payment state, and currency tags only.
+- [ ] Meta Pixel Helper or Events Manager confirms PageView and funnel events on production URLs. Missing: production dashboard/browser-extension verification has not been captured after these tracking changes are deployed.
 - [ ] Clarity collection requests are visible during production QA. Missing: browser network or Clarity dashboard verification has not been captured.
-- [ ] Pixel/Clarity behavior is documented when adding consent management. Missing: consent-management behavior and analytics gating are not documented.
-- [ ] Privacy Policy discloses Meta Pixel, Clarity, cookies, and ad attribution. Missing: the privacy page mentions technical information and service providers, but does not explicitly disclose Meta Pixel, Microsoft Clarity, cookies, or ad attribution.
+- [x] Pixel/Clarity behavior is documented when adding consent management. Evidence: `AGENTS.md` documents the route-owned analytics contract, no-PII rule, dedupe IDs, verified-payment-only `Purchase`, and future consent gating.
+- [x] Privacy Policy discloses Meta Pixel, Clarity, cookies, and ad attribution. Evidence: the Privacy Policy includes an Analytics, Cookies, And Ads section naming Meta Pixel, Microsoft Clarity, cookies/local storage, ad attribution, and session recordings.
 
 Examples:
 

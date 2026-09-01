@@ -8,7 +8,9 @@ import {
   rememberCheckoutOrderTracking,
   rememberCheckoutVisit,
 } from "../lib/checkout-tracking.js";
+import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
 import { normalizeIndianMobile } from "../lib/phone.js";
+import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
 const DRAFT_KEY = "attractivemen-checkout-draft";
@@ -73,6 +75,11 @@ export function CheckoutPage() {
 
   useEffect(() => {
     rememberCheckoutVisit();
+  }, []);
+
+  useEffect(() => {
+    initializeAnalytics({ route: CHECKOUT_PATH });
+    trackCheckoutView({ route: CHECKOUT_PATH });
   }, []);
 
   useEffect(() => {
@@ -177,6 +184,12 @@ export function CheckoutPage() {
       if (!data.redirectUrl) throw new Error("Payment gateway did not return a checkout URL.");
 
       rememberCheckoutOrderTracking(data.merchantOrderId, tracking);
+      trackPaymentStarted({
+        merchantOrderId: data.merchantOrderId,
+        amountPaise: data.amountPaise,
+        currency: data.currency,
+        route: CHECKOUT_PATH,
+      });
       window.location.assign(data.redirectUrl);
     } catch (error) {
       setIsPaying(false);
@@ -201,7 +214,7 @@ export function CheckoutPage() {
           </section>
         ) : null}
 
-        <form className="checkout-card" onSubmit={handleSubmit} noValidate>
+        <form className="checkout-card" onSubmit={handleSubmit} noValidate data-clarity-mask="true">
           <section className="checkout-block" aria-labelledby="contact-title">
             <div className="checkout-block-heading">
               <h2 id="contact-title">Where should we send your report?</h2>

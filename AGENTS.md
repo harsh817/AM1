@@ -438,6 +438,13 @@ const webhookUrl = "https://hook.eu2.make.com/private-value";
 - Normalize browser-provided tracking before forwarding it.
 - Duplicate UTM values into top-level sheet-friendly columns.
 - Do not collect more PII than checkout operations require.
+- Load Meta Pixel and Microsoft Clarity from route-owned React effects, not inline HTML snippets or the global app entry.
+- Pixel funnel events must use deduplication IDs. Payment event IDs must be derived from event name and merchant order ID without sending the raw merchant order ID as an event parameter.
+- Do not send raw name, email, phone, address, UPI, card, or payment credential fields to Pixel or Clarity custom events.
+- Fire Meta `Purchase` only after a verified `COMPLETED` PhonePe status response and use the verified amount in paise converted to INR rupees.
+- Keep Clarity tags low-risk: route, funnel step, payment state, and currency.
+- Mask checkout contact fields from Clarity recording.
+- If consent management is added later, analytics initialization and funnel events must be gated by the accepted consent category before scripts load.
 - Add idempotency keys for repeated status checks and webhooks.
 - Add tests when adding or changing payload fields.
 
