@@ -4,6 +4,9 @@ import test from "node:test";
 import createOrderHandler from "./create-order.js";
 import statusHandler from "./status.js";
 import webhookHandler from "./webhook.js";
+import { clearPhonePeAccessTokenCache } from "../_lib/phonepe.js";
+
+const TEST_TOKEN_LIFETIME_SECONDS = 3600;
 
 test("PhonePe routes reject unsupported methods", async () => {
   for (const handler of [createOrderHandler, statusHandler, webhookHandler]) {
@@ -48,6 +51,62 @@ test("create-order returns 400 for malformed JSON", async () => {
   assert.deepEqual(res.json(), { message: "Invalid checkout payload." });
 });
 
+test("create-order sanitizes unknown provider errors", async () => {
+  const restore = withEnv({
+    PHONEPE_ENV: "sandbox",
+    PHONEPE_CLIENT_ID: "client-id",
+    PHONEPE_CLIENT_VERSION: "1",
+    PHONEPE_CLIENT_SECRET: "client-secret",
+    BASE_URL: "https://thriveonp.com",
+    MAKE_WEBHOOK_URL: "",
+  });
+  const originalFetch = globalThis.fetch;
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  let authReturned = false;
+  clearPhonePeAccessTokenCache();
+
+  globalThis.fetch = async (_url, _options) => {
+    if (!authReturned) {
+      authReturned = true;
+      return jsonResponse({
+        access_token: "access-token",
+        token_type: "O-Bearer",
+        expires_at: Math.floor(Date.now() / 1000) + TEST_TOKEN_LIFETIME_SECONDS,
+      });
+    }
+
+    return jsonResponse({ message: "raw provider failure should stay internal" }, { status: 502 });
+  };
+  console.log = () => {};
+  console.error = () => {};
+
+  try {
+    const res = createJsonResponse();
+    await createOrderHandler(createRequest({
+      method: "POST",
+      body: {
+        details: {
+          name: "Harsh Goel",
+          email: "harsh@example.com",
+          phone: "9876543210",
+        },
+        selected: [],
+      },
+    }), res);
+
+    assert.equal(res.statusCode, 502);
+    assert.deepEqual(res.json(), { message: "Payment could not be started. Please try again." });
+    assert.doesNotMatch(res.body, /raw provider failure|harsh@example\.com|9876543210/);
+  } finally {
+    console.log = originalConsoleLog;
+    console.error = originalConsoleError;
+    globalThis.fetch = originalFetch;
+    clearPhonePeAccessTokenCache();
+    restore();
+  }
+});
+
 test("status returns 400 for invalid JSON and invalid merchant order ids", async () => {
   const invalidJsonResponse = createJsonResponse();
   await statusHandler(createRequest({ method: "POST", body: "{" }), invalidJsonResponse);
@@ -65,37 +124,94 @@ test("status returns 400 for invalid JSON and invalid merchant order ids", async
   assert.deepEqual(invalidIdResponse.json(), { message: "Invalid order id." });
 });
 
-test("webhook returns 401 for invalid auth and 400 for invalid JSON", async () => {
-  const invalidAuthResponse = createJsonResponse();
-  await webhookHandler(createRequest({
-    method: "POST",
-    headers: { authorization: "bad" },
-    body: "{}",
-  }), invalidAuthResponse);
+test("status sanitizes unknown provider errors", async () => {
+  const restore = withEnv({
+    PHONEPE_ENV: "sandbox",
+    PHONEPE_CLIENT_ID: "client-id",
+    PHONEPE_CLIENT_VERSION: "1",
+    PHONEPE_CLIENT_SECRET: "client-secret",
+    MAKE_WEBHOOK_URL: "",
+  });
+  const originalFetch = globalThis.fetch;
+  const originalConsoleError = console.error;
+  let authReturned = false;
+  clearPhonePeAccessTokenCache();
 
-  assert.equal(invalidAuthResponse.statusCode, 401);
-  assert.deepEqual(invalidAuthResponse.json(), { message: "Webhook verification failed." });
+  globalThis.fetch = async (_url, _options) => {
+    if (!authReturned) {
+      authReturned = true;
+      return jsonResponse({
+        access_token: "access-token",
+        token_type: "O-Bearer",
+        expires_at: Math.floor(Date.now() / 1000) + TEST_TOKEN_LIFETIME_SECONDS,
+      });
+    }
 
-  const originalUsername = process.env.PHONEPE_WEBHOOK_USERNAME;
-  const originalPassword = process.env.PHONEPE_WEBHOOK_PASSWORD;
-  process.env.PHONEPE_WEBHOOK_USERNAME = "user";
-  process.env.PHONEPE_WEBHOOK_PASSWORD = "pass";
+    return jsonResponse({ message: "raw status failure should stay internal" }, { status: 503 });
+  };
+  console.error = () => {};
 
   try {
-    const invalidPayloadResponse = createJsonResponse();
+    const res = createJsonResponse();
+    await statusHandler(createRequest({
+      method: "GET",
+      url: "/api/phonepe/status?merchantOrderId=AM_TEST_ORDER",
+    }), res);
+
+    assert.equal(res.statusCode, 502);
+    assert.deepEqual(res.json(), {
+      message: "Payment status could not be checked. Please refresh or contact support.",
+    });
+    assert.doesNotMatch(res.body, /raw status failure/);
+  } finally {
+    console.error = originalConsoleError;
+    globalThis.fetch = originalFetch;
+    clearPhonePeAccessTokenCache();
+    restore();
+  }
+});
+
+test("webhook returns 401 for invalid auth and 400 for invalid JSON", async () => {
+  const originalConsoleWarn = console.warn;
+  const originalConsoleError = console.error;
+  console.warn = () => {};
+  console.error = () => {};
+
+  const invalidAuthResponse = createJsonResponse();
+  try {
     await webhookHandler(createRequest({
       method: "POST",
-      headers: {
-        authorization: crypto.createHash("sha256").update("user:pass").digest("hex"),
-      },
-      body: "{",
-    }), invalidPayloadResponse);
+      headers: { authorization: "bad" },
+      body: "{}",
+    }), invalidAuthResponse);
 
-    assert.equal(invalidPayloadResponse.statusCode, 400);
-    assert.deepEqual(invalidPayloadResponse.json(), { message: "Invalid webhook payload." });
+    assert.equal(invalidAuthResponse.statusCode, 401);
+    assert.deepEqual(invalidAuthResponse.json(), { message: "Webhook verification failed." });
+
+    const originalUsername = process.env.PHONEPE_WEBHOOK_USERNAME;
+    const originalPassword = process.env.PHONEPE_WEBHOOK_PASSWORD;
+    process.env.PHONEPE_WEBHOOK_USERNAME = "user";
+    process.env.PHONEPE_WEBHOOK_PASSWORD = "pass";
+
+    try {
+      const invalidPayloadResponse = createJsonResponse();
+      await webhookHandler(createRequest({
+        method: "POST",
+        headers: {
+          authorization: crypto.createHash("sha256").update("user:pass").digest("hex"),
+        },
+        body: "{",
+      }), invalidPayloadResponse);
+
+      assert.equal(invalidPayloadResponse.statusCode, 400);
+      assert.deepEqual(invalidPayloadResponse.json(), { message: "Invalid webhook payload." });
+    } finally {
+      restoreEnv("PHONEPE_WEBHOOK_USERNAME", originalUsername);
+      restoreEnv("PHONEPE_WEBHOOK_PASSWORD", originalPassword);
+    }
   } finally {
-    restoreEnv("PHONEPE_WEBHOOK_USERNAME", originalUsername);
-    restoreEnv("PHONEPE_WEBHOOK_PASSWORD", originalPassword);
+    console.warn = originalConsoleWarn;
+    console.error = originalConsoleError;
   }
 });
 
@@ -130,6 +246,29 @@ function createJsonResponse() {
     json() {
       return JSON.parse(this.body);
     },
+  };
+}
+
+function jsonResponse(body, { status = 200 } = {}) {
+  return new Response(JSON.stringify(body), { status });
+}
+
+function withEnv(values) {
+  const original = {};
+
+  for (const [name, value] of Object.entries(values)) {
+    original[name] = process.env[name];
+    if (value === undefined) {
+      delete process.env[name];
+    } else {
+      process.env[name] = value;
+    }
+  }
+
+  return () => {
+    for (const [name, value] of Object.entries(original)) {
+      restoreEnv(name, value);
+    }
   };
 }
 

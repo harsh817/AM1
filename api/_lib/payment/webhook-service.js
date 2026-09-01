@@ -2,7 +2,11 @@ import crypto from "node:crypto";
 import { getEnv } from "../env.js";
 import { getHeader } from "../http.js";
 import { forwardMakeWebhookPayload } from "../make.js";
+import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPhonePeWebhookPayload } from "../phonepe-webhook-payload.js";
+
+const WEBHOOK_ROUTE = "/api/phonepe/webhook";
+const WEBHOOK_OPERATION = "phonepe.webhook";
 
 export class PhonePeWebhookVerificationError extends Error {
   constructor() {
@@ -41,13 +45,43 @@ export async function handlePhonePeWebhook({
   rawBody = "",
   credentials,
   forwardWebhook = forwardMakeWebhookPayload,
+  logger = logPaymentEvent,
 } = {}) {
   if (!verifyPhonePeWebhookRequest(req, credentials)) {
+    logger("phonepe.webhook_failed", {
+      level: "warn",
+      operation: WEBHOOK_OPERATION,
+      route: WEBHOOK_ROUTE,
+      errorType: "PhonePeWebhookVerificationError",
+    });
     throw new PhonePeWebhookVerificationError();
   }
 
-  const payload = parseWebhookPayload(rawBody);
-  await forwardWebhook(buildPhonePeWebhookPayload({ payload, req }));
+  let makePayload;
+  try {
+    const payload = parseWebhookPayload(rawBody);
+    makePayload = buildPhonePeWebhookPayload({ payload, req });
+    await forwardWebhook(makePayload);
+  } catch (error) {
+    logger("phonepe.webhook_failed", {
+      level: "error",
+      operation: WEBHOOK_OPERATION,
+      route: WEBHOOK_ROUTE,
+      merchantOrderId: makePayload?.merchant_order_id,
+      phonePeOrderId: makePayload?.phonepe_order_id,
+      paymentState: makePayload?.payment_state,
+      errorType: getPaymentErrorType(error),
+    });
+    throw error;
+  }
+
+  logger("phonepe.webhook_accepted", {
+    operation: WEBHOOK_OPERATION,
+    route: WEBHOOK_ROUTE,
+    merchantOrderId: makePayload.merchant_order_id,
+    phonePeOrderId: makePayload.phonepe_order_id,
+    paymentState: makePayload.payment_state,
+  });
 
   return { received: true };
 }

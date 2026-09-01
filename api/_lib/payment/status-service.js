@@ -1,9 +1,12 @@
 import { forwardMakeWebhookPayload } from "../make.js";
+import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPaymentStatusPayload } from "../payment-status-webhook.js";
 import { getPhonePeOrderStatus } from "../phonepe.js";
 import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
 
 const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
+const STATUS_ROUTE = "/api/phonepe/status";
+const STATUS_OPERATION = "phonepe.payment.status";
 
 export class InvalidMerchantOrderIdError extends Error {
   constructor() {
@@ -30,11 +33,35 @@ export async function checkPaymentOrderStatus({
   tracking = {},
   getStatus = getPhonePeOrderStatus,
   forwardWebhook = forwardMakeWebhookPayload,
+  logger = logPaymentEvent,
 } = {}) {
   const normalizedOrderId = normalizeMerchantOrderId(merchantOrderId);
   if (!isValidMerchantOrderId(normalizedOrderId)) throw new InvalidMerchantOrderIdError();
 
-  const status = await getStatus(normalizedOrderId);
+  let status;
+  try {
+    status = await getStatus(normalizedOrderId);
+  } catch (error) {
+    logger("phonepe.status_check_failed", {
+      level: "error",
+      operation: STATUS_OPERATION,
+      route: STATUS_ROUTE,
+      merchantOrderId: normalizedOrderId,
+      paymentState: "UNKNOWN",
+      responseStatus: error?.responseStatus,
+      errorType: getPaymentErrorType(error),
+    });
+    throw error;
+  }
+
+  logger("phonepe.status_check_succeeded", {
+    operation: STATUS_OPERATION,
+    route: STATUS_ROUTE,
+    merchantOrderId: normalizedOrderId,
+    phonePeOrderId: status.orderId,
+    paymentState: status.state,
+  });
+
   if (isFinalPaymentState(status.state)) {
     await forwardWebhook(buildPaymentStatusPayload({
       merchantOrderId: normalizedOrderId,

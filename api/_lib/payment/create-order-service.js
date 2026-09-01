@@ -9,9 +9,12 @@ import {
 import { getEnv } from "../env.js";
 import { buildCheckoutLeadPayload } from "../lead-webhook.js";
 import { forwardMakeWebhookPayload } from "../make.js";
+import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { createPhonePePayment } from "../phonepe.js";
 
 const PRODUCT_NAME = "AttractiveMen Personalized Style Report";
+const CREATE_ORDER_ROUTE = "/api/phonepe/create-order";
+const CREATE_PAYMENT_OPERATION = "phonepe.payment.create";
 
 export class CheckoutValidationError extends Error {
   constructor(errors) {
@@ -40,6 +43,7 @@ export async function createCheckoutPaymentOrder({
   createOrderId = createMerchantOrderId,
   createPayment = createPhonePePayment,
   forwardWebhook = forwardMakeWebhookPayload,
+  logger = logPaymentEvent,
 } = {}) {
   const errors = getCheckoutValidationErrors(payload);
   if (Object.keys(errors).length) throw new CheckoutValidationError(errors);
@@ -53,12 +57,41 @@ export async function createCheckoutPaymentOrder({
   const redirectUrl = buildRedirectUrl(baseUrl, merchantOrderId);
   const metaInfo = buildPhonePeMetaInfo({ details, phoneNumber, totals });
 
-  const payment = await createPayment({
+  logger("phonepe.payment_create_started", {
+    operation: CREATE_PAYMENT_OPERATION,
+    route: CREATE_ORDER_ROUTE,
     merchantOrderId,
-    amountPaise: totals.amountPaise,
-    redirectUrl,
-    phoneNumber,
-    metaInfo,
+    paymentState: "INITIATED",
+  });
+
+  let payment;
+  try {
+    payment = await createPayment({
+      merchantOrderId,
+      amountPaise: totals.amountPaise,
+      redirectUrl,
+      phoneNumber,
+      metaInfo,
+    });
+  } catch (error) {
+    logger("phonepe.payment_create_failed", {
+      level: "error",
+      operation: CREATE_PAYMENT_OPERATION,
+      route: CREATE_ORDER_ROUTE,
+      merchantOrderId,
+      paymentState: "FAILED",
+      responseStatus: error?.responseStatus,
+      errorType: getPaymentErrorType(error),
+    });
+    throw error;
+  }
+
+  logger("phonepe.payment_create_succeeded", {
+    operation: CREATE_PAYMENT_OPERATION,
+    route: CREATE_ORDER_ROUTE,
+    merchantOrderId,
+    phonePeOrderId: payment.orderId,
+    paymentState: payment.state,
   });
 
   await forwardWebhook(buildCheckoutLeadPayload({

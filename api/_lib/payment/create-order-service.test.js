@@ -9,6 +9,7 @@ import {
 test("creates a checkout payment order from trusted server totals", async () => {
   const forwardedPayloads = [];
   const createdPayments = [];
+  const paymentLogs = [];
 
   const result = await createCheckoutPaymentOrder({
     payload: {
@@ -40,6 +41,9 @@ test("creates a checkout payment order from trusted server totals", async () => 
       forwardedPayloads.push(payload);
       return { sent: true };
     },
+    logger: (eventName, fields) => {
+      paymentLogs.push({ eventName, fields });
+    },
   });
 
   assert.deepEqual(result, {
@@ -68,6 +72,57 @@ test("creates a checkout payment order from trusted server totals", async () => 
   assert.equal(forwardedPayloads[0].event_name, "checkout.payment_initiated");
   assert.equal(forwardedPayloads[0].merchant_order_id, "AM_TEST_ORDER");
   assert.equal(forwardedPayloads[0].amount_paise, "294764");
+  assert.deepEqual(paymentLogs.map((log) => log.eventName), [
+    "phonepe.payment_create_started",
+    "phonepe.payment_create_succeeded",
+  ]);
+  assert.equal(paymentLogs[0].fields.merchantOrderId, "AM_TEST_ORDER");
+  assert.equal(paymentLogs[1].fields.phonePeOrderId, "OMO_TEST_ORDER");
+  assert.doesNotMatch(JSON.stringify(paymentLogs), /Harsh Goel|harsh@example\.com|9876543210/);
+});
+
+test("logs payment creation failures without leaking checkout details", async () => {
+  const paymentLogs = [];
+  const providerError = new Error("raw provider failure with harsh@example.com");
+  providerError.code = "PHONEPE_PAYMENT_CREATE_FAILED";
+  providerError.responseStatus = 502;
+
+  await assert.rejects(
+    createCheckoutPaymentOrder({
+      payload: {
+        details: {
+          name: "Harsh Goel",
+          email: "harsh@example.com",
+          phone: "+91 98765 43210",
+        },
+        selected: [],
+      },
+      baseUrl: "https://thriveonp.com",
+      createOrderId: () => "AM_FAILED_ORDER",
+      createPayment: async () => {
+        throw providerError;
+      },
+      forwardWebhook: async () => {
+        throw new Error("webhook should not be called");
+      },
+      logger: (eventName, fields) => {
+        paymentLogs.push({ eventName, fields });
+      },
+    }),
+    (error) => {
+      assert.equal(error, providerError);
+      return true;
+    },
+  );
+
+  assert.deepEqual(paymentLogs.map((log) => log.eventName), [
+    "phonepe.payment_create_started",
+    "phonepe.payment_create_failed",
+  ]);
+  assert.equal(paymentLogs[1].fields.merchantOrderId, "AM_FAILED_ORDER");
+  assert.equal(paymentLogs[1].fields.errorType, "PHONEPE_PAYMENT_CREATE_FAILED");
+  assert.equal(paymentLogs[1].fields.responseStatus, 502);
+  assert.doesNotMatch(JSON.stringify(paymentLogs), /Harsh Goel|harsh@example\.com|9876543210|raw provider/);
 });
 
 test("rejects invalid checkout details before provider calls", async () => {

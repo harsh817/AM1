@@ -9,6 +9,7 @@ import {
 
 test("forwards Make payloads only for final payment states", async () => {
   const forwardedPayloads = [];
+  const paymentLogs = [];
 
   const completed = await checkPaymentOrderStatus({
     merchantOrderId: " AM_123 ",
@@ -21,6 +22,9 @@ test("forwards Make payloads only for final payment states", async () => {
     forwardWebhook: async (payload) => {
       forwardedPayloads.push(payload);
       return { sent: true };
+    },
+    logger: (eventName, fields) => {
+      paymentLogs.push({ eventName, fields });
     },
   });
 
@@ -35,6 +39,9 @@ test("forwards Make payloads only for final payment states", async () => {
       forwardedPayloads.push(payload);
       return { sent: true };
     },
+    logger: (eventName, fields) => {
+      paymentLogs.push({ eventName, fields });
+    },
   });
 
   assert.equal(completed.state, "COMPLETED");
@@ -44,6 +51,45 @@ test("forwards Make payloads only for final payment states", async () => {
   assert.equal(forwardedPayloads[0].merchant_order_id, "AM_123");
   assert.equal(isFinalPaymentState("FAILED"), true);
   assert.equal(isFinalPaymentState("PENDING"), false);
+  assert.deepEqual(paymentLogs.map((log) => log.eventName), [
+    "phonepe.status_check_succeeded",
+    "phonepe.status_check_succeeded",
+  ]);
+  assert.equal(paymentLogs[0].fields.merchantOrderId, "AM_123");
+  assert.equal(paymentLogs[0].fields.phonePeOrderId, "OMO_123");
+  assert.equal(paymentLogs[1].fields.paymentState, "PENDING");
+});
+
+test("logs status failures before rethrowing provider errors", async () => {
+  const paymentLogs = [];
+  const providerError = new Error("raw status failure");
+  providerError.code = "PHONEPE_STATUS_CHECK_FAILED";
+  providerError.responseStatus = 503;
+
+  await assert.rejects(
+    checkPaymentOrderStatus({
+      merchantOrderId: "AM_FAILED_STATUS",
+      getStatus: async () => {
+        throw providerError;
+      },
+      forwardWebhook: async () => {
+        throw new Error("webhook should not be called");
+      },
+      logger: (eventName, fields) => {
+        paymentLogs.push({ eventName, fields });
+      },
+    }),
+    (error) => {
+      assert.equal(error, providerError);
+      return true;
+    },
+  );
+
+  assert.deepEqual(paymentLogs.map((log) => log.eventName), ["phonepe.status_check_failed"]);
+  assert.equal(paymentLogs[0].fields.merchantOrderId, "AM_FAILED_STATUS");
+  assert.equal(paymentLogs[0].fields.errorType, "PHONEPE_STATUS_CHECK_FAILED");
+  assert.equal(paymentLogs[0].fields.responseStatus, 503);
+  assert.doesNotMatch(JSON.stringify(paymentLogs), /raw status failure/);
 });
 
 test("rejects invalid merchant order ids before provider calls", async () => {

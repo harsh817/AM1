@@ -42,7 +42,7 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 80/80 tests.
+- [x] Local test suite passes. Evidence: `npm test` passed, 84/84 tests.
 - [x] Production build passes. Evidence: `npm run build` passed.
 - [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment `am1-7fprvxoda` is Ready for commit `3a70009`; current local fixes need a new production deployment.
 - [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
@@ -228,18 +228,18 @@ Examples:
 
 ## PhonePe Payment Integration
 
-- [~] PhonePe environment is intentionally set to production only for live launch. Evidence: endpoint selection is controlled by `PHONEPE_ENV`; missing: current production Vercel value was not verified in this audit.
-- [~] Production and sandbox credentials are never mixed. Evidence: credentials are read only from env and no credentials are committed; missing: no runtime guard proves production credentials are paired only with `PHONEPE_ENV=production`.
+- [~] PhonePe environment is intentionally set to production only for live launch. Evidence: endpoint selection now fails closed unless `PHONEPE_ENV` is `sandbox` or `production`; missing: current production Vercel value was not verified in this audit.
+- [~] Production and sandbox credentials are never mixed. Evidence: credentials are read only from env, no credentials are committed, invalid environments fail closed, and the access-token cache is scoped by environment and client id; missing: PhonePe/Vercel dashboard evidence that production credential values are paired only with `PHONEPE_ENV=production`.
 - [x] Access token request uses server-side credentials only. Evidence: token exchange lives in `api/_lib/phonepe.js` and reads `PHONEPE_CLIENT_ID`, `PHONEPE_CLIENT_VERSION`, and `PHONEPE_CLIENT_SECRET` through server env helpers.
 - [x] PhonePe payment request uses a server-generated merchant order ID. Evidence: `createCheckoutPaymentOrder` defaults to `createMerchantOrderId()` before calling PhonePe; browser payload does not provide the order id.
-- [~] Redirect URL uses the production base URL. Evidence: redirect URL is built from `BASE_URL`, with `.env.example` set to `https://thriveonp.com`; missing: current production Vercel `BASE_URL` value was not verified in this audit.
+- [~] Redirect URL uses the production base URL. Evidence: when `PHONEPE_ENV=production`, source now requires `BASE_URL` to be exactly `https://thriveonp.com` and validates the PhonePe redirect origin; missing: current production Vercel `BASE_URL` value was not verified in this audit.
 - [x] Payment amount is sent in paise and matches server total. Evidence: `calculateCheckoutTotals` returns `amountPaise`, and `createCheckoutPaymentOrder` sends that exact value to PhonePe.
 - [x] Payment expiry is intentional and documented. Evidence: `PHONEPE_ORDER_EXPIRY_SECONDS` is a named constant set to `20 * 60` and used as PhonePe `expireAfter`.
 - [x] PhonePe response is validated before redirecting user. Evidence: PhonePe payment creation rejects non-OK responses and responses without `redirectUrl`; checkout also refuses to redirect without a returned `redirectUrl`.
 - [x] PhonePe status API is used for return-page reconciliation. Evidence: `/a-m-thankyou?merchantOrderId=...` and checkout return handling call `/api/phonepe/status`, which delegates to `getPhonePeOrderStatus`.
-- [~] PhonePe provider errors are sanitized before returning to browser. Evidence: malformed JSON, validation, webhook verification, and unknown webhook failures use controlled messages; missing: create-order/status `502` responses can still pass through provider `error.message` text.
-- [ ] External PhonePe calls have timeouts. Missing: PhonePe auth, pay, and status fetches do not use `AbortController` or any explicit timeout; only Make webhook calls currently have a timeout.
-- [ ] Logs include order IDs and state, not secrets or full PII. Missing: there is no structured payment logging around PhonePe auth/pay/status/webhook flows, so order IDs and state are not available in logs for diagnosis.
+- [x] PhonePe provider errors are sanitized before returning to browser. Evidence: create-order and status `502` responses now return controlled generic messages, while malformed JSON, validation, webhook verification, and unknown webhook failures still use controlled messages.
+- [x] External PhonePe calls have timeouts. Evidence: PhonePe auth, payment creation, and status calls use the shared `fetchPhonePe` helper with `PHONEPE_REQUEST_TIMEOUT_MS = 10000` and `AbortController`.
+- [x] Logs include order IDs and state, not secrets or full PII. Evidence: payment create, status, and webhook flows now emit structured JSON logs through a whitelist-only logger; tests verify PII, secrets, raw request bodies, and provider messages are excluded.
 
 ## Webhooks And Reconciliation
 
@@ -394,7 +394,7 @@ Examples:
 - [ ] Production build bundle output is reviewed for unexpected growth.
 - [ ] Vercel cache headers are intentional for static assets and HTML.
 - [ ] API routes are not cached by browser/CDN when returning payment state.
-- [ ] PhonePe and Make calls have timeout and failure behavior tests.
+- [x] PhonePe and Make calls have timeout and failure behavior tests. Evidence: tests cover PhonePe abort signals, timeout errors, provider failure sanitization, and Make webhook failure behavior with abort signals.
 
 ## SEO And Sharing
 
@@ -501,7 +501,7 @@ Based on the current project shape, prioritize these before scaling paid traffic
 - [ ] Add a durable order ledger instead of relying only on Make/Sheets for order state.
 - [ ] Add idempotency keys for payment lifecycle events.
 - [ ] Prevent duplicate payment initiation from rapid double-submit.
-- [ ] Add explicit timeouts to PhonePe API calls.
+- [x] Add explicit timeouts to PhonePe API calls.
 - [ ] Add production smoke tests for public routes and checkout API health.
 - [ ] Add a support/admin process to look up orders by email, phone, and merchant order ID.
 - [x] Add an analytics helper for Meta Pixel and Clarity instead of inline event calls.

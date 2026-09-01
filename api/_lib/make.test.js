@@ -16,6 +16,7 @@ test("sends direct payloads to the shared Make webhook URL", async () => {
 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "https://make.example/tracking");
+  assert.ok(calls[0].options.signal instanceof AbortSignal);
   assert.deepEqual(JSON.parse(calls[0].options.body), {
     event_name: "checkout.payment_initiated",
     sheet_name: "payment_initiated",
@@ -35,12 +36,31 @@ test("sends wrapped event payloads to the shared Make webhook URL", async () => 
 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "https://make.example/tracking");
+  assert.ok(calls[0].options.signal instanceof AbortSignal);
   const body = JSON.parse(calls[0].options.body);
   assert.equal(body.event, "phonepe.webhook");
   assert.equal(body.payload.merchantOrderId, "AM_123");
 });
 
-async function withMockedFetch(callback) {
+test("Make webhook forwarding fails closed on network errors", async () => {
+  const calls = await withMockedFetch(async () => {
+    process.env.MAKE_WEBHOOK_URL = "https://make.example/tracking";
+
+    const result = await forwardMakeWebhookPayload({
+      event_name: "checkout.payment_failed",
+      sheet_name: "payment_failed",
+    });
+
+    assert.deepEqual(result, { sent: false });
+  }, async () => {
+    throw new Error("network failure");
+  });
+
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0].options.signal instanceof AbortSignal);
+});
+
+async function withMockedFetch(callback, fetchImpl = async () => new Response("", { status: 202 })) {
   const originalFetch = globalThis.fetch;
   const originalLeadUrl = process.env.MAKE_WEBHOOK_URL;
   const calls = [];
@@ -49,7 +69,7 @@ async function withMockedFetch(callback) {
 
   globalThis.fetch = async (url, options) => {
     calls.push({ url, options });
-    return new Response("", { status: 202 });
+    return fetchImpl(url, options);
   };
 
   try {

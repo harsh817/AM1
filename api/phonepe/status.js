@@ -37,8 +37,6 @@ export default async function handler(req, res) {
       return sendJson(res, 400, { message: error.message });
     }
 
-    return sendJson(res, 502, {
-      message: error instanceof Error ? error.message : "Payment status could not be checked.",
-    });
+    return sendJson(res, 502, { message: "Payment status could not be checked. Please refresh or contact support." });
   }
 }

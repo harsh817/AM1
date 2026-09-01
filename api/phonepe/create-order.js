@@ -31,8 +31,6 @@ export default async function handler(req, res) {
       return sendJson(res, 400, { message: error.message, errors: error.errors });
     }
 
-    return sendJson(res, 502, {
-      message: error instanceof Error ? error.message : "Payment could not be started.",
-    });
+    return sendJson(res, 502, { message: "Payment could not be started. Please try again." });
   }
 }
