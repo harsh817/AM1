@@ -351,60 +351,60 @@ Examples:
 
 ## Security
 
-- [ ] API routes reject unsupported methods with method-not-allowed responses.
-- [ ] API routes enforce request body limits.
-- [ ] API routes validate body/query before provider calls.
-- [ ] API routes return JSON through shared helpers.
-- [ ] Public responses do not expose stack traces, secrets, or raw provider internals.
-- [ ] Environment variables are read through shared environment helpers.
-- [ ] Secrets are only stored in Vercel environment variables and local env files.
-- [ ] Production dependency audit has no unresolved moderate or high-risk issue.
-- [ ] Security headers are configured for production pages.
-- [ ] Checkout and payment routes are rate limited or protected from basic abuse before high-volume traffic.
-- [ ] CSP allows required scripts only: app bundle, PhonePe, Meta/Clarity if used.
-- [ ] Third-party scripts do not run on checkout unless needed.
-- [ ] Checkout inputs have server-side validation even if browser validation passes.
-- [ ] Webhook verification uses timing-safe comparison.
-- [ ] Webhook endpoints do not expose detailed failure information to attackers.
-- [ ] API routes do not log full request bodies containing PII.
-- [ ] Sensitive pages and APIs are reviewed for cache behavior.
-- [ ] Dependency versions are pinned or lockfile-controlled.
+- [x] API routes reject unsupported methods with method-not-allowed responses. Evidence: PhonePe route handlers return 405 through the shared JSON helper; route tests cover create-order, status, and webhook.
+- [x] API routes enforce request body limits. Evidence: `readBody` enforces `DEFAULT_MAX_BODY_BYTES`; body-limit tests cover create-order, status, and webhook 413 responses.
+- [x] API routes validate body/query before provider calls. Evidence: create-order validates checkout details and bump IDs, status validates merchant order IDs, and webhook verifies authorization before business processing.
+- [x] API routes return JSON through shared helpers. Evidence: public API handlers use `sendJson` for success and error responses.
+- [x] Public responses do not expose stack traces, secrets, or raw provider internals. Evidence: route tests cover sanitized create-order/status provider failures and generic webhook failure responses.
+- [x] Environment variables are read through shared environment helpers. Evidence: production source references `process.env` only inside `api/_lib/env.js`; env consumers use `getEnv` or `requireEnv`.
+- [~] Secrets are only stored in Vercel environment variables and local env files. Evidence: `.env`, `.env.*`, and `.npmrc` are gitignored and no secret file is tracked beyond `.env.example`; missing: current Vercel production secret storage/values were not re-verified in this run.
+- [x] Production dependency audit has no unresolved moderate or high-risk issue. Evidence: `npm audit --omit=dev --audit-level=moderate` returned `found 0 vulnerabilities`.
+- [~] Security headers are configured for production pages. Evidence: `vercel.json` sets CSP and `frame-ancestors 'none'`; missing: explicit `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and HSTS headers are not configured.
+- [ ] Checkout and payment routes are rate limited or protected from basic abuse before high-volume traffic. Missing: no rate limiter, 429 response, CAPTCHA/Turnstile, or equivalent abuse protection was found in `api`, `src`, or `vercel.json`.
+- [~] CSP allows required scripts only: app bundle, PhonePe, Meta/Clarity if used. Evidence: CSP source list is limited around app, PhonePe, Meta, and Clarity domains; missing: `script-src` still includes `'unsafe-inline'` and `'unsafe-eval'`, so the policy is not strict enough for a complete mark.
+- [x] Third-party scripts do not run on checkout unless needed. Evidence: checkout intentionally initializes route-owned Meta/Clarity funnel tracking; tests verify HTML entries do not inline duplicate analytics bootstraps.
+- [x] Checkout inputs have server-side validation even if browser validation passes. Evidence: `getCheckoutValidationErrors` runs inside server-side payment creation before PhonePe calls.
+- [x] Webhook verification uses timing-safe comparison. Evidence: PhonePe webhook verification compares SHA authorization using `crypto.timingSafeEqual`.
+- [x] Webhook endpoints do not expose detailed failure information to attackers. Evidence: invalid auth/payload return generic 401/400 responses and unexpected webhook failures return a generic 502 response.
+- [x] API routes do not log full request bodies containing PII. Evidence: payment logging allowlists safe order/status fields only, and source scan found no API console logging of request bodies.
+- [ ] Sensitive pages and APIs are reviewed for cache behavior. Missing: no explicit `Cache-Control` or `no-store` policy was found for payment APIs, thank-you/status responses, or production HTML routes.
+- [x] Dependency versions are pinned or lockfile-controlled. Evidence: `package-lock.json` is tracked and the dependency audit ran against the locked install.
 
 ## Privacy And Legal
 
-- [ ] Privacy Policy describes what customer data is collected and why.
-- [ ] Terms describe product delivery, refund policy, revisions, limitations, and support channel.
-- [ ] Payment, delivery, and refund language matches the actual process.
-- [ ] Customer photos and assessment data handling is described.
-- [ ] Data retention and deletion process exists.
-- [ ] Marketing pixels and analytics are disclosed where required.
-- [ ] GST/tax display is accurate.
-- [ ] Business contact details are correct.
-- [ ] PCI scope is reviewed with the payment provider/acquirer when card payments are enabled.
+- [x] Privacy Policy describes what customer data is collected and why. Evidence: privacy copy lists contact details, order/payment status, body details, styling preferences, uploaded photos, assessment inputs, device/page/timestamp data, and the reasons for using them.
+- [x] Terms describe product delivery, refund policy, revisions, limitations, and support channel. Evidence: terms copy covers 48-hour delivery after complete assessment, refunds/cancellations after work begins, review/support handling, personal-use limits, outcome limitations, and support email/hours.
+- [~] Payment, delivery, and refund language matches the actual process. Evidence: checkout and terms match the 48-hour delivery promise, PhonePe payment flow, INR 1,999 + GST base offer, and non-refundable-after-analysis policy; missing: terms should explicitly mention current add-ons and the one revision within 3 days that appears in the FAQ.
+- [x] Customer photos and assessment data handling is described. Evidence: privacy copy explains that photos, body-related details, measurements, and preferences are used for style analysis, report preparation, quality checks, and order support.
+- [~] Data retention and deletion process exists. Evidence: privacy copy allows access/correction/deletion requests and explains legal/tax/dispute retention reasons; missing: no concrete retention period, deletion SLA, or internal deletion SOP is documented.
+- [~] Marketing pixels and analytics are disclosed where required. Evidence: React privacy content discloses Meta Pixel, Microsoft Clarity, cookies/local storage, ad attribution, analytics, and session recording; missing: the static `public/privacy/index.html` page does not include the analytics/pixel disclosure and may be the production-served `/privacy` page.
+- [x] GST/tax display is accurate. Evidence: `GST_RATE` is `0.18`, checkout displays `GST (18%)`, add-ons show `+ GST`, and sales/terms copy states INR 1,999 plus GST.
+- [~] Business contact details are correct. Evidence: legal pages list `DYN PRODUCTIVITY SEMPRE PRIVATE LIMITED`, Noida address, support email, and support hours; missing: correctness was not verified against company records or GST/legal registration documents in this run.
+- [ ] PCI scope is reviewed with the payment provider/acquirer when card payments are enabled. Missing: no PCI scope note, PhonePe/acquirer responsibility confirmation, or card-payment compliance record is documented in the repo.
 
 ## Performance
 
-- [ ] Landing page LCP image is optimized and not oversized.
-- [ ] Below-the-fold images use lazy loading.
-- [ ] Images have stable dimensions to avoid layout shift.
-- [ ] CSS bundle is reviewed for unused large sections before launch.
-- [ ] Third-party scripts are async/deferred where possible.
-- [ ] Checkout page loads quickly on mobile data.
-- [ ] Font loading does not block critical content.
-- [ ] Production build bundle output is reviewed for unexpected growth.
-- [ ] Vercel cache headers are intentional for static assets and HTML.
-- [ ] API routes are not cached by browser/CDN when returning payment state.
+- [x] Landing page LCP image is optimized and not oversized. Evidence: hero image uses Cloudinary `f_auto,q_auto,c_limit,w_900`, `loading="eager"`, `fetchPriority="high"`, `decoding="async"`, and explicit `900x900` dimensions.
+- [x] Below-the-fold images use lazy loading. Evidence: source tests verify only one eager image and below-fold landing images use `loading="lazy"`.
+- [x] Images have stable dimensions to avoid layout shift. Evidence: landing image tests verify every production `<img>` has `width`, `height`, and async decoding; section CSS also uses stable ratios/wrappers.
+- [~] CSS bundle is reviewed for unused large sections before launch. Evidence: CSS is split into route-owned chunks and the build CSS passes the gzip budget; missing: no selector-level unused CSS audit or Lighthouse coverage report has been completed.
+- [x] Third-party scripts are async/deferred where possible. Evidence: HTML entries contain only the app module script before React; Meta Pixel and Clarity are inserted after route initialization with `script.async = true`.
+- [x] Checkout page loads quickly on mobile data. Evidence: checkout now lazy-loads as its own route chunk, does not eagerly import landing sections or `landing.css`, has no large product imagery, and the build stays under bundle budget.
+- [x] Font loading does not block critical content. Evidence: generated Inter `@font-face` rules use `font-display: swap`, so text can render before webfont files finish loading.
+- [x] Production build bundle output is reviewed for unexpected growth. Evidence: `npm run build` passed; `npm run check:bundle` reported JS gzip `60.65 kB / 100.00 kB` and CSS gzip `12.88 kB / 25.00 kB`.
+- [x] Vercel cache headers are intentional for static assets and HTML. Evidence: `vercel.json` sets app/legal routes to `Cache-Control: no-store, max-age=0` and hashed `/assets/(.*)` to `public, max-age=31536000, immutable`.
+- [x] API routes are not cached by browser/CDN when returning payment state. Evidence: the shared `sendJson` helper now adds `Cache-Control: no-store, max-age=0`, `Pragma: no-cache`, and `Expires: 0`; tests cover the headers.
 - [x] PhonePe and Make calls have timeout and failure behavior tests. Evidence: tests cover PhonePe abort signals, timeout errors, provider failure sanitization, and Make webhook failure behavior with abort signals.
 
 ## SEO And Sharing
 
-- [ ] Title and meta description are correct.
-- [ ] Canonical URL is set for the production landing route.
-- [ ] Open Graph title, description, and image are configured.
-- [ ] Favicon and theme color are correct.
-- [ ] Robots behavior is intentional.
-- [ ] Legal pages are not accidentally blocked if they need to be public.
-- [ ] Broken links are checked before launch.
+- [x] Title and meta description are correct. Evidence: `index.html` defines the landing title `AttractiveMen | Your Personalized Style Report` and a landing meta description; `checkout.html` defines checkout-specific title and description.
+- [ ] Canonical URL is set for the production landing route. Missing: no `<link rel="canonical" href="https://thriveonp.com/a-m">` is present in `index.html` or the built HTML.
+- [ ] Open Graph title, description, and image are configured. Missing: no `og:title`, `og:description`, `og:image`, Twitter card tags, or share image asset are configured.
+- [~] Favicon and theme color are correct. Evidence: `index.html` and `checkout.html` set `theme-color` to `#f8f9f7`; missing: no favicon, app icon, or manifest asset/link exists in `public/` or the HTML entries.
+- [ ] Robots behavior is intentional. Missing: no `robots.txt`, sitemap, or explicit robots policy is present; the current behavior is default indexability by omission.
+- [x] Legal pages are not accidentally blocked if they need to be public. Evidence: `public/privacy/index.html` and `public/terms/index.html` exist, no robots rule blocks them, and local production preview returned `200` for `/privacy` and `/terms`.
+- [~] Broken links are checked before launch. Evidence: local production preview returned `200` for `/`, `/a-m`, `/a-m-checkout`, `/a-m-thankyou`, `/privacy`, and `/terms`; missing: full production crawl and external/share-preview validation after deployment.
 
 ## Accessibility
 
@@ -420,20 +420,20 @@ Examples:
 
 ## Deployment And DNS
 
-- [ ] Vercel project is linked to the intended GitHub repo and branch.
-- [ ] Vercel route config matches public URLs.
-- [ ] Root DNS record points to Vercel when root domain should serve Vercel.
-- [ ] www CNAME points to Vercel DNS.
-- [ ] Vercel domain status is verified after DNS changes.
-- [ ] SSL certificate is active.
-- [ ] Production env vars are configured in Vercel, not only locally.
-- [ ] Preview deployment is checked before production promotion when possible.
-- [ ] Rollback deployment URL is known.
-- [ ] Build output, dependencies, Vercel local config, and env files are not committed.
-- [ ] GitHub branch connected to Vercel is confirmed before release.
-- [ ] Production aliases point to the intended Vercel project.
-- [ ] Base URL matches the public production domain used in PhonePe redirects.
-- [ ] Domain change is checked with DNS and HTTP headers, not only browser view.
+- [x] Vercel project is linked to the intended GitHub repo and branch. Evidence: local `.vercel/project.json` links this workspace to Vercel project `am1`, local branch is `main`, git remote `am1` points to `https://github.com/harsh817/AM1.git`, and owner confirmed the Vercel/GitHub connection.
+- [x] Vercel route config matches public URLs. Evidence: `vercel.json` rewrites `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` to the app entry, excludes `/am/temp`, and local/live route checks returned `200`.
+- [x] Root DNS record points to Vercel when root domain should serve Vercel. Evidence: `Resolve-DnsName thriveonp.com -Type A` returns `76.76.21.21`.
+- [x] www CNAME points to Vercel DNS. Evidence: `Resolve-DnsName www.thriveonp.com -Type CNAME` returns `cname.vercel-dns.com`.
+- [x] Vercel domain status is verified after DNS changes. Evidence: Vercel project-domain API lists `thriveonp.com` and `www.thriveonp.com` under project `am1` with `verified: true`; `vercel inspect https://thriveonp.com` and `https://www.thriveonp.com` resolve to the Ready `am1` production deployment; live HTTPS returns `Server: Vercel`.
+- [x] SSL certificate is active. Evidence: `https://thriveonp.com/a-m`, `/a-m-checkout`, `/a-m-thankyou`, and `https://www.thriveonp.com/a-m` return HTTPS `200` with Vercel/HSTS headers.
+- [x] Production env vars are configured in Vercel, not only locally. Evidence: `vercel env ls production` for `harsh817s-projects/am1` shows encrypted production entries for `MAKE_WEBHOOK_URL`, `BASE_URL`, `PHONEPE_ENV`, `PHONEPE_CLIENT_VERSION`, `PHONEPE_CLIENT_SECRET`, and `PHONEPE_CLIENT_ID`.
+- [ ] Preview deployment is checked before production promotion when possible. Missing: no validated preview deployment URL or preview-before-promote evidence is documented for the latest release.
+- [x] Rollback deployment URL is known. Evidence: `vercel ls` lists previous Ready production deployments for `am1`, including `https://am1-9thgu7y0y-harsh817s-projects.vercel.app`; `vercel ls pg-thriveonp` also lists previous Ready production deployments for the currently aliased domain project.
+- [x] Build output, dependencies, Vercel local config, and env files are not committed. Evidence: `git ls-files .env .env.* .vercel dist node_modules` returns only `.env.example`; `.gitignore` ignores `.env`, `.env.*`, `.vercel`, `dist/`, and `node_modules/`.
+- [x] GitHub branch connected to Vercel is confirmed before release. Evidence: local branch is `main`, the AM1 remote points to `https://github.com/harsh817/AM1.git`, and owner confirmed the Vercel/GitHub connection before release.
+- [x] Production aliases point to the intended Vercel project. Evidence: `vercel alias set` mapped `thriveonp.com` and `www.thriveonp.com` to `am1-373xs124z-harsh817s-projects.vercel.app`; Vercel project-domain API now lists both domains under project `am1`.
+- [~] Base URL matches the public production domain used in PhonePe redirects. Evidence: `.env.example` and production-mode PhonePe validation use `https://thriveonp.com`, Vercel production has encrypted `BASE_URL`, and the root/`www` aliases now point to `am1`; missing: actual encrypted production `BASE_URL` value was not inspected to avoid exposing secrets.
+- [x] Domain change is checked with DNS and HTTP headers, not only browser view. Evidence: DNS was checked with `Resolve-DnsName`; live routes were checked with `curl -I -L` and returned Vercel HTTPS headers.
 
 ## CI And Quality Automation
 

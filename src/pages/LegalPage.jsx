@@ -1,3 +1,5 @@
+import "../styles/legal.css";
+
 const COMPANY_NAME = "DYN PRODUCTIVITY SEMPRE PRIVATE LIMITED";
 const SUPPORT_EMAIL = "attractivemen08@gmail.com";
 const COMPANY_ADDRESS = [

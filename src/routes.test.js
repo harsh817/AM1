@@ -40,3 +40,21 @@ test("production rewrites expose only current AM1 public routes", () => {
   assert.deepEqual(rewriteSources, ["/a-m", "/a-m-checkout", "/a-m-thankyou"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
+
+test("production cache headers are explicit for app routes and assets", () => {
+  const config = JSON.parse(
+    readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
+  );
+  const headersBySource = new Map(config.headers.map((entry) => [entry.source, entry.headers]));
+
+  for (const source of ["/", "/a-m", "/a-m-checkout", "/a-m-thankyou", "/privacy", "/terms"]) {
+    assertHeader(headersBySource, source, "Cache-Control", "no-store, max-age=0");
+  }
+
+  assertHeader(headersBySource, "/assets/(.*)", "Cache-Control", "public, max-age=31536000, immutable");
+});
+
+function assertHeader(headersBySource, source, key, value) {
+  const header = headersBySource.get(source)?.find((entry) => entry.key === key);
+  assert.equal(header?.value, value);
+}

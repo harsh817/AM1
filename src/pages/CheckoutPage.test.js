@@ -63,6 +63,20 @@ test("funnel pages own analytics side effects by route", () => {
   assert.match(thankyouSource, /trackPaymentFailed\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
 });
 
+test("route entry lazy-loads page modules and keeps landing styles out of checkout", () => {
+  assert.match(mainSource, /import React, \{ Suspense, lazy \} from "react";/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LandingPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/CheckoutPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/ThankYouPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LegalPage\.jsx"\)/);
+  assert.doesNotMatch(mainSource, /from "\.\/pages\/LandingPage\.jsx"|from "\.\/pages\/CheckoutPage\.jsx"|from "\.\/styles\/landing\.css"/);
+  assert.match(landingSource, /import "\.\.\/styles\/landing\.css";/);
+  assert.match(checkoutSource, /import "\.\.\/styles\/checkout\.css";/);
+  assert.match(legalSource, /import "\.\.\/styles\/legal\.css";/);
+  assert.doesNotMatch(checkoutSource, /landing\.css|\.\/landing\//);
+  assert.doesNotMatch(legalSource, /landing\.css|checkout\.css/);
+});
+
 test("checkout add-ons use the approved shared config", () => {
   assert.match(checkoutConfigSource, /id: "style-consultation",[\s\S]*title: "Personal Style Consultation",[\s\S]*price: 499,/);
   assert.match(checkoutConfigSource, /id: "instagram-makeover",[\s\S]*title: "Instagram Profile Analysis \+ Makeover",[\s\S]*price: 299,/);

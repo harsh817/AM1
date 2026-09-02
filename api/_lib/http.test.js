@@ -5,6 +5,7 @@ import {
   BodyTooLargeError,
   readBody,
   readJson,
+  sendJson,
 } from "./http.js";
 
 test("reads JSON request bodies within the configured size limit", async () => {
@@ -30,3 +31,33 @@ test("rejects streamed request bodies once they exceed the configured size limit
     BodyTooLargeError,
   );
 });
+
+test("sends API JSON responses with no-store cache headers", () => {
+  const res = createJsonResponse();
+
+  sendJson(res, 200, { ok: true });
+
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(res.json(), { ok: true });
+  assert.equal(res.headers["Content-Type"], "application/json");
+  assert.equal(res.headers["Cache-Control"], "no-store, max-age=0");
+  assert.equal(res.headers.Pragma, "no-cache");
+  assert.equal(res.headers.Expires, "0");
+});
+
+function createJsonResponse() {
+  return {
+    statusCode: 0,
+    headers: {},
+    body: "",
+    setHeader(name, value) {
+      this.headers[name] = value;
+    },
+    end(body) {
+      this.body = body;
+    },
+    json() {
+      return JSON.parse(this.body);
+    },
+  };
+}

@@ -7,6 +7,7 @@ import { BonusesSection, ComparisonSection, ProcessSection, RecapSection, Report
 import { FAQ, Footer, SocialProof } from "./landing/SocialProofSections.jsx";
 import { StickyBuyBar } from "./landing/StickyBuyBar.jsx";
 import { TrustSection } from "./landing/TrustSection.jsx";
+import "../styles/landing.css";
 
 export function LandingPage() {
   useEffect(() => {

@@ -55,6 +55,9 @@ export async function readBody(req, options = {}) {
 export function sendJson(res, statusCode, payload) {
   res.statusCode = statusCode;
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   res.end(JSON.stringify(payload));
 }
 
