@@ -58,7 +58,8 @@ test("funnel pages own analytics side effects by route", () => {
   assert.match(checkoutSource, /initializeAnalytics\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
-  assert.match(thankyouSource, /initializeAnalytics\(\{ trackPageView: false, route: THANKYOU_PATH \}\);/);
+  assert.match(thankyouSource, /if \(data\.state === "COMPLETED"\) \{[\s\S]*initializeAnalytics\(\{ route: THANKYOU_PATH \}\);/);
+  assert.match(thankyouSource, /else if \(data\.state === "FAILED"\) \{[\s\S]*initializeAnalytics\(\{ trackPageView: false, route: THANKYOU_PATH \}\);/);
   assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
   assert.match(thankyouSource, /trackPaymentFailed\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
 });

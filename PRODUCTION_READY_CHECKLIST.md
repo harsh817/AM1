@@ -1,6 +1,6 @@
 # Production Ready Checklist
 
-Last updated: 2026-09-01
+Last updated: 2026-09-06
 
 Scope: AttractiveMen landing pages, cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
 
@@ -31,10 +31,10 @@ Status legend:
 
 | Field | Value |
 | --- | --- |
-| Release date | 2026-09-01 |
+| Release date | 2026-09-06 |
 | Owner | Pending owner signoff |
-| Git commit | Pending commit for current fixes; previous production commit was 3a70009 |
-| Vercel deployment URL | Current production still needs redeploy after this checklist update; previous AM1 production: https://am1-7fprvxoda-harsh817s-projects.vercel.app |
+| Git commit | Pending current tracking fix push |
+| Vercel deployment URL | Pending Vercel deployment after current push |
 | Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
 | Make scenario tested | Not verified in Make dashboard during this run |
@@ -42,9 +42,9 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 84/84 tests.
-- [x] Production build passes. Evidence: `npm run build` passed.
-- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment `am1-7fprvxoda` is Ready for commit `3a70009`; current local fixes need a new production deployment.
+- [x] Local test suite passes. Evidence: `npm test` passed, 93/93 tests after the verified thank-you PageView tracking change.
+- [x] Production build passes. Evidence: `npm run build` passed after the verified thank-you PageView tracking change.
+- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current verified thank-you PageView tracking fix needs a new Vercel deployment after this push.
 - [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
@@ -55,7 +55,7 @@ Status legend:
 - [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
 - [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
 - [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
-- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML; browser-network or dashboard verification was not completed, and no funnel-specific Pixel events exist beyond PageView.
+- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the verified thank-you PageView rule is covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
 - [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; pending-state evidence and reproducible proof were not captured in this run.
 - [~] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads. Evidence: code/tests cover forwarding and `MAKE_WEBHOOK_URL` exists; actual Make/CRM receipt was not verified in the dashboard.
 - [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are now added and local tests pass; production verification needs redeploy.
@@ -330,8 +330,9 @@ Required event plan:
 - [x] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `index.html` and `checkout.html` keep only the Meta noscript fallback before React; `src/lib/analytics.js` loads scripts asynchronously, guards duplicate initialization, and guards duplicate Meta `PageView` calls.
 - [~] Pixel ID belongs to the correct Meta Business account. Evidence: Pixel ID `2647411082380065` is present in source and production HTML fallback. Missing: ownership was not verified in Meta Events Manager.
 - [~] Clarity project ID belongs to the correct Microsoft Clarity project. Evidence: Clarity project ID `xx2rulxltt` is present in source. Missing: ownership was not verified in the Microsoft Clarity dashboard.
-- [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you initializes analytics only after verified final payment status; global `main.jsx` and legal routes do not initialize analytics.
+- [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you initializes analytics after verified payment status; global `main.jsx` and legal routes do not initialize analytics.
 - [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: thank-you waits for `/api/phonepe/status`; only `COMPLETED` calls `trackPaymentCompleted`.
+- [x] URL-based Meta custom conversion for `/a-m-thankyou` fires only after verified completed payment status. Evidence: completed thank-you status now calls `initializeAnalytics({ route: THANKYOU_PATH })` so Meta receives a verified thank-you `PageView`; failed status keeps `trackPageView: false`; tests cover both branches.
 - [x] Purchase value uses server-verified total and INR. Evidence: `/api/phonepe/status` returns client-safe `amountPaise`, `payableAmountPaise`, and `currency`; the thank-you page uses verified status amount before firing `Purchase`.
 - [x] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Evidence: all Pixel funnel events pass an `eventID`; payment event IDs are derived from event name plus merchant order ID without sending the raw order ID in event parameters.
 - [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: analytics helpers allowlist low-risk event fields and tests prove raw email, phone, and merchant order IDs are excluded from Pixel and Clarity calls.
@@ -437,16 +438,16 @@ Examples:
 
 ## CI And Quality Automation
 
-- [ ] GitHub push triggers Vercel deployment for the intended project.
-- [ ] CI runs the local test suite.
-- [ ] CI runs the production build.
-- [ ] CI fails on dependency install or lockfile mismatch.
-- [ ] Add linting before the project grows further.
-- [ ] Add formatting rules before multiple contributors edit the same CSS/JS files.
-- [ ] Add route smoke tests for public URLs after deploy.
-- [ ] Add checkout API health checks that do not create real payments.
-- [ ] Add coverage reporting for server utilities and shared browser helpers.
-- [ ] Do not bypass hooks or CI checks for production payment changes.
+- [x] GitHub push triggers Vercel deployment for the intended project. Evidence: pushing commit `8cc8883` to `harsh817/AM1.git` `main` created AM1 production deployment `https://am1-beasmcjim-harsh817s-projects.vercel.app`; `thriveonp.com` and `www.thriveonp.com` now resolve to that Ready `am1` deployment.
+- [ ] CI runs the local test suite. Missing: no `.github/workflows` or other CI config runs `npm test`; local `npm test` passed 93/93, but this is not enforced on push.
+- [x] CI runs the production build. Evidence: Vercel Git deployment runs the project production build for pushes to `main`; commit `8cc8883` deployed successfully to Ready AM1 production.
+- [~] CI fails on dependency install or lockfile mismatch. Evidence: `package-lock.json` is tracked and `npm ci --dry-run --ignore-scripts` passes locally; missing: no CI workflow explicitly uses `npm ci` as a required lockfile gate.
+- [ ] Add linting before the project grows further. Missing: no `lint` script, ESLint/Biome config, or lint CI gate exists.
+- [ ] Add formatting rules before multiple contributors edit the same CSS/JS files. Missing: no `format`/`format:check` script, Prettier/Biome config, or formatting CI gate exists.
+- [~] Add route smoke tests for public URLs after deploy. Evidence: manual production checks returned `200` for `https://thriveonp.com/a-m`, `/a-m-checkout`, and `/a-m-thankyou`; missing: no automated post-deploy smoke script or CI/Vercel deployment check exists.
+- [ ] Add checkout API health checks that do not create real payments. Missing: no non-payment health endpoint or deployed health-check script exists for checkout/PhonePe route availability.
+- [ ] Add coverage reporting for server utilities and shared browser helpers. Missing: no coverage dependency, `coverage` script, generated report, or CI coverage threshold exists.
+- [~] Do not bypass hooks or CI checks for production payment changes. Evidence: this run did not use `--no-verify`, and no hooks were bypassed; missing: no git hooks, branch protection evidence, or required CI checks enforce this rule.
 
 Recommended automation examples:
 

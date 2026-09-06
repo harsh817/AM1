@@ -35,7 +35,7 @@ export function ThankYouPage({ merchantOrderId = "" }) {
         setPaymentResult(data);
 
         if (data.state === "COMPLETED") {
-          initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
+          initializeAnalytics({ route: THANKYOU_PATH });
           trackPaymentCompleted({
             merchantOrderId,
             amountPaise: getVerifiedStatusAmountPaise(data),
