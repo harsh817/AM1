@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, LockKey, WarningCircle } from "@phosphor-icons/react";
 import { initializeAnalytics, trackPaymentCompleted, trackPaymentFailed } from "../lib/analytics.js";
 import { getCheckoutOrderTrackingPayload } from "../lib/checkout-tracking.js";
-import { CHECKOUT_PATH, LANDING_PATH, THANKYOU_PATH } from "../routes.js";
+import { CHECKOUT_PATH, THANKYOU_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
 const THANKYOU_STATUS_RETRY_DELAY_MS = 3000;
@@ -112,14 +112,16 @@ export function ThankYouPage({ merchantOrderId = "" }) {
           </ul>
         </div>
 
-        <div className="thankyou-actions">
-          <a className="checkout-pay thankyou-primary" href={isCompleted ? LANDING_PATH : CHECKOUT_PATH}>
-            {isCompleted ? "Back to landing page" : "Retry checkout"}
-          </a>
-          <a className="checkout-save" href={`mailto:attractivemen08@gmail.com?subject=AttractiveMen order ${merchantOrderId}`}>
-            Contact support
-          </a>
-        </div>
+        {isFailed ? (
+          <div className="thankyou-actions">
+            <a className="checkout-pay thankyou-primary" href={CHECKOUT_PATH}>
+              Retry checkout
+            </a>
+            <a className="checkout-save" href={`mailto:attractivemen08@gmail.com?subject=AttractiveMen order ${merchantOrderId}`}>
+              Contact support
+            </a>
+          </div>
+        ) : null}
 
         <nav className="thankyou-legal" aria-label="Legal links">
           <a href="/privacy">Privacy Policy</a>

@@ -93,6 +93,10 @@ test("thank-you page uses the same status and next-step treatment", () => {
   assert.match(thankyouSource, /className="thankyou-legal"/);
   assert.match(thankyouSource, /href="\/privacy"/);
   assert.match(thankyouSource, /href="\/terms"/);
+  assert.match(thankyouSource, /\{isFailed \? \(/);
+  assert.match(thankyouSource, /href=\{CHECKOUT_PATH\}/);
+  assert.match(thankyouSource, /Retry checkout/);
+  assert.doesNotMatch(thankyouSource, /Back to landing page|LANDING_PATH/);
   assert.match(thankyouSource, /const THANKYOU_STATUS_RETRY_DELAY_MS = 3000;/);
   assert.match(thankyouSource, /const THANKYOU_STATUS_MAX_ATTEMPTS = 20;/);
   assert.match(thankyouSource, /retryTimeout = window\.setTimeout\(\(\) => checkStatus\(attempt \+ 1\), THANKYOU_STATUS_RETRY_DELAY_MS\);/);
