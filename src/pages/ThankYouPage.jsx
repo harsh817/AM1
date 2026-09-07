@@ -5,6 +5,9 @@ import { getCheckoutOrderTrackingPayload } from "../lib/checkout-tracking.js";
 import { CHECKOUT_PATH, LANDING_PATH, THANKYOU_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
+const THANKYOU_STATUS_RETRY_DELAY_MS = 3000;
+const THANKYOU_STATUS_MAX_ATTEMPTS = 20;
+
 export function ThankYouPage({ merchantOrderId = "" }) {
   const [status, setStatus] = useState("Checking your payment status...");
   const [paymentResult, setPaymentResult] = useState(null);
@@ -16,53 +19,62 @@ export function ThankYouPage({ merchantOrderId = "" }) {
     }
 
     let cancelled = false;
+    let retryTimeout;
 
-    fetch("/api/phonepe/status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        merchantOrderId,
-        tracking: getCheckoutOrderTrackingPayload(merchantOrderId),
-      }),
-    })
-      .then(async (response) => {
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.message || "Payment status could not be checked.");
-        return data;
+    const checkStatus = (attempt = 1) => {
+      fetch("/api/phonepe/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          merchantOrderId,
+          tracking: getCheckoutOrderTrackingPayload(merchantOrderId),
+        }),
       })
-      .then((data) => {
-        if (cancelled) return;
-        setPaymentResult(data);
+        .then(async (response) => {
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.message || "Payment status could not be checked.");
+          return data;
+        })
+        .then((data) => {
+          if (cancelled) return;
+          setPaymentResult(data);
 
-        if (data.state === "COMPLETED") {
-          initializeAnalytics({ route: THANKYOU_PATH });
-          trackPaymentCompleted({
-            merchantOrderId,
-            amountPaise: getVerifiedStatusAmountPaise(data),
-            currency: data.currency,
-            route: THANKYOU_PATH,
-          });
-          localStorage.removeItem("attractivemen-checkout-draft");
-          setStatus("Payment received. Your report order is confirmed.");
-        } else if (data.state === "FAILED") {
-          initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
-          trackPaymentFailed({
-            merchantOrderId,
-            amountPaise: getVerifiedStatusAmountPaise(data),
-            currency: data.currency,
-            route: THANKYOU_PATH,
-          });
-          setStatus("Payment was not completed. You can retry checkout.");
-        } else {
-          setStatus("Payment is pending. If money was deducted, wait a moment and refresh this page.");
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) setStatus(error.message);
-      });
+          if (data.state === "COMPLETED") {
+            initializeAnalytics({ route: THANKYOU_PATH });
+            trackPaymentCompleted({
+              merchantOrderId,
+              amountPaise: getVerifiedStatusAmountPaise(data),
+              currency: data.currency,
+              route: THANKYOU_PATH,
+            });
+            localStorage.removeItem("attractivemen-checkout-draft");
+            setStatus("Payment received. Your report order is confirmed.");
+          } else if (data.state === "FAILED") {
+            initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
+            trackPaymentFailed({
+              merchantOrderId,
+              amountPaise: getVerifiedStatusAmountPaise(data),
+              currency: data.currency,
+              route: THANKYOU_PATH,
+            });
+            setStatus("Payment was not completed. You can retry checkout.");
+          } else if (attempt < THANKYOU_STATUS_MAX_ATTEMPTS) {
+            setStatus("Payment is pending. Checking again in a moment.");
+            retryTimeout = window.setTimeout(() => checkStatus(attempt + 1), THANKYOU_STATUS_RETRY_DELAY_MS);
+          } else {
+            setStatus("Payment is pending. If money was deducted, wait a moment and refresh this page.");
+          }
+        })
+        .catch((error) => {
+          if (!cancelled) setStatus(error.message);
+        });
+    };
+
+    checkStatus();
 
     return () => {
       cancelled = true;
+      if (retryTimeout) window.clearTimeout(retryTimeout);
     };
   }, [merchantOrderId]);
 

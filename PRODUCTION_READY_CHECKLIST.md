@@ -1,6 +1,6 @@
 # Production Ready Checklist
 
-Last updated: 2026-09-06
+Last updated: 2026-09-07
 
 Scope: AttractiveMen landing pages, cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
 
@@ -31,9 +31,9 @@ Status legend:
 
 | Field | Value |
 | --- | --- |
-| Release date | 2026-09-06 |
+| Release date | 2026-09-07 |
 | Owner | Pending owner signoff |
-| Git commit | Pending current tracking fix push |
+| Git commit | Pending current thank-you status retry push |
 | Vercel deployment URL | Pending Vercel deployment after current push |
 | Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
@@ -42,9 +42,9 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 93/93 tests after the verified thank-you PageView tracking change.
-- [x] Production build passes. Evidence: `npm run build` passed after the verified thank-you PageView tracking change.
-- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current verified thank-you PageView tracking fix needs a new Vercel deployment after this push.
+- [x] Local test suite passes. Evidence: `npm test` passed, 93/93 tests after the verified thank-you PageView and pending-status retry tracking change.
+- [x] Production build passes. Evidence: `npm run build` passed after the verified thank-you PageView and pending-status retry tracking change.
+- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current thank-you status retry tracking fix needs a new Vercel deployment after this push.
 - [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
@@ -55,8 +55,8 @@ Status legend:
 - [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
 - [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
 - [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
-- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the verified thank-you PageView rule is covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
-- [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; pending-state evidence and reproducible proof were not captured in this run.
+- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the verified thank-you PageView plus pending retry rule is covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
+- [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; thank-you now retries pending status before final pending copy; pending-state dashboard evidence and reproducible proof were not captured in this run.
 - [~] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads. Evidence: code/tests cover forwarding and `MAKE_WEBHOOK_URL` exists; actual Make/CRM receipt was not verified in the dashboard.
 - [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are now added and local tests pass; production verification needs redeploy.
 - [x] Mobile checkout has been tested on a real phone or device emulation. Evidence: Playwright MCP using installed Edge channel verified 390x844 mobile checkout and thank-you routes locally.
@@ -198,7 +198,7 @@ Examples:
 - [x] Checkout button has loading and disabled states. Evidence: submit sets `isPaying`, changes button copy to `Opening secure payment...`, sets `aria-busy`, and disables the button.
 - [~] Double-clicking the pay button cannot create accidental duplicate orders. Evidence: the button is disabled after submit and shows a loading state; missing: no synchronous in-handler lock/ref prevents two very fast submit events before React applies the disabled state.
 - [x] Payment failure returns user to a clear retry state. Evidence: failed status sets clear retry copy on checkout and thank-you pages, and thank-you shows a retry checkout CTA.
-- [x] Pending payment state tells the user what to do next. Evidence: pending status tells the user to wait and refresh if money was deducted.
+- [x] Pending payment state tells the user what to do next. Evidence: thank-you retries pending status for up to 20 attempts at 3-second intervals, then tells the user to wait and refresh if money was deducted.
 - [x] Thank-you page confirms the order and explains next steps. Evidence: completed payments show confirmation copy, merchant order ID, and next steps for assessment, stylist review, and 48-hour report delivery.
 - [x] User can recover if they close the PhonePe tab and return with the merchant order ID. Evidence: `/a-m-thankyou?merchantOrderId=...` reads the query value and checks `/api/phonepe/status`; checkout also checks status when a merchant order ID is present.
 - [x] Checkout works after refresh with saved draft data. Evidence: checkout draft loads through lazy `useState(loadDraft)` and persists contact details plus selected add-on ids in localStorage.
@@ -332,7 +332,7 @@ Required event plan:
 - [~] Clarity project ID belongs to the correct Microsoft Clarity project. Evidence: Clarity project ID `xx2rulxltt` is present in source. Missing: ownership was not verified in the Microsoft Clarity dashboard.
 - [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you initializes analytics after verified payment status; global `main.jsx` and legal routes do not initialize analytics.
 - [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: thank-you waits for `/api/phonepe/status`; only `COMPLETED` calls `trackPaymentCompleted`.
-- [x] URL-based Meta custom conversion for `/a-m-thankyou` fires only after verified completed payment status. Evidence: completed thank-you status now calls `initializeAnalytics({ route: THANKYOU_PATH })` so Meta receives a verified thank-you `PageView`; failed status keeps `trackPageView: false`; tests cover both branches.
+- [x] URL-based Meta custom conversion for `/a-m-thankyou` fires only after verified completed payment status. Evidence: completed thank-you status calls `initializeAnalytics({ route: THANKYOU_PATH })` so Meta receives a verified thank-you `PageView`; pending status retries for up to 20 attempts before giving up; failed status keeps `trackPageView: false`; tests cover these rules.
 - [x] Purchase value uses server-verified total and INR. Evidence: `/api/phonepe/status` returns client-safe `amountPaise`, `payableAmountPaise`, and `currency`; the thank-you page uses verified status amount before firing `Purchase`.
 - [x] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Evidence: all Pixel funnel events pass an `eventID`; payment event IDs are derived from event name plus merchant order ID without sending the raw order ID in event parameters.
 - [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: analytics helpers allowlist low-risk event fields and tests prove raw email, phone, and merchant order IDs are excluded from Pixel and Clarity calls.
