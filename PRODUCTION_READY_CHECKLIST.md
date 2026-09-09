@@ -33,9 +33,9 @@ Status legend:
 | --- | --- |
 | Release date | 2026-09-10 |
 | Owner | Pending owner signoff |
-| Git commit | Pending direct thank-you Pixel fallback push |
-| Vercel deployment URL | Pending Vercel deployment after current push |
-| Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou |
+| Git commit | c21574c |
+| Vercel deployment URL | Production alias verified after GitHub push; exact Vercel deployment URL not captured |
+| Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou returned 200 on 2026-09-10 |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
 | Make scenario tested | Not verified in Make dashboard during this run |
 | Rollback deployment | AM1 previous: https://am1-lhd03zro5-harsh817s-projects.vercel.app; wrapper previous: https://pg-thriveonp-go2ksxkt2-harsh817s-projects.vercel.app |
@@ -44,7 +44,7 @@ Status legend:
 
 - [x] Local test suite passes. Evidence: `npm test` passed, 94/94 tests after the direct thank-you Pixel fallback change.
 - [x] Production build passes. Evidence: `npm run build` passed after the direct thank-you Pixel fallback change.
-- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current direct thank-you Pixel fallback needs a new Vercel deployment after this push.
+- [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
 - [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
@@ -55,13 +55,13 @@ Status legend:
 - [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
 - [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
 - [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
-- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the direct thank-you Pixel fallback plus verified Purchase rule are covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
+- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: production `/a-m-thankyou?pixelCheck=1` serves the direct thank-you Pixel fallback and Meta script source; the verified Purchase rule is covered by local tests. Missing: Meta Pixel Helper / Events Manager and Clarity browser-network or dashboard verification still need to be captured.
 - [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; thank-you now retries pending status before final pending copy; pending-state dashboard evidence and reproducible proof were not captured in this run.
 - [~] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads. Evidence: code/tests cover forwarding and `MAKE_WEBHOOK_URL` exists; actual Make/CRM receipt was not verified in the dashboard.
-- [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are now added and local tests pass; production verification needs redeploy.
+- [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are added and local tests pass; production click-through verification was not recaptured in this run.
 - [x] Mobile checkout has been tested on a real phone or device emulation. Evidence: Playwright MCP using installed Edge channel verified 390x844 mobile checkout and thank-you routes locally.
 - [x] Rollback plan is known before launch. Evidence: previous Ready deployments are listed in Release Signoff.
-- [~] Additional API gate: malformed JSON to `POST /api/phonepe/create-order` should return 400. Evidence: fixed locally and covered by tests; production needs redeploy.
+- [~] Additional API gate: malformed JSON to `POST /api/phonepe/create-order` should return 400. Evidence: fixed locally and covered by tests; production API response was not recaptured in this run.
 
 ## Project Structure And File Ownership
 
