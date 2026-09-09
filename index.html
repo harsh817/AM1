@@ -8,6 +8,61 @@
     <title>AttractiveMen | Your Personalized Style Report</title>
   </head>
   <body>
+    <script>
+      (function(windowRef, documentRef) {
+        var normalizedPath = windowRef.location.pathname.replace(/\/+$/, "") || "/";
+        if (normalizedPath !== "/a-m-thankyou") return;
+        if (windowRef.__attractiveMenThankYouPixelLoaded) return;
+
+        windowRef.__attractiveMenThankYouPixelLoaded = true;
+        var pixelId = "2647411082380065";
+        var scriptId = "meta-pixel-sdk";
+        var pixelSrc = "https://connect.facebook.net/en_US/fbevents.js";
+
+        if (!windowRef.fbq) {
+          var fbq = function pixelQueue() {
+            if (fbq.callMethod) {
+              fbq.callMethod.apply(fbq, arguments);
+              return;
+            }
+
+            fbq.queue.push(arguments);
+          };
+
+          if (!windowRef._fbq) windowRef._fbq = fbq;
+          fbq.push = fbq;
+          fbq.loaded = true;
+          fbq.version = "2.0";
+          fbq.queue = [];
+          windowRef.fbq = fbq;
+        }
+
+        if (!documentRef.getElementById(scriptId)) {
+          var script = documentRef.createElement("script");
+          script.id = scriptId;
+          script.async = true;
+          script.src = pixelSrc;
+
+          var firstScript = documentRef.getElementsByTagName("script")[0];
+          if (firstScript && firstScript.parentNode) {
+            firstScript.parentNode.insertBefore(script, firstScript);
+          } else {
+            documentRef.head.appendChild(script);
+          }
+        }
+
+        if (!windowRef.__attractiveMenMetaInitialized) {
+          windowRef.fbq("init", pixelId);
+          windowRef.__attractiveMenMetaInitialized = true;
+        }
+
+        if (!windowRef.__attractiveMenMetaPageViewTracked) {
+          var eventId = "am_pageview_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+          windowRef.fbq("track", "PageView", {}, { eventID: eventId });
+          windowRef.__attractiveMenMetaPageViewTracked = true;
+        }
+      })(window, document);
+    </script>
     <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=2647411082380065&ev=PageView&noscript=1"
       /></noscript>

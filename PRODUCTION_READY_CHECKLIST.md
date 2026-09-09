@@ -1,6 +1,6 @@
 # Production Ready Checklist
 
-Last updated: 2026-09-07
+Last updated: 2026-09-10
 
 Scope: AttractiveMen landing pages, cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
 
@@ -31,9 +31,9 @@ Status legend:
 
 | Field | Value |
 | --- | --- |
-| Release date | 2026-09-07 |
+| Release date | 2026-09-10 |
 | Owner | Pending owner signoff |
-| Git commit | Pending current thank-you status retry push |
+| Git commit | Pending direct thank-you Pixel fallback push |
 | Vercel deployment URL | Pending Vercel deployment after current push |
 | Production URL tested | https://thriveonp.com/a-m, /a-m-checkout, /a-m-thankyou |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
@@ -42,9 +42,9 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 93/93 tests after the verified thank-you PageView and pending-status retry tracking change.
-- [x] Production build passes. Evidence: `npm run build` passed after the verified thank-you PageView and pending-status retry tracking change.
-- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current thank-you status retry tracking fix needs a new Vercel deployment after this push.
+- [x] Local test suite passes. Evidence: `npm test` passed, 94/94 tests after the direct thank-you Pixel fallback change.
+- [x] Production build passes. Evidence: `npm run build` passed after the direct thank-you Pixel fallback change.
+- [~] Production Vercel deployment is Ready. Evidence: previous AM1 production deployment was Ready; current direct thank-you Pixel fallback needs a new Vercel deployment after this push.
 - [x] Public routes return successful responses: /a-m, /a-m-checkout, /a-m-thankyou. Evidence: required production routes returned 200; `/am/temp` was removed from required AM1 routes.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
@@ -55,7 +55,7 @@ Status legend:
 - [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
 - [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
 - [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
-- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the verified thank-you PageView plus pending retry rule is covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
+- [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: scripts and CSP are present on production HTML, and the direct thank-you Pixel fallback plus verified Purchase rule are covered by local tests; browser-network or dashboard verification still needs to be captured after deployment.
 - [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; thank-you now retries pending status before final pending copy; pending-state dashboard evidence and reproducible proof were not captured in this run.
 - [~] Make/CRM receives payment initiated, payment completed, payment failed, and PhonePe webhook payloads. Evidence: code/tests cover forwarding and `MAKE_WEBHOOK_URL` exists; actual Make/CRM receipt was not verified in the dashboard.
 - [~] Legal links work from landing, checkout, and thank-you pages. Evidence: thank-you legal links are now added and local tests pass; production verification needs redeploy.
@@ -151,7 +151,7 @@ Examples:
 
 ## Frontend Optimization
 
-- [x] Critical hero content is visible without waiting on analytics scripts. Evidence: `index.html` no longer bootstraps Meta Pixel or Clarity before the React entry, and analytics initializes from a post-render React effect.
+- [x] Critical hero content is visible without waiting on analytics scripts. Evidence: the HTML Pixel fallback exits immediately unless the path is `/a-m-thankyou`; landing and checkout analytics still initialize from route-owned React effects, and external scripts load asynchronously.
 - [x] Meta Pixel and Clarity scripts load asynchronously and never block React rendering. Evidence: `src/lib/analytics.js` inserts both third-party scripts with async loading after mount and guards duplicate initialization.
 - [x] Above-the-fold images are compressed, dimensioned, and intentionally eager/lazy. Evidence: the hero image uses Cloudinary `f_auto,q_auto,c_limit,w_900`, `loading="eager"`, `fetchPriority="high"`, `decoding="async"`, and explicit width/height.
 - [x] Below-the-fold images use lazy loading. Evidence: landing image source tests verify all production image tags have loading, decoding, width, and height, with only the hero image eager-loaded.
@@ -161,7 +161,7 @@ Examples:
 - [x] CSS uses shared tokens for spacing, width, radius, transitions, and color. Evidence: landing CSS imports shared token chunks and tests verify palette, type, spacing, and motion tokens.
 - [~] No section-level CSS creates layout shift on hover, timer updates, or sticky bar visibility. Evidence: source tests verify stable image ratios and sticky timer width with tabular numbers; missing: no automated browser CLS/layout-shift measurement exists yet.
 - [n/a] Bundle size is reviewed after adding libraries. Evidence: no new dependency was added in this audit.
-- [x] Production build output is checked for unexpected asset or CSS growth. Evidence: `npm run build` passed and `npm run check:bundle` passed with JS 90.17 kB gzip / 100 kB budget and CSS 16.68 kB gzip / 25 kB budget.
+- [x] Production build output is checked for unexpected asset or CSS growth. Evidence: `npm run build` passed and `npm run check:bundle` passed with JS 60.65 kB gzip / 100 kB budget and CSS 12.88 kB gzip / 25 kB budget.
 
 Examples:
 
@@ -327,12 +327,12 @@ Required event plan:
 | Payment completed | Purchase only after verified completed status | payment completed event |
 | Payment failed | PaymentFailed | payment failed event |
 
-- [x] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `index.html` and `checkout.html` keep only the Meta noscript fallback before React; `src/lib/analytics.js` loads scripts asynchronously, guards duplicate initialization, and guards duplicate Meta `PageView` calls.
+- [x] Pixel base setup exists once per HTML entry and fires exactly one page view per page load. Evidence: `index.html` and `checkout.html` include a route-gated direct Meta `PageView` fallback only for `/a-m-thankyou`; `src/lib/analytics.js` loads route-owned analytics, guards duplicate Pixel initialization, and guards duplicate Meta `PageView` calls.
 - [~] Pixel ID belongs to the correct Meta Business account. Evidence: Pixel ID `2647411082380065` is present in source and production HTML fallback. Missing: ownership was not verified in Meta Events Manager.
 - [~] Clarity project ID belongs to the correct Microsoft Clarity project. Evidence: Clarity project ID `xx2rulxltt` is present in source. Missing: ownership was not verified in the Microsoft Clarity dashboard.
-- [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you initializes analytics after verified payment status; global `main.jsx` and legal routes do not initialize analytics.
+- [x] Pixel and Clarity are present only where intended by route. Evidence: landing and checkout own their analytics effects; thank-you has an intentional Meta-only HTML `PageView` fallback for URL custom conversion and initializes full analytics after verified payment status; global `main.jsx` and legal routes do not initialize analytics.
 - [x] Purchase is not fired on simple thank-you page load unless payment status is verified as completed. Evidence: thank-you waits for `/api/phonepe/status`; only `COMPLETED` calls `trackPaymentCompleted`.
-- [x] URL-based Meta custom conversion for `/a-m-thankyou` fires only after verified completed payment status. Evidence: completed thank-you status calls `initializeAnalytics({ route: THANKYOU_PATH })` so Meta receives a verified thank-you `PageView`; pending status retries for up to 20 attempts before giving up; failed status keeps `trackPageView: false`; tests cover these rules.
+- [x] Direct URL-based Meta custom conversion fallback for `/a-m-thankyou` is intentionally enabled. Evidence: `index.html` and `checkout.html` route-gate a direct Meta `PageView` on `/a-m-thankyou` before React so Meta can detect the URL custom conversion; React still fires `Purchase` only after verified `COMPLETED` status. Caveat: this fallback can count anyone who reaches the thank-you URL, including pending or failed redirects.
 - [x] Purchase value uses server-verified total and INR. Evidence: `/api/phonepe/status` returns client-safe `amountPaise`, `payableAmountPaise`, and `currency`; the thank-you page uses verified status amount before firing `Purchase`.
 - [x] Client-side Pixel events and any future server-side Conversions API events use deduplication IDs. Evidence: all Pixel funnel events pass an `eventID`; payment event IDs are derived from event name plus merchant order ID without sending the raw order ID in event parameters.
 - [x] Do not send raw email, phone, address, or payment details to Pixel or Clarity custom events. Evidence: analytics helpers allowlist low-risk event fields and tests prove raw email, phone, and merchant order IDs are excluded from Pixel and Clarity calls.
@@ -363,7 +363,7 @@ Examples:
 - [~] Security headers are configured for production pages. Evidence: `vercel.json` sets CSP and `frame-ancestors 'none'`; missing: explicit `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and HSTS headers are not configured.
 - [ ] Checkout and payment routes are rate limited or protected from basic abuse before high-volume traffic. Missing: no rate limiter, 429 response, CAPTCHA/Turnstile, or equivalent abuse protection was found in `api`, `src`, or `vercel.json`.
 - [~] CSP allows required scripts only: app bundle, PhonePe, Meta/Clarity if used. Evidence: CSP source list is limited around app, PhonePe, Meta, and Clarity domains; missing: `script-src` still includes `'unsafe-inline'` and `'unsafe-eval'`, so the policy is not strict enough for a complete mark.
-- [x] Third-party scripts do not run on checkout unless needed. Evidence: checkout intentionally initializes route-owned Meta/Clarity funnel tracking; tests verify HTML entries do not inline duplicate analytics bootstraps.
+- [x] Third-party scripts do not run on checkout unless needed. Evidence: checkout intentionally initializes route-owned Meta/Clarity funnel tracking; the only HTML-level Pixel fallback is route-gated to `/a-m-thankyou` and does not run on checkout.
 - [x] Checkout inputs have server-side validation even if browser validation passes. Evidence: `getCheckoutValidationErrors` runs inside server-side payment creation before PhonePe calls.
 - [x] Webhook verification uses timing-safe comparison. Evidence: PhonePe webhook verification compares SHA authorization using `crypto.timingSafeEqual`.
 - [x] Webhook endpoints do not expose detailed failure information to attackers. Evidence: invalid auth/payload return generic 401/400 responses and unexpected webhook failures return a generic 502 response.
@@ -505,9 +505,9 @@ Based on the current project shape, prioritize these before scaling paid traffic
 - [x] Add explicit timeouts to PhonePe API calls.
 - [ ] Add production smoke tests for public routes and checkout API health.
 - [ ] Add a support/admin process to look up orders by email, phone, and merchant order ID.
-- [x] Add an analytics helper for Meta Pixel and Clarity instead of inline event calls.
-- [ ] Add Pixel funnel events: checkout view, payment started, verified purchase, payment failed.
-- [ ] Add Clarity masking on checkout form surfaces and low-risk funnel events.
+- [x] Add an analytics helper for Meta Pixel and Clarity instead of inline event calls. Evidence: route-owned analytics helpers handle funnel events; the documented exception is the direct `/a-m-thankyou` Pixel `PageView` fallback for URL custom conversion capture.
+- [x] Add Pixel funnel events: checkout view, payment started, verified purchase, payment failed.
+- [x] Add Clarity masking on checkout form surfaces and low-risk funnel events.
 - [ ] Add schema version and idempotency keys to Make payloads.
 - [x] Split large landing page files into section components and bring checkout page within the line-count target.
 - [ ] Add CI scripts for lint, format check, tests, and production build.

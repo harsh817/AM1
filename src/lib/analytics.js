@@ -286,7 +286,10 @@ function initializeMetaPixel(windowRef, documentRef) {
   }
 
   insertAsyncScript(documentRef, META_PIXEL_SCRIPT_ID, META_PIXEL_SRC);
-  windowRef.fbq("init", META_PIXEL_ID);
+  if (!windowRef.__attractiveMenMetaInitialized) {
+    windowRef.fbq("init", META_PIXEL_ID);
+    windowRef.__attractiveMenMetaInitialized = true;
+  }
 }
 
 function initializeClarity(windowRef, documentRef) {

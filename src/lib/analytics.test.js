@@ -16,6 +16,15 @@ import {
 const indexHtml = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
 const checkoutHtml = readFileSync(new URL("../../checkout.html", import.meta.url), "utf8");
 
+function assertRouteGatedThankYouPixelFallback(html) {
+  assert.match(html, /__attractiveMenThankYouPixelLoaded/);
+  assert.match(html, /normalizedPath !== "\/a-m-thankyou"/);
+  assert.match(html, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
+  assert.match(html, /fbq\("track", "PageView"/);
+  assert.doesNotMatch(html, /www\.clarity\.ms\/tag|clarity\("event"/);
+  assert.match(html, /facebook\.com\/tr\?id=2647411082380065&ev=PageView&noscript=1/);
+}
+
 function createFakeWindow() {
   const scripts = [];
   const scriptsById = new Map();
@@ -55,15 +64,13 @@ test("analytics initialization no-ops without browser document access", () => {
   assert.equal(initializeAnalytics({}), false);
 });
 
-test("main HTML does not bootstrap analytics before the React app entry", () => {
-  assert.doesNotMatch(indexHtml, /fbq\('init'|www\.clarity\.ms\/tag/);
-  assert.match(indexHtml, /facebook\.com\/tr\?id=2647411082380065&ev=PageView&noscript=1/);
+test("main HTML route-gates a direct thank-you Pixel fallback before React", () => {
+  assertRouteGatedThankYouPixelFallback(indexHtml);
   assert.match(indexHtml, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
 });
 
-test("checkout HTML does not duplicate analytics bootstraps before React", () => {
-  assert.doesNotMatch(checkoutHtml, /fbq\('init'|www\.clarity\.ms\/tag/);
-  assert.match(checkoutHtml, /facebook\.com\/tr\?id=2647411082380065&ev=PageView&noscript=1/);
+test("checkout HTML route-gates a direct thank-you Pixel fallback before React", () => {
+  assertRouteGatedThankYouPixelFallback(checkoutHtml);
   assert.match(checkoutHtml, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
 });
 
@@ -106,6 +113,35 @@ test("analytics can initialize without firing a thank-you page view", () => {
 
   const pixelCalls = windowRef.fbq.queue.map((args) => Array.from(args));
   assert.deepEqual(pixelCalls, [["init", META_PIXEL_ID]]);
+});
+
+test("route-owned analytics does not duplicate the direct thank-you Pixel fallback", () => {
+  const windowRef = createFakeWindow();
+  windowRef.fbq = function inlinePixelQueue() {
+    windowRef.fbq.queue.push(arguments);
+  };
+  windowRef.fbq.queue = [];
+  windowRef._fbq = windowRef.fbq;
+  windowRef.__attractiveMenMetaInitialized = true;
+  windowRef.__attractiveMenMetaPageViewTracked = true;
+
+  assert.equal(initializeAnalytics({ windowRef, route: "/a-m-thankyou" }), true);
+
+  const pixelCallsAfterInit = windowRef.fbq.queue.map((args) => Array.from(args));
+  assert.deepEqual(pixelCallsAfterInit, []);
+
+  assert.equal(trackPaymentCompleted({
+    windowRef,
+    merchantOrderId: "AM_123",
+    amountPaise: 330046,
+    currency: "INR",
+    route: "/a-m-thankyou",
+  }), true);
+
+  const pixelCallsAfterPurchase = windowRef.fbq.queue.map((args) => Array.from(args));
+  assert.equal(pixelCallsAfterPurchase.length, 1);
+  assert.deepEqual(pixelCallsAfterPurchase[0].slice(0, 2), ["track", "Purchase"]);
+  assert.equal(pixelCallsAfterPurchase[0][3].eventID, buildPaymentEventId("Purchase", "AM_123"));
 });
 
 test("safe funnel events map to Meta Pixel and Clarity without PII", () => {
