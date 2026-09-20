@@ -71,8 +71,8 @@ Use development-only fixtures: 100 AM visitors, 10 purchasing visitors, 12 compl
 - [x] Convex typecheck and deployment — functions ready on `notable-wolf-488`.
 - [x] `npm audit --omit=dev --audit-level=moderate` — 0 vulnerabilities.
 - [x] `node --test --experimental-test-coverage` — 93.38% line coverage overall.
-- [ ] Production dashboard login and read-only smoke test
-- [ ] Production payment and reconciliation smoke test with marked test records
+- [ ] Production dashboard login and read-only smoke test — blocked until Vercel serves commit `e4a5d26`.
+- [ ] Production payment and reconciliation smoke test with marked test records — blocked until the deployment is live.
 - [ ] Standalone export regenerated when landing source changes
 - [ ] Deployment URL, commit and verification timestamp recorded here
 
@@ -85,6 +85,7 @@ Use development-only fixtures: 100 AM visitors, 10 purchasing visitors, 12 compl
 - CSV export, administrator status-refresh actions, and payment reconciliation imports remain follow-up work in the health module.
 - The connected Convex deployment is currently the existing development deployment; a separate production Convex deployment remains a release prerequisite.
 - A dashboard zero can mean no activity or missing historical tracking; the health view must be checked before drawing conclusions.
+- The current public domain is still serving the previous deployment: `/dashboard` returned Vercel `404 NOT_FOUND` during verification and `/experiment-dashboard` served the older dashboard. Vercel deployment authorization or Git integration needs to be refreshed before production smoke testing.
 
 ## Rollback
 
