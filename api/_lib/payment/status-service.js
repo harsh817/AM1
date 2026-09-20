@@ -65,19 +65,11 @@ export async function checkPaymentOrderStatus({
   });
 
   if (isFinalPaymentState(status.state)) {
-    await forwardWebhook(buildPaymentStatusPayload({
-      merchantOrderId: normalizedOrderId,
-      req,
-      status,
-      tracking,
-    }));
-  }
-
-  try {
+    const paymentPayload = buildPaymentStatusPayload({ merchantOrderId: normalizedOrderId, req, status, tracking });
     await recordConvexOrder({
       merchantOrderId: normalizedOrderId,
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
-      state: isFinalPaymentState(status.state) ? status.state : "PENDING",
+      state: status.state,
       attribution: buildConvexAttribution(tracking),
       failure: status.state === "FAILED" ? {
         type: "payment_failed",
@@ -87,19 +79,26 @@ export async function checkPaymentOrderStatus({
       providerEventId: buildProviderEventId(normalizedOrderId, status),
       occurredAt: Date.now(),
     });
-    if (isFinalPaymentState(status.state)) {
-      await recordConvexPaymentReceipt({
-        merchantOrderId: normalizedOrderId,
-        providerEventId: buildProviderEventId(normalizedOrderId, status),
-        state: status.state,
-        amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
-        errorCode: status.errorCode,
-        errorMessage: status.errorMessage,
-        receivedAt: Date.now(),
-      });
-    }
-  } catch {
-    // Payment status remains authoritative even if reporting is temporarily unavailable.
+    await recordConvexPaymentReceipt({
+      merchantOrderId: normalizedOrderId,
+      providerEventId: buildProviderEventId(normalizedOrderId, status),
+      state: status.state,
+      amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
+      errorCode: status.errorCode,
+      errorMessage: status.errorMessage,
+      receivedAt: Date.now(),
+    });
+    await forwardWebhook(paymentPayload);
+  }
+  if (!isFinalPaymentState(status.state)) {
+    await recordConvexOrder({
+      merchantOrderId: normalizedOrderId,
+      amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
+      state: "PENDING",
+      attribution: buildConvexAttribution(tracking),
+      providerEventId: buildProviderEventId(normalizedOrderId, status),
+      occurredAt: Date.now(),
+    });
   }
 
   return buildClientStatusResponse(status, normalizedOrderId);

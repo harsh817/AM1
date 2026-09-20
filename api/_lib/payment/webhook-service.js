@@ -62,30 +62,26 @@ export async function handlePhonePeWebhook({
   try {
     const payload = parseWebhookPayload(rawBody);
     makePayload = buildPhonePeWebhookPayload({ payload, req });
+    const providerEventId = `${makePayload.merchant_order_id}:${makePayload.phonepe_order_id || "webhook"}:${makePayload.payment_state}`;
+    const failure = makePayload.payment_state === "FAILED" ? { type: "payment_failed", ...(makePayload.error_code ? { code: makePayload.error_code } : {}), ...(makePayload.error_message ? { message: makePayload.error_message } : {}) } : undefined;
+    await recordConvexOrder({
+      merchantOrderId: makePayload.merchant_order_id,
+      amountPaise: Number(makePayload.amount_paise || makePayload.amount || 0),
+      state: normalizeConvexState(makePayload.payment_state),
+      failure,
+      providerEventId,
+      occurredAt: Date.now(),
+    });
+    await recordConvexPaymentReceipt({
+      merchantOrderId: makePayload.merchant_order_id,
+      providerEventId,
+      state: makePayload.payment_state,
+      amountPaise: Number(makePayload.amount_paise || makePayload.amount || 0) || undefined,
+      errorCode: makePayload.error_code || undefined,
+      errorMessage: makePayload.error_message || undefined,
+      receivedAt: Date.now(),
+    });
     await forwardWebhook(makePayload);
-    try {
-      const providerEventId = `${makePayload.merchant_order_id}:${makePayload.phonepe_order_id || "webhook"}:${makePayload.payment_state}`;
-      const failure = makePayload.payment_state === "FAILED" ? { type: "payment_failed", ...(makePayload.error_code ? { code: makePayload.error_code } : {}), ...(makePayload.error_message ? { message: makePayload.error_message } : {}) } : undefined;
-      await recordConvexOrder({
-        merchantOrderId: makePayload.merchant_order_id,
-        amountPaise: Number(makePayload.amount_paise || makePayload.amount || 0),
-        state: normalizeConvexState(makePayload.payment_state),
-        failure,
-        providerEventId,
-        occurredAt: Date.now(),
-      });
-      await recordConvexPaymentReceipt({
-        merchantOrderId: makePayload.merchant_order_id,
-        providerEventId,
-        state: makePayload.payment_state,
-        amountPaise: Number(makePayload.amount_paise || makePayload.amount || 0) || undefined,
-        errorCode: makePayload.error_code || undefined,
-        errorMessage: makePayload.error_message || undefined,
-        receivedAt: Date.now(),
-      });
-    } catch {
-      // Make remains the operational fallback when Convex is unavailable.
-    }
   } catch (error) {
     logger("phonepe.webhook_failed", {
       level: "error",

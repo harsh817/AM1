@@ -1,92 +1,83 @@
 # Sales, Campaigns and Experiment Reporting
 
-Status: implemented; production rollout pending  
-Owner: AttractiveMen operations  
-Timezone: Asia/Kolkata  
+Status: dashboard workspace implemented; payment-reconciliation rollout remains gated
+Owner: AttractiveMen operations
+Timezone: Asia/Kolkata
 Primary route: `/dashboard`
 
 ## Purpose
 
-This feature provides one private place to answer four operating questions: how much traffic arrived, where people dropped, which payments need attention, and which page produces confirmed sales. It uses the existing Convex deployment and Convex Auth administrator account.
+This private Convex workspace answers four operating questions: how much traffic arrived, where visitors dropped, which payments need attention, and which page produces confirmed sales. It keeps `/a-m`, `/AM2`, checkout, and thank-you behavior separate from reporting UI.
 
-The original `/experiment-dashboard` route redirects to `/dashboard/experiments` for compatibility. Advertising spend, ROAS, refunds, and customer messaging are future phases.
+## Delivered in this pass
 
-## Delivered views
+- [x] Light responsive dashboard shell with desktop sidebar and mobile navigation drawer.
+- [x] Independent Overview, Funnels, Orders & Payments, Contacts, Campaigns, Experiments, and Tracking Health screens.
+- [x] Shared IST date, page, traffic, source, and campaign filters.
+- [x] Paginated order and contact results with loading, empty, and end-of-results states.
+- [x] Order detail drawer with customer contact details, attribution, line items, payment timeline, and status.
+- [x] Explicit payment states: initiated, pending, completed, failed, and unknown.
+- [x] Pending-over-24-hour, unmatched-receipt, and unresolved-reporting-failure indicators.
+- [x] Funnel visualization for recorded landing, checkout visit, payment initiation, and confirmed purchase.
+- [x] Explicit Save action for experiment allocation changes and pause/resume controls.
+- [x] Contacts table backed by server-side checkout submission records.
+- [x] Additive Convex tables for contacts, journey events, and reconciliation jobs.
+- [x] Fixed the AM/AM2 purchasing visitor counter so repeat paid orders by one visitor do not count that visitor twice.
+- [x] Fixed checkout tracking length so `randomized` and other entry types are not truncated.
+- [x] Corrected checkout `utm_term` to the displayed page variant when attribution is captured.
 
-- [x] Overview: visitors, checkout visitors, initiated, pending, failed, completed and confirmed revenue.
-- [x] Sales and payments: searchable order records with customer details, amounts, attribution and status history.
-- [x] Pending and failed payments: separate current-state counts, stale pending flags and safe failure context.
-- [x] Campaigns: source, medium, campaign and page comparisons across traffic and sales.
-- [x] Funnel: recorded landing, checkout visit, payment initiation and confirmed purchase.
-- [x] Experiments: AM/AM2 allocation, conversion and experiment controls.
-- [x] Tracking health: unmatched receipts, reporting failures and stale payment checks.
-- [x] Responsive admin navigation, empty states, loading states and mobile layout.
+## Data and metric rules
 
-## Data rules
+- Revenue includes only verified completed payments and counts each paid order once.
+- Pending and failed amounts are potential order value and never enter confirmed revenue.
+- A pending order is not changed to failed only because it is old.
+- Experiment conversion is unique purchasing visitors divided by randomized exposures.
+- Direct, test, and unattributed records remain visible in sales reporting and are excluded from randomized comparisons.
+- Customer contacts are saved after valid checkout submission and are administrator-only.
+- Visitor metrics represent identifiable browsers, not unique people across devices.
+- Dates use Asia/Kolkata boundaries; zero denominators display as an empty result in the UI rather than a misleading percentage.
 
-- Dates are displayed and filtered in Asia/Kolkata.
-- Confirmed revenue includes only verified completed payments and each paid order is counted once.
-- Pending and failed amounts are potential order value; they never enter confirmed revenue.
-- Pending orders are not converted to failed orders because of age.
-- Experiment conversion is unique purchasing visitors divided by recorded randomized exposures.
-- Direct, test and unattributed records remain visible in sales reporting and are excluded from randomized comparisons.
-- Attribution is captured at payment initiation and cannot be replaced by a later browser request.
-- Customer contact fields are administrator-only and are excluded from analytics and logs.
+## Payment and reporting states
 
-## Payment states
-
-The dashboard keeps these cases separate:
-
-1. `INITIATED`: an order was created before the payment provider completed the request.
+1. `INITIATED`: the order was created before a final provider response.
 2. `PENDING`: the provider has not reached a final state.
-3. `COMPLETED`: verified payment received; this is the only state included in revenue.
+3. `COMPLETED`: verified payment received; only this state enters revenue.
 4. `FAILED`: the provider confirmed payment failure.
-5. `UNKNOWN`: provider or network uncertainty that requires reconciliation.
+5. `UNKNOWN`: provider or network uncertainty requiring reconciliation.
 
-Checkout creation errors, provider uncertainty, payment failures and reporting delivery failures have separate labels and must not be combined.
+Checkout creation errors, provider uncertainty, payment failures, and reporting delivery failures remain distinct fields. A thank-you page visit is never treated as proof of payment.
 
-## End-to-end checks
+## Remaining release gates
 
-- [ ] Sign in, sign out, password recovery configuration and unauthorized access.
-- [ ] Fresh AM/AM2 assignment, returning assignment, direct AM2 access, paused experiment and storage fallback.
-- [ ] UTM source, medium, campaign, content, term, ID, gclid, gbraid, wbraid and fbclid preservation.
-- [ ] Landing and checkout deduplication across refreshes and separate tabs.
-- [ ] Order attribution remains unchanged after thank-you navigation.
-- [ ] Initiated, pending, failed, completed, duplicate and out-of-order payment events.
-- [ ] Successful payment without a thank-you return is still attributed from the verified webhook.
-- [ ] Unmatched receipts, delayed order records, Convex outage, Make outage and retry recovery.
-- [ ] Search, status tabs, page filters, campaign filters, funnel counts, empty results and mobile layout.
-- [ ] CSV export escaping and administrator-only customer data access.
+- [ ] Replace bounded aggregate reads with rebuildable production aggregates for datasets beyond the current Convex query limit.
+- [ ] Add durable journey-event ingestion for checkout submit, thank-you visit, and CTA diagnostics.
+- [ ] Make verified payment receipt persistence happen before webhook acknowledgement and expose retryable failures.
+- [ ] Complete unmatched-receipt reconciliation, scheduled status checks, and administrator retry actions.
+- [ ] Add filtered CSV export with formula escaping and optional contact inclusion.
+- [ ] Add server-issued enrollment attribution and durable per-tab attribution validation.
+- [ ] Complete production Convex environment separation and migration rehearsal.
+- [ ] Run marked sandbox payment tests for initiated, pending, failed, completed, duplicate, delayed, and out-of-order events.
 
 ## Deterministic test dataset
 
-Use development-only fixtures: 100 AM visitors, 10 purchasing visitors, 12 completed orders and ₹12,000 revenue must produce 10% conversion, ₹1,000 average order value and ₹120 revenue per visitor. Add 8 pending and 5 failed orders; the completed revenue must remain unchanged. Two completed orders by one visitor count as two orders and one purchasing visitor.
+In development only, 100 AM visitors, 10 purchasing visitors, 12 completed orders, and INR 12,000 revenue must produce 10% conversion, INR 1,000 average order value, and INR 120 revenue per visitor. Add 8 pending and 5 failed orders; revenue must remain INR 12,000. Two completed orders by one visitor count as two orders and one purchasing visitor.
 
-## Release evidence
+## Verification evidence
 
-- [x] `npm test` — 101 passing tests.
-- [x] `npm run build` — production Vite build passed.
-- [x] `npm run check:bundle` — JavaScript and CSS budgets passed.
-- [x] `npx tsc --noEmit -p convex/tsconfig.json` — passed.
-- [x] Convex typecheck and deployment — functions ready on `notable-wolf-488`.
-- [x] `npm audit --omit=dev --audit-level=moderate` — 0 vulnerabilities.
-- [x] `node --test --experimental-test-coverage` — 93.38% line coverage overall.
-- [x] Production dashboard login and read-only smoke test — `/dashboard` verified live.
-- [ ] Production payment and reconciliation smoke test with marked test records.
-- [ ] Standalone export regenerated when landing source changes
-- [x] Deployment URL, commit and verification timestamp recorded here: `https://thriveonp.com/dashboard`, deployment `https://am1-cmg8il26j-harsh817s-projects.vercel.app`, commit `b2da981`, verified 2026-09-20 Asia/Kolkata.
+- [x] `npm test` — 101 tests passed before the dashboard pass; rerun after final Convex deployment.
+- [x] `npm run build` — passed after the dashboard UI rewrite.
+- [x] `npx tsc --noEmit -p convex/tsconfig.json` — passed after schema and dashboard changes.
+- [ ] `npm run check:bundle` after final build.
+- [ ] `npm audit --omit=dev --audit-level=moderate`.
+- [ ] `node --test --experimental-test-coverage`.
+- [ ] Convex typecheck and deployment against the intended production deployment.
+- [ ] Desktop and mobile smoke tests for every dashboard route.
+- [ ] Source-record, dashboard, and export reconciliation with marked test records.
 
 ## Known limitations
 
-- Historical rows created before reporting fields were added may show `Not recorded`.
-- Visitor counts represent identifiable browsers, not people across devices.
-- Ad spend and ROAS are not calculated until a spend source is connected.
-- Refund and net-revenue reporting is a later phase.
-- CSV export, administrator status-refresh actions, and payment reconciliation imports remain follow-up work in the health module.
-- The connected Convex deployment is currently the existing development deployment; a separate production Convex deployment remains a release prerequisite.
-- A dashboard zero can mean no activity or missing historical tracking; the health view must be checked before drawing conclusions.
-- The dashboard deployment is live, but payment/reconciliation smoke testing still requires marked test records. The experiment control currently reports `Running`; allocation changes are intentionally separate from this dashboard release.
+Historical rows created before reporting fields were introduced may show `Not recorded`. The current dashboard reports the existing payment history, but it does not yet provide full provider reconciliation, CSV exports, ad spend/ROAS, refund accounting, recovery messaging, or additional administrator roles. The active Convex deployment must be separated from development before production reporting is enabled.
 
 ## Rollback
 
-Keep the experiment paused if reporting health is uncertain. The public landing pages and checkout remain available. Disable dashboard access through the deployment feature flag, preserve payment operations, and reconcile verified PhonePe receipts from the operational records before re-enabling reporting.
+Dashboard rollback is route-level: restore the previous dashboard component or disable dashboard access without changing public landing pages, checkout, payments, or stored Convex records. Keep the experiment allocation unchanged while investigating reporting issues. Reconcile verified provider receipts from operational records before re-enabling reporting.

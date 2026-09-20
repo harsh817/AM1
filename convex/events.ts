@@ -38,13 +38,13 @@ export const recordLanding = mutation({
 });
 
 export const recordCheckoutVisit = mutation({
-  args: { token: v.string(), dedupeKey: v.string(), attribution, occurredAt: v.number() },
+  args: { token: v.string(), dedupeKey: v.string(), attribution, eventType: v.optional(v.union(v.literal("checkout_visit"), v.literal("checkout_submit"), v.literal("thankyou_visit"))), occurredAt: v.number() },
   returns: v.object({ recorded: v.boolean(), duplicate: v.boolean() }),
   handler: async (ctx, args) => {
     assertIngestToken(args.token);
     const existing = await ctx.db.query("checkoutVisits").withIndex("by_dedupe_key", (query) => query.eq("dedupeKey", args.dedupeKey)).unique();
     if (existing) return { recorded: false, duplicate: true };
-    await ctx.db.insert("checkoutVisits", { ...args.attribution, dedupeKey: args.dedupeKey, occurredAt: args.occurredAt });
+    await ctx.db.insert("checkoutVisits", { ...args.attribution, dedupeKey: args.dedupeKey, eventType: args.eventType || "checkout_visit", occurredAt: args.occurredAt });
     return { recorded: true, duplicate: false };
   },
 });
@@ -56,7 +56,8 @@ export const recordOrder = mutation({
     assertIngestToken(args.token);
     const existing = await ctx.db.query("orders").withIndex("by_merchant_order_id", (query) => query.eq("merchantOrderId", args.merchantOrderId)).unique();
     const finalAttribution = existing?.attribution || args.attribution;
-    const previousPaidOrder = existing?.visitorId ? await ctx.db.query("orders").withIndex("by_visitor_state", (query) => query.eq("visitorId", existing.visitorId).eq("state", "COMPLETED")).take(1) : [];
+    const visitorForDedup = existing?.visitorId || args.attribution?.visitorId;
+    const previousPaidOrder = visitorForDedup ? await ctx.db.query("orders").withIndex("by_visitor_state", (query) => query.eq("visitorId", visitorForDedup).eq("state", "COMPLETED")).take(1) : [];
     if (existing) {
       const completed = existing.state === "COMPLETED";
       const nextState = completed ? "COMPLETED" : args.state;
@@ -71,8 +72,9 @@ export const recordOrder = mutation({
     }
     const newOrder = withoutUndefined({ merchantOrderId: args.merchantOrderId, amountPaise: args.amountPaise, state: args.state, attribution: args.attribution, visitorId: args.attribution?.visitorId, variant: args.attribution?.variant, entryType: args.attribution?.entryType, customerName: args.customer?.name, customerEmail: args.customer?.email, customerPhone: args.customer?.phone, selectedAddons: args.customer?.selectedAddons, lineItems: args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, paymentTimeline: [timelineEvent(args)], createdAt: args.occurredAt, updatedAt: args.occurredAt, ...(args.state === "COMPLETED" ? { completedAt: args.occurredAt } : {}) }) as any;
     await ctx.db.insert("orders", newOrder);
+    if (args.customer) await upsertContact(ctx, args.customer, args.merchantOrderId, args.state === "COMPLETED", args.occurredAt);
     if (args.state === "COMPLETED" && args.attribution?.entryType === "randomized" && args.attribution.variant) {
-      await adjustDailyMetric(ctx, args.attribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: 1 });
+      await adjustDailyMetric(ctx, args.attribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: previousPaidOrder.length ? 0 : 1 });
     }
     return { recorded: true, duplicate: false };
   },
@@ -113,6 +115,16 @@ function timelineEvent(args: { state: string; occurredAt: number; providerEventI
 
 function withoutUndefined<T extends Record<string, unknown>>(value: T) {
   return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined));
+}
+
+async function upsertContact(ctx: any, customer: { name: string; email: string; phone: string }, merchantOrderId: string, paid: boolean, occurredAt: number) {
+  const normalizedEmail = customer.email.trim().toLowerCase();
+  const existing = await ctx.db.query("contacts").withIndex("by_email", (query: any) => query.eq("normalizedEmail", normalizedEmail)).unique();
+  if (existing) {
+    await ctx.db.patch(existing._id, { name: customer.name.trim(), email: customer.email.trim(), phone: customer.phone.trim(), lastSeenAt: occurredAt, latestOrderId: merchantOrderId, orderCount: existing.orderCount + 1, paidOrderCount: existing.paidOrderCount + (paid ? 1 : 0) });
+    return;
+  }
+  await ctx.db.insert("contacts", { email: customer.email.trim(), normalizedEmail, name: customer.name.trim(), phone: customer.phone.trim(), firstSeenAt: occurredAt, lastSeenAt: occurredAt, latestOrderId: merchantOrderId, orderCount: 1, paidOrderCount: paid ? 1 : 0 });
 }
 
 async function adjustDailyMetric(ctx: any, attribution: any, timestamp: number, changes: { visitors?: number; purchasingVisitors?: number; paidOrders?: number; revenuePaise?: number }) {

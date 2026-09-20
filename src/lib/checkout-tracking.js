@@ -1,6 +1,6 @@
 const TRACKING_KEY = "attractivemen-checkout-tracking";
 const ORDER_TRACKING_KEY = "attractivemen-checkout-order-tracking";
-const BOOLEAN_TEXT_MAX_LENGTH = 8;
+const BOOLEAN_TEXT_MAX_LENGTH = 16;
 const DEFAULT_TRACKING_TEXT_MAX_LENGTH = 256;
 const LONG_TRACKING_TEXT_MAX_LENGTH = 512;
 const ORDER_TRACKING_ID_MAX_LENGTH = 128;
@@ -37,8 +37,9 @@ export function rememberCheckoutVisit(context = getBrowserContext()) {
  */
 export function getCheckoutTrackingPayload(context = getBrowserContext()) {
   const state = readTracking(context.storage);
+  const experiment = getExperimentTracking(context);
   const next = {
-    marketing: normalizeMarketing(state.marketing),
+    marketing: normalizeMarketing({ ...state.marketing, term: experiment.page_variant || state.marketing?.term }),
     pageVisits: positiveCount(state.pageVisits),
     formSubmissions: positiveCount(state.formSubmissions) + 1,
   };
@@ -48,7 +49,7 @@ export function getCheckoutTrackingPayload(context = getBrowserContext()) {
   return {
     device: buildDevice(context),
     marketing: next.marketing,
-    experiment: getExperimentTracking(context),
+    experiment,
     engagement: {
       page_visits: String(next.pageVisits),
       form_submissions: String(next.formSubmissions),
@@ -94,11 +95,12 @@ export function getCheckoutOrderTrackingPayload(merchantOrderId, context = getBr
  */
 export function getCheckoutTrackingSnapshot(context = getBrowserContext()) {
   const state = readTracking(context.storage);
+  const experiment = getExperimentTracking(context);
 
   return {
     device: buildDevice(context),
-    marketing: normalizeMarketing(state.marketing),
-    experiment: getExperimentTracking(context),
+    marketing: normalizeMarketing({ ...state.marketing, term: experiment.page_variant || state.marketing?.term }),
+    experiment,
     engagement: {
       page_visits: String(positiveCount(state.pageVisits)),
       form_submissions: String(positiveCount(state.formSubmissions)),

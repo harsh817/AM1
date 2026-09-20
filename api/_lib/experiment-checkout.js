@@ -35,6 +35,7 @@ export async function recordExperimentCheckout({ payload = {}, req, forwardWebho
   await forwardWebhook(event);
   await recordConvexCheckoutVisit({
     dedupeKey,
+    eventType: "checkout_visit",
     occurredAt: Date.now(),
     attribution: {
       experimentId,
