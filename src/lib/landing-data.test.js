@@ -12,7 +12,7 @@ import {
 test("landing data represents the StyleIQ offer from copy.md", () => {
   assert.deepEqual(trustBadges, [
     "1,119+ happy clients",
-    "★★★★★ 4.8 star rating",
+    "⭐⭐⭐⭐⭐ 4.8 star rating",
     "Delivered in 48 hours",
     "Lifetime access",
   ]);

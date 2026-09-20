@@ -87,7 +87,7 @@ export function ProblemSection() {
           </ul>
           <figure className="problem-visual">
             <img
-              src="/assets/problem/reel-vs-real.webp"
+              src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/problem/reel-vs-real.webp"
               alt="The same outfit looking suitable in a Reel but poorly fitted in real life"
               loading="lazy"
               decoding="async"

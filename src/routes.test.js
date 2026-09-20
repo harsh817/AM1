@@ -5,6 +5,8 @@ import { getPageRoute } from "./routes.js";
 
 test("routes requested marketing, checkout, and thank-you URLs", () => {
   assert.deepEqual(getPageRoute("/a-m", ""), { page: "landing" });
+  assert.deepEqual(getPageRoute("/AM2", ""), { page: "landing-am2" });
+  assert.deepEqual(getPageRoute("/am2", ""), { page: "landing-am2" });
   assert.deepEqual(getPageRoute("/a-m-checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/a-m-thankyou", "?merchantOrderId=AM_123"), {
     page: "thankyou",
@@ -37,7 +39,7 @@ test("production rewrites expose only current AM1 public routes", () => {
   );
   const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
 
-  assert.deepEqual(rewriteSources, ["/a-m", "/a-m-checkout", "/a-m-thankyou"]);
+  assert.deepEqual(rewriteSources, ["/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
 
@@ -47,7 +49,7 @@ test("production cache headers are explicit for app routes and assets", () => {
   );
   const headersBySource = new Map(config.headers.map((entry) => [entry.source, entry.headers]));
 
-  for (const source of ["/", "/a-m", "/a-m-checkout", "/a-m-thankyou", "/privacy", "/terms"]) {
+  for (const source of ["/", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/privacy", "/terms"]) {
     assertHeader(headersBySource, source, "Cache-Control", "no-store, max-age=0");
   }
 

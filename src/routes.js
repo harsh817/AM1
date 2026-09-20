@@ -1,4 +1,5 @@
 export const LANDING_PATH = "/a-m";
+export const LANDING_AM2_PATH = "/AM2";
 export const CHECKOUT_PATH = "/a-m-checkout";
 export const THANKYOU_PATH = "/a-m-thankyou";
 
@@ -8,6 +9,10 @@ export function getPageRoute(pathname, search = "") {
 
   if (path === LANDING_PATH) {
     return { page: "landing" };
+  }
+
+  if (path.toLowerCase() === LANDING_AM2_PATH.toLowerCase()) {
+    return { page: "landing-am2" };
   }
 
   if (query.get("page") === "checkout" || path === CHECKOUT_PATH || path === "/checkout" || path === "/checkout.html") {

@@ -7,6 +7,14 @@
 - Related documents: `AGENTS.md`, `design-qa.md`.
 - Current status: Delivered in pull request https://github.com/harsh817/AM1/pull/1.
 
+## AM2 Production Variant (2026-09-20)
+
+- Outcome: Publish the redesigned StyleIQ page as a separate production route at `/AM2` while preserving the original `/a-m` control page.
+- Included: AM2 page composition, responsive editorial styling, Cloudinary-optimized WebP assets, report/process/bonus sections, testimonial video behavior, route tests, and standalone export.
+- Deployment: `https://thriveonp.com/AM2` through the existing Vercel project; no automatic traffic splitting is enabled.
+- Asset delivery: optimized WebP assets are uploaded to the Cloudinary `AM - Assets` folder and referenced through optimized Cloudinary URLs.
+- Acceptance criteria: `/a-m` remains the original page, `/AM2` renders the variant, checkout and thank-you routes remain unchanged, secrets are excluded from git, and the required test/build/export checks pass.
+
 ## Feature Target
 
 - Outcome: Deliver the approved landing-page, testimonial, approach, report-card, social-proof, footer, and checkout presentation changes without regressing AM1's payment integration.

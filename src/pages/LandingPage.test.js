@@ -49,7 +49,7 @@ test("hero, trust strip, sticky buy bar, and video sound controls keep the appro
   assert.match(sources.shared, /video\.muted = !nextSoundOn;/);
   assert.match(sources.shared, /const playPromise = video\.play\(\);/);
   assert.match(sources.shared, /aria-pressed=\{soundOn\}/);
-  assert.match(sources.shared, /<span>\{soundOn \? "Sound on" : "Tap for sound"\}<\/span>/);
+  assert.match(sources.shared, /<span>\{soundOn \? "Mute voice" : "Tap to hear voice"\}<\/span>/);
 });
 
 test("you-first transformation stack renders the moved images vertically", () => {
@@ -90,7 +90,10 @@ test("landing images use optimized loading and stable dimensions", () => {
     assert.match(url, /\/image\/upload\/f_auto,q_auto,c_limit,w_\d+\//);
   }
 
-  assert.match(sources.editorial, /src="\/assets\/problem\/reel-vs-real\.webp"[\s\S]*loading="lazy"/);
+  assert.match(
+    sources.editorial,
+    /src="https:\/\/res\.cloudinary\.com\/dm49wi6j4\/image\/upload\/f_auto,q_auto,c_limit,w_1200\/AM%20-%20Assets\/problem\/reel-vs-real\.webp"[\s\S]*loading="lazy"/,
+  );
 });
 
 test("editorial sections keep approved headings and skimmable copy markers", () => {

@@ -1,4 +1,4 @@
-export const trustBadges = ["1,119+ happy clients", "★★★★★ 4.8 star rating", "Delivered in 48 hours", "Lifetime access"];
+export const trustBadges = ["1,119+ happy clients", "⭐⭐⭐⭐⭐ 4.8 star rating", "Delivered in 48 hours", "Lifetime access"];
 
 export const transformationPersonas = [
   {
@@ -168,7 +168,7 @@ export const processSteps = [
     title: "Tell Us About You",
     description:
       "After purchase, complete your StyleIQ assessment with photos, measurements, lifestyle, preferences, budget, and the areas you want help with.",
-    image: "/assets/process/assessment.webp",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/assessment.webp",
     imageWidth: 550,
     imageHeight: 320,
     alt: "Front, side and full-body photo examples for a style assessment",
@@ -178,7 +178,7 @@ export const processSteps = [
     title: "Your Stylist Builds Your StyleIQ",
     description:
       "A human stylist reviews your information and uses the StyleIQ system to connect your features, proportions, coloring, lifestyle, and preferences.",
-    image: "/assets/process/analysis-v2.png",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/analysis-v2.webp",
     imageWidth: 1645,
     imageHeight: 956,
     alt: "Minimal face, body and color analysis preview",
@@ -188,7 +188,7 @@ export const processSteps = [
     title: "Get Your Personal Style Plan",
     description:
       "Receive your complete personalized StyleIQ within 48 hours, with clear recommendations for hair, grooming, colors, fits, outfits, accessories, and what to buy next.",
-    image: "/assets/product/style-report.png",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/product/style-report.webp",
     imageWidth: 1555,
     imageHeight: 1012,
     alt: "Personal style report cover with analysis and outfit pages",
@@ -220,7 +220,7 @@ export const testimonials = [
       "It felt like someone actually looked at my face and body instead of giving random tips. The haircut and color advice were instantly useful.",
     name: "Rishi",
     meta: "Verified customer - Pune",
-    image: "/assets/testimonials/customer-1.webp",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-1.webp",
     imageWidth: 1254,
     imageHeight: 1254,
   },
@@ -229,7 +229,7 @@ export const testimonials = [
       "I did not need expensive brands. I finally understood what fits to choose and what to stop buying.",
     name: "Vikram",
     meta: "Verified customer - Chennai",
-    image: "/assets/testimonials/customer-2.webp",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-2.webp",
     imageWidth: 1254,
     imageHeight: 1254,
   },
@@ -238,7 +238,7 @@ export const testimonials = [
       "The report gave me a clear direction. I stopped saving random outfits and started knowing what actually works for me.",
     name: "Jasprit",
     meta: "Verified customer - Chandigarh",
-    image: "/assets/testimonials/customer-3.webp",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-3.webp",
     imageWidth: 1254,
     imageHeight: 1254,
   },
@@ -247,7 +247,7 @@ export const testimonials = [
       "The best part was how practical it was. Hair, beard, colors, fits, outfits, shoes - everything was connected.",
     name: "Verified customer",
     meta: "",
-    image: "/assets/testimonials/customer-4.webp",
+    image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-4.webp",
     imageWidth: 1254,
     imageHeight: 1254,
   },

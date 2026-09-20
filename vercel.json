@@ -4,6 +4,8 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/a-m", "destination": "/" },
+    { "source": "/AM2", "destination": "/" },
+    { "source": "/am2", "destination": "/" },
     { "source": "/a-m-checkout", "destination": "/" },
     { "source": "/a-m-thankyou", "destination": "/" }
   ],
@@ -28,6 +30,24 @@
     },
     {
       "source": "/a-m",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/AM2",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/am2",
       "headers": [
         {
           "key": "Cache-Control",

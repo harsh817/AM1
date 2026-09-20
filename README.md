@@ -5,8 +5,9 @@ A responsive React and Vite sales page for the AttractiveMen Personalized Style 
 ## Features
 
 - Responsive landing page for desktop and mobile
+- Separate AM2 landing-page variant for future A/B testing
 - Personalized StyleIQ report offer at INR 1,999 plus GST
-- Local before-and-after, report, process and testimonial imagery
+- Cloudinary-optimized before-and-after, report, process and testimonial imagery
 - Checkout form with locally saved contact and bump selections
 - Optional 20-minute style-review call with a flirting guide for INR 499
 - Live subtotal, GST and payable-total calculations
@@ -24,6 +25,8 @@ Open the local URL shown by Vite. The checkout is available at:
 ```text
 /a-m-checkout
 ```
+
+The original landing page is available at `/a-m`. The AM2 variant is available at `/AM2`.
 
 ## Project structure
 
@@ -91,6 +94,9 @@ Production URLs:
 
 ```text
 https://thriveonp.com/a-m
+https://thriveonp.com/AM2
 https://thriveonp.com/a-m-checkout
 https://thriveonp.com/a-m-thankyou
 ```
+
+`/a-m` is the original control page. `/AM2` is a separate production variant; traffic splitting is intentionally not enabled yet.

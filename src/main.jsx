@@ -9,6 +9,7 @@ import { getPageRoute } from "./routes.js";
 
 const route = getPageRoute(window.location.pathname, window.location.search);
 const LandingPage = lazy(() => import("./pages/LandingPage.jsx").then((module) => ({ default: module.LandingPage })));
+const LandingPageAM2 = lazy(() => import("./pages/LandingPageAM2.jsx").then((module) => ({ default: module.LandingPageAM2 })));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
 const ThankYouPage = lazy(() => import("./pages/ThankYouPage.jsx").then((module) => ({ default: module.ThankYouPage })));
 const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({ default: module.LegalPage })));
@@ -16,6 +17,8 @@ const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({
 function App() {
   const page = route.page === "checkout" ? (
     <CheckoutPage />
+  ) : route.page === "landing-am2" ? (
+    <LandingPageAM2 />
   ) : route.page === "thankyou" ? (
     <ThankYouPage merchantOrderId={route.merchantOrderId} />
   ) : route.page === "legal" ? (

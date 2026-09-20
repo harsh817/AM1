@@ -15,7 +15,7 @@ export function Button({ children = "Show Me What Suits Me", light = false, clas
   );
 }
 
-export function SoundVideo({ className, src, label }) {
+export function SoundVideo({ className, src, label, showSoundControl = true }) {
   const videoRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
@@ -52,20 +52,22 @@ export function SoundVideo({ className, src, label }) {
       <video ref={videoRef} autoPlay muted={!soundOn} loop playsInline aria-label={label}>
         <source src={src} type="video/mp4" />
       </video>
-      <button
-        className={`video-sound-button ${soundOn ? "video-sound-button-on" : ""}`}
-        type="button"
-        onClick={handleSoundToggle}
-        aria-label={soundOn ? "Mute video sound" : "Play video sound"}
-        aria-pressed={soundOn}
-      >
-        {soundOn ? (
-          <SpeakerHigh size={18} weight="fill" aria-hidden="true" />
-        ) : (
-          <SpeakerSlash size={18} weight="fill" aria-hidden="true" />
-        )}
-        <span>{soundOn ? "Sound on" : "Tap for sound"}</span>
-      </button>
+      {showSoundControl ? (
+        <button
+          className={`video-sound-button ${soundOn ? "video-sound-button-on" : ""}`}
+          type="button"
+          onClick={handleSoundToggle}
+          aria-label={soundOn ? "Mute testimonial voice" : "Hear testimonial voice"}
+          aria-pressed={soundOn}
+        >
+          {soundOn ? (
+            <SpeakerHigh size={18} weight="fill" aria-hidden="true" />
+          ) : (
+            <SpeakerSlash size={18} weight="fill" aria-hidden="true" />
+          )}
+          <span>{soundOn ? "Mute voice" : "Tap to hear voice"}</span>
+        </button>
+      ) : null}
     </figure>
   );
 }

@@ -2,6 +2,12 @@
 
 This file defines the selected visual direction for the StyleIQ landing page. Use it when editing `src/styles/landing.css`, `src/pages/LandingPage.jsx`, and generated artifacts.
 
+## AM2 Variant
+
+AM2 is a separate production landing-page variant at `/AM2`. The original control page remains at `/a-m`; do not replace or redirect it. AM2 uses the same StyleIQ offer and checkout flow with a distinct editorial page composition, responsive section treatment, conversion copy, and report-focused visuals.
+
+AM2 image assets are delivered through Cloudinary using optimized WebP sources with `f_auto`, `q_auto`, and bounded-width transformations. The local asset files remain available for development and standalone generation, while the page references the Cloudinary delivery URLs in production source.
+
 ## Selected Direction
 
 Use **Option 05 - Ink Luxury** from [artifacts/design-system-combinations.html](artifacts/design-system-combinations.html).
@@ -195,6 +201,8 @@ The only approved non-base hex values are the exact artifact values `#F2ECE8`, `
 Ink Luxury works only if the page follows the artifact's deliberate color transitions. Do not keep every section on the same light background.
 
 Current preview: problem, waste, you-first, professional-styling, StyleIQ system, comparison, report contents, bonuses, process, and reviews sections may use `section-editorial-preview` to test the selected Option 05 heading treatment from `artifacts/heading-backdrop-examples.html`: compact black rectangle, hard near-black right split, soft-linen heading, icy-slate accent words, and soft heading glow. Most preview sections use a clean white background, while report contents intentionally uses a brand-ink background and reviews uses a soft-linen background to create color transitions. Do not add internal hairlines, divider rules, eyebrow text, subheadline, support sentence, or any other text inside this heading box. The live heading box must contain only the headline text. Use the same headline size as the hero (`--hero-headline-size`, currently 28px), `1.08` line-height, `22px` vertical desktop padding, and `18px` vertical mobile padding. Do not roll this to every section until the preview is approved.
+
+The AM2 report preview is an approved white-band variant: `.am2-report-preview` uses `var(--palette-clean)` for the section surface and hero-black for its supporting copy, while retaining the standard editorial heading backdrop and report subsection contrast.
 
 Editorial heading backdrop rules:
 
