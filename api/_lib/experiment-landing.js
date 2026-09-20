@@ -2,13 +2,15 @@ import { getHeader } from "./http.js";
 import { forwardMakeWebhookPayload } from "./make.js";
 
 const MAX_TEXT_LENGTH = 128;
+const MAX_REQUESTS_PER_WINDOW = 60;
 const recentRequests = new Map();
+const requestCounts = new Map();
 
 export async function recordExperimentLanding({ payload = {}, req, forwardWebhook = forwardMakeWebhookPayload } = {}) {
   const visitorId = clean(payload.visitor_id);
   const variant = clean(payload.page_variant);
   const entryType = clean(payload.entry_type);
-  if (!visitorId || !["AM", "AM2"].includes(variant) || !["randomized", "direct"].includes(entryType)) {
+  if (!visitorId || !["AM", "AM2"].includes(variant) || !["randomized", "direct", "test"].includes(entryType)) {
     const error = new Error("Invalid experiment landing payload.");
     error.statusCode = 400;
     throw error;
@@ -17,7 +19,20 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
   const experimentId = clean(payload.experiment_id);
   const dedupeKey = `${experimentId || "direct"}:${visitorId}:${variant}`;
   const now = Date.now();
-  const requestKey = `${getHeader(req, "x-forwarded-for")}:${dedupeKey}`;
+  const clientKey = getHeader(req, "x-forwarded-for") || "unknown";
+  const requestWindow = requestCounts.get(clientKey);
+  if (!requestWindow || now - requestWindow.startedAt >= 60 * 1000) {
+    requestCounts.set(clientKey, { startedAt: now, count: 1 });
+  } else {
+    requestWindow.count += 1;
+    if (requestWindow.count > MAX_REQUESTS_PER_WINDOW) {
+      const error = new Error("Experiment tracking rate limit exceeded.");
+      error.statusCode = 429;
+      throw error;
+    }
+  }
+
+  const requestKey = `${clientKey}:${dedupeKey}`;
   if (recentRequests.has(requestKey) && now - recentRequests.get(requestKey) < 60 * 60 * 1000) {
     return { recorded: false, duplicate: true };
   }

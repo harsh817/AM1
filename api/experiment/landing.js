@@ -13,6 +13,7 @@ export default async function handler(req, res) {
     if (error instanceof SyntaxError || error.statusCode === 400) {
       return sendJson(res, 400, { message: "Invalid experiment landing payload." });
     }
+    if (error.statusCode === 429) return sendJson(res, 429, { message: "Experiment tracking is temporarily rate limited." });
     return sendJson(res, 502, { message: "Experiment tracking could not be recorded." });
   }
 }

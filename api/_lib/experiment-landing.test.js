@@ -33,3 +33,20 @@ test("rejects an invalid landing variant", async () => {
     (error) => error.statusCode === 400,
   );
 });
+
+test("accepts marked test traffic without treating it as randomized", async () => {
+  let payload;
+  const result = await recordExperimentLanding({
+    req: { headers: { "x-forwarded-for": "198.51.100.42" } },
+    payload: {
+      experiment_id: "am-test-landing-2",
+      visitor_id: "visitor-test-3",
+      page_variant: "AM",
+      entry_type: "test",
+    },
+    forwardWebhook: async (nextPayload) => { payload = nextPayload; },
+  });
+
+  assert.deepEqual(result, { recorded: true });
+  assert.equal(payload.entry_type, "test");
+});

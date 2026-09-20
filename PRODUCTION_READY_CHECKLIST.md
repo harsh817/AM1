@@ -44,7 +44,7 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 100/100 tests after the AM/AM2 experiment routing and attribution changes.
+- [x] Local test suite passes. Evidence: `npm test` passed, 101/101 tests after the AM/AM2 experiment routing and attribution changes.
 - [x] Production build passes. Evidence: `npm run build` passed after the AM/AM2 experiment routing and attribution changes.
 - [x] AM2 production deployment is Ready. Evidence: commit `b3c6da4` pushed to `main`; `https://thriveonp.com/AM2` returned HTTP 200 from Vercel with `X-Vercel-Cache: HIT`.
 - [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
