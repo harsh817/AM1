@@ -35,9 +35,9 @@ Status legend:
 | --- | --- |
 | Release date | 2026-09-20 |
 | Owner | Pending owner signoff |
-| Git commit | `b3c6da4` (`feat: publish AM2 styleiq landing variant`) |
+| Git commit | `a12fc47` (`fix: classify experiment test traffic`) on top of `88a5d57` |
 | Vercel deployment URL | `https://thriveonp.com/AM2` (production alias; Vercel response confirmed) |
-| Production URL tested | Verified 2026-09-20: `https://thriveonp.com/a-m`, `https://thriveonp.com/AM2`, `https://thriveonp.com/a-m-checkout`, and `https://thriveonp.com/a-m-thankyou` returned HTTP 200 |
+| Production URL tested | Verified 2026-09-20: four public routes returned HTTP 200 and `POST https://thriveonp.com/api/experiment/landing` accepted a marked test event |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
 | Make scenario tested | Not verified in Make dashboard during this run |
 | Rollback deployment | AM1 previous: https://am1-lhd03zro5-harsh817s-projects.vercel.app; wrapper previous: https://pg-thriveonp-go2ksxkt2-harsh817s-projects.vercel.app |
@@ -49,7 +49,8 @@ Status legend:
 - [x] AM2 production deployment is Ready. Evidence: commit `b3c6da4` pushed to `main`; `https://thriveonp.com/AM2` returned HTTP 200 from Vercel with `X-Vercel-Cache: HIT`.
 - [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
 - [x] Public routes return successful responses: /a-m, /AM2, /a-m-checkout, /a-m-thankyou. Evidence: 2026-09-20 production smoke test returned HTTP 200 for all four routes; `/a-m` remains the original control page and `/AM2` is the separate variant.
-- [x] A/B routing and attribution are covered by tests. Evidence: 100 tests pass, including pre-render assignment, AM2 redirect preservation, checkout URL attribution, direct AM2 classification, landing-event validation, and idempotency keys.
+- [x] A/B routing and attribution are covered by tests. Evidence: 101 tests pass, including pre-render assignment, AM2 redirect preservation, checkout URL attribution, direct AM2 classification, landing-event validation, and idempotency keys.
+- [x] A/B landing endpoint is live. Evidence: production `POST /api/experiment/landing` accepted a marked `test` event after commit `a12fc47` deployed.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
 - [x] No env files, API keys, webhook URLs, credentials, or private tokens are committed. Evidence: `.env` is gitignored, only `.env.example` is tracked, and tracked-source secret scan outside generated artifacts returned no hits.
