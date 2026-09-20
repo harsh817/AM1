@@ -1,6 +1,6 @@
 # Sales, Campaigns and Experiment Reporting
 
-Status: dashboard workspace implemented; payment-reconciliation rollout remains gated
+Status: dashboard workspace deployed; payment-reconciliation rollout remains gated
 Owner: AttractiveMen operations
 Timezone: Asia/Kolkata
 Primary route: `/dashboard`
@@ -55,7 +55,7 @@ Checkout creation errors, provider uncertainty, payment failures, and reporting 
 - [ ] Complete unmatched-receipt reconciliation, scheduled status checks, and administrator retry actions.
 - [ ] Add filtered CSV export with formula escaping and optional contact inclusion.
 - [ ] Add server-issued enrollment attribution and durable per-tab attribution validation.
-- [ ] Complete production Convex environment separation and migration rehearsal.
+- [x] Production Convex environment separated and deployed at `grand-cod-27`.
 - [ ] Run marked sandbox payment tests for initiated, pending, failed, completed, duplicate, delayed, and out-of-order events.
 
 ## Deterministic test dataset
@@ -67,12 +67,15 @@ In development only, 100 AM visitors, 10 purchasing visitors, 12 completed order
 - [x] `npm test` — 101 tests passed before the dashboard pass; rerun after final Convex deployment.
 - [x] `npm run build` — passed after the dashboard UI rewrite.
 - [x] `npx tsc --noEmit -p convex/tsconfig.json` — passed after schema and dashboard changes.
+- [x] Convex development and production deployments — functions and indexes ready.
 - [ ] `npm run check:bundle` after final build.
 - [ ] `npm audit --omit=dev --audit-level=moderate`.
 - [ ] `node --test --experimental-test-coverage`.
 - [ ] Convex typecheck and deployment against the intended production deployment.
 - [ ] Desktop and mobile smoke tests for every dashboard route.
 - [ ] Source-record, dashboard, and export reconciliation with marked test records.
+- [x] Production Vercel deployment — `https://thriveonp.com`, deployment `https://am1-1ehmhu3nr-harsh817s-projects.vercel.app`, commit `42b777c`, verified 2026-09-21 Asia/Kolkata.
+- [x] Production Convex Auth administrator provisioned — `harsh@thriveonp.com`.
 
 ## Known limitations
 
