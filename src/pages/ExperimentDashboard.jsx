@@ -105,7 +105,14 @@ function DashboardContent({ initialSection }) {
 }
 
 function FilterBar({ filters, setFilters }) {
-  const setRange = (days) => { const end = Date.now() + 86400000; setFilters((current) => ({ ...current, startAt: end - days * 86400000, endAt: end })); };
+  const setRange = (days) => {
+    const todayStart = getIstDayStart();
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const startAt = days === 1 ? todayStart : todayStart - (days - 1) * day;
+    const endAt = days === 2 ? todayStart : now;
+    setFilters((current) => ({ ...current, startAt, endAt }));
+  };
   return <section className="dashboard-filter-bar" aria-label="Report filters"><label>Date range<select value={filters.range} onChange={(event) => { const days = Number(event.target.value); setFilters((current) => ({ ...current, range: event.target.value })); if (days) setRange(days); }}><option value="7">Last 7 days</option><option value="1">Today</option><option value="2">Yesterday</option><option value="30">Last 30 days</option><option value="0">All recorded</option></select></label><label>Page<select value={filters.variant} onChange={(event) => setFilters((current) => ({ ...current, variant: event.target.value }))}><option value="">AM and AM2</option><option value="AM">AM</option><option value="AM2">AM2</option></select></label><label>Traffic<select value={filters.entryType} onChange={(event) => setFilters((current) => ({ ...current, entryType: event.target.value }))}><option value="">All traffic</option><option value="randomized">Randomized</option><option value="direct">Direct</option><option value="test">Test</option></select></label></section>;
 }
 
@@ -117,7 +124,17 @@ function Experiments({ experiment, overview, update, status }) { return <><secti
 function Health({ health }) { return <section className="dashboard-panel"><div className="dashboard-panel-heading"><div><p className="dashboard-kicker">Reconciliation</p><h2>Tracking health</h2></div></div><div className="dashboard-health-grid"><Status label="Pending over 24 hours" value={health.stalePending} /><Status label="Unmatched receipts" value={health.unmatchedReceipts} /><Status label="Open reporting failures" value={health.reportingFailures} /></div><p className="dashboard-muted">Payment confirmations remain authoritative. A pending order is never marked failed just because it is old.</p></section>; }
 function Metric({ label, value, tone = "" }) { return <article className={`dashboard-metric ${tone}`}><span>{label}</span><strong>{value}</strong></article>; }
 function Status({ label, value }) { return <div className={`dashboard-health-item ${value ? "attention" : "clear"}`}><strong>{value}</strong><span>{label}</span></div>; }
-function defaultFilters() { const endAt = Date.now() + 86400000; return { range: "7", startAt: endAt - 7 * 86400000, endAt, variant: "", entryType: "" }; }
+function defaultFilters() { const todayStart = getIstDayStart(); return { range: "7", startAt: todayStart - 6 * 24 * 60 * 60 * 1000, endAt: Date.now(), variant: "", entryType: "" }; }
+
+function getIstDayStart(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date).reduce((values, part) => ({ ...values, [part.type]: part.value }), {});
+  return Date.parse(`${parts.year}-${parts.month}-${parts.day}T00:00:00+05:30`);
+}
 function money(paise = 0) { return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(Number(paise || 0) / 100); }
 function date(timestamp) { return timestamp ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeZone: "Asia/Kolkata" }).format(new Date(timestamp)) : "Not recorded"; }
 function DashboardState({ message }) { return <main className="experiment-dashboard dashboard-state"><p>{message}</p></main>; }
