@@ -1,4 +1,4 @@
-export const EXPERIMENT_ID = "am-vs-am2-v1";
+export const EXPERIMENT_ID = "am-vs-am2-v2";
 export const ORIGINAL_VARIANT = "AM";
 export const AM2_VARIANT = "AM2";
 export const EXPERIMENT_COOKIE = "attractivemen-ab-v1";
@@ -7,7 +7,19 @@ export const LANDING_ENTRY_STORAGE = "attractivemen-ab-landing-v1";
 export const EXPERIMENT_ENABLED = true;
 export const ASSIGNMENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 
-export function resolveLandingRoute(windowRef = globalThis.window) {
+export async function resolveLandingRouteAsync(windowRef = globalThis.window) {
+  if (!windowRef?.location || !["/a-m", "/AM2", "/am2"].includes(normalizePath(windowRef.location.pathname))) return null;
+  let config = { enabled: false, amPercentage: 50, am2Percentage: 50 };
+  try {
+    const response = await fetch("/api/experiment/config", { headers: { Accept: "application/json" } });
+    if (response.ok) config = await response.json();
+  } catch {
+    // A configuration outage fails closed to the original page.
+  }
+  return resolveLandingRoute(windowRef, config);
+}
+
+export function resolveLandingRoute(windowRef = globalThis.window, config = null) {
   if (!windowRef?.location) return null;
   const path = normalizePath(windowRef.location.pathname);
   if (path.toLowerCase() === "/am2" && !new URL(windowRef.location.href).searchParams.get("utm_term")) {
@@ -16,13 +28,14 @@ export function resolveLandingRoute(windowRef = globalThis.window) {
   }
   if (path !== "/a-m") return null;
 
-  if (!EXPERIMENT_ENABLED) {
+  const experimentEnabled = config?.enabled ?? EXPERIMENT_ENABLED;
+  if (!experimentEnabled) {
     replaceLandingQuery(windowRef, ORIGINAL_VARIANT);
     return { page: "landing", experiment: null };
   }
 
   const assignment = readAssignment(windowRef);
-  const nextAssignment = assignment || assignVariant(windowRef);
+  const nextAssignment = assignment || assignVariant(windowRef, config);
 
   if (nextAssignment.variant === AM2_VARIANT) {
     const destination = buildVariantUrl(windowRef.location, AM2_VARIANT);
@@ -92,8 +105,10 @@ export function getExperimentTracking(context = getBrowserContext()) {
   return getExperimentContext(context);
 }
 
-function assignVariant(windowRef) {
-  const variant = Math.random() < 0.5 ? ORIGINAL_VARIANT : AM2_VARIANT;
+function assignVariant(windowRef, config = null) {
+  const amPercentage = Number(config?.amPercentage);
+  const normalizedAmPercentage = Number.isFinite(amPercentage) ? Math.min(100, Math.max(0, amPercentage)) : 50;
+  const variant = Math.random() * 100 < normalizedAmPercentage ? ORIGINAL_VARIANT : AM2_VARIANT;
   const assignment = {
     experimentId: EXPERIMENT_ID,
     variant,
@@ -183,10 +198,13 @@ function buildVariantUrl(location, variant) {
 
 function readMarketing(search = "") {
   const params = new URLSearchParams(search);
-  return Object.fromEntries(["source", "medium", "campaign", "content", "term", "id"].map((key) => [
-    key,
-    params.get(key === "source" ? "utm_source" : `utm_${key}`) || "",
-  ]));
+  return {
+    ...Object.fromEntries(["source", "medium", "campaign", "content", "term", "id"].map((key) => [key, params.get(key === "source" ? "utm_source" : `utm_${key}`) || ""])),
+    gclid: params.get("gclid") || "",
+    gbraid: params.get("gbraid") || "",
+    wbraid: params.get("wbraid") || "",
+    fbclid: params.get("fbclid") || "",
+  };
 }
 
 function readLandingMarker(storage) {

@@ -117,6 +117,10 @@ function mergeFirstTouchMarketing(current = {}, search, referrer) {
     term: checkoutMarketing.term || referrerMarketing.term,
     id: checkoutMarketing.id || referrerMarketing.id,
     referrer: referrer || "",
+    gclid: checkoutMarketing.gclid || referrerMarketing.gclid,
+    gbraid: checkoutMarketing.gbraid || referrerMarketing.gbraid,
+    wbraid: checkoutMarketing.wbraid || referrerMarketing.wbraid,
+    fbclid: checkoutMarketing.fbclid || referrerMarketing.fbclid,
   };
 
   return Object.fromEntries(
@@ -140,11 +144,15 @@ function readMarketingParams(params = new URLSearchParams()) {
     content: params.get("utm_content") || "",
     term: params.get("utm_term") || "",
     id: params.get("utm_id") || "",
+    gclid: params.get("gclid") || "",
+    gbraid: params.get("gbraid") || "",
+    wbraid: params.get("wbraid") || "",
+    fbclid: params.get("fbclid") || "",
   };
 }
 
 function normalizeMarketing(marketing = {}) {
-  return {
+  const normalized = {
     source: clean(marketing.source),
     medium: clean(marketing.medium),
     campaign: clean(marketing.campaign),
@@ -153,6 +161,11 @@ function normalizeMarketing(marketing = {}) {
     id: clean(marketing.id),
     referrer: clean(marketing.referrer, LONG_TRACKING_TEXT_MAX_LENGTH),
   };
+  for (const key of ["gclid", "gbraid", "wbraid", "fbclid"]) {
+    const value = clean(marketing[key]);
+    if (value) normalized[key] = value;
+  }
+  return normalized;
 }
 
 function normalizeTrackingPayload(tracking = {}) {

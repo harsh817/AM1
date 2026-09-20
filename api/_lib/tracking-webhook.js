@@ -38,6 +38,10 @@ export function buildTrackingFields({ req, tracking = {} } = {}) {
       page_variant: experiment.page_variant,
       entry_type: experiment.entry_type,
     } : {}),
+    ...(marketing.gclid ? { gclid: marketing.gclid } : {}),
+    ...(marketing.gbraid ? { gbraid: marketing.gbraid } : {}),
+    ...(marketing.wbraid ? { wbraid: marketing.wbraid } : {}),
+    ...(marketing.fbclid ? { fbclid: marketing.fbclid } : {}),
   };
 }
 
@@ -83,7 +87,7 @@ function buildMarketing(marketing = {}) {
   const referrer = clean(marketing.referrer, LONG_TEXT_MAX_LENGTH);
   const referrerMarketing = readMarketingFromUrl(referrer);
 
-  return {
+  const normalized = {
     source: clean(marketing.source || marketing.utm_source || referrerMarketing.source),
     medium: clean(marketing.medium || marketing.utm_medium || referrerMarketing.medium),
     campaign: clean(marketing.campaign || marketing.utm_campaign || referrerMarketing.campaign),
@@ -92,6 +96,11 @@ function buildMarketing(marketing = {}) {
     id: clean(marketing.id || marketing.utm_id || referrerMarketing.id),
     referrer,
   };
+  for (const key of ["gclid", "gbraid", "wbraid", "fbclid"]) {
+    const value = clean(marketing[key] || referrerMarketing[key]);
+    if (value) normalized[key] = value;
+  }
+  return normalized;
 }
 
 function readMarketingFromUrl(url) {
@@ -104,6 +113,10 @@ function readMarketingFromUrl(url) {
       content: params.get("utm_content") || "",
       term: params.get("utm_term") || "",
       id: params.get("utm_id") || "",
+      ...(params.get("gclid") ? { gclid: params.get("gclid") } : {}),
+      ...(params.get("gbraid") ? { gbraid: params.get("gbraid") } : {}),
+      ...(params.get("wbraid") ? { wbraid: params.get("wbraid") } : {}),
+      ...(params.get("fbclid") ? { fbclid: params.get("fbclid") } : {}),
     };
   } catch {
     return {

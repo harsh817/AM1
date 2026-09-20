@@ -519,6 +519,18 @@ Based on the current project shape, prioritize these before scaling paid traffic
 - [x] Split large landing page files into section components and bring checkout page within the line-count target.
 - [ ] Add CI scripts for lint, format check, tests, and production build.
 
+## Convex Experiment Dashboard Release
+
+- [x] Convex schema added for experiment exposures, orders, payment receipts, daily metrics, and administrator audit records.
+- [x] `/experiment-dashboard` route added with Convex Auth email/password login and admin-only queries/mutations.
+- [x] Password reset flow wired through Resend configuration.
+- [x] `utm_term` reserved for `AM`/`AM2`; other UTM values and `gclid`, `gbraid`, `wbraid`, and `fbclid` are retained.
+- [x] Landing, order initiation, status checks, and verified webhook paths have server-side Convex write hooks.
+- [x] Convex local deployment typecheck and isolated landing-write smoke test passed on 2026-09-20.
+- [x] `npm test` passes 101/101; `npm run build` and `npm run check:bundle` pass.
+- [~] Production Convex and Resend environments still require project configuration, environment variables, and one-time administrator provisioning.
+- [~] Start `am-vs-am2-v2` paused, verify preview login/reporting, then enable the 50/50 split from the dashboard and record the start time.
+
 ## Official References
 
 - [PhonePe Standard Checkout introduction](https://developer.phonepe.com/payment-gateway/website-integration/standard-checkout/api-integration/api-integration-website)

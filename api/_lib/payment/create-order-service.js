@@ -11,6 +11,7 @@ import { buildCheckoutLeadPayload } from "../lead-webhook.js";
 import { forwardMakeWebhookPayload } from "../make.js";
 import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { createPhonePePayment } from "../phonepe.js";
+import { buildConvexAttribution, recordConvexOrder } from "../convex.js";
 
 const PRODUCT_NAME = "AttractiveMen Personalized Style Report";
 const CREATE_ORDER_ROUTE = "/api/phonepe/create-order";
@@ -56,6 +57,18 @@ export async function createCheckoutPaymentOrder({
   const merchantOrderId = createOrderId();
   const redirectUrl = buildRedirectUrl(baseUrl, merchantOrderId);
   const metaInfo = buildPhonePeMetaInfo({ details, phoneNumber, totals });
+
+  try {
+    await recordConvexOrder({
+      merchantOrderId,
+      amountPaise: totals.amountPaise,
+      state: "INITIATED",
+      attribution: buildConvexAttribution(tracking),
+      occurredAt: Date.now(),
+    });
+  } catch (error) {
+    logger("experiment.order_record_failed", { level: "warn", merchantOrderId, errorType: getPaymentErrorType(error) });
+  }
 
   logger("phonepe.payment_create_started", {
     operation: CREATE_PAYMENT_OPERATION,

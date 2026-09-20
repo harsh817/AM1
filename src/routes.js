@@ -2,6 +2,7 @@ export const LANDING_PATH = "/a-m";
 export const LANDING_AM2_PATH = "/AM2";
 export const CHECKOUT_PATH = "/a-m-checkout";
 export const THANKYOU_PATH = "/a-m-thankyou";
+export const EXPERIMENT_DASHBOARD_PATH = "/experiment-dashboard";
 
 export function getPageRoute(pathname, search = "") {
   const query = new URLSearchParams(search);
@@ -25,6 +26,8 @@ export function getPageRoute(pathname, search = "") {
       merchantOrderId: query.get("merchantOrderId") || "",
     };
   }
+
+  if (path === EXPERIMENT_DASHBOARD_PATH) return { page: "experiment-dashboard" };
 
   if (query.get("page") === "privacy" || path === "/privacy") return { page: "legal", type: "privacy" };
   if (query.get("page") === "terms" || path === "/terms") return { page: "legal", type: "terms" };

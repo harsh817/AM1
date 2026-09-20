@@ -8,16 +8,24 @@
     "build": "vite build",
     "check:bundle": "node scripts/check-build-size.mjs",
     "test": "node --test",
+    "convex:dev": "convex dev",
+    "convex:typecheck": "convex dev --once --typecheck enable",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@convex-dev/auth": "^0.0.95",
     "@fontsource/inter": "^5.2.8",
     "@phosphor-icons/react": "^2.1.10",
+    "convex": "^1.46.0",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "typescript": "^7.0.2",
     "vite": "^6.4.3"
   }
 }

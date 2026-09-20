@@ -4,6 +4,7 @@ import { getHeader } from "../http.js";
 import { forwardMakeWebhookPayload } from "../make.js";
 import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPhonePeWebhookPayload } from "../phonepe-webhook-payload.js";
+import { recordConvexOrder } from "../convex.js";
 
 const WEBHOOK_ROUTE = "/api/phonepe/webhook";
 const WEBHOOK_OPERATION = "phonepe.webhook";
@@ -62,6 +63,16 @@ export async function handlePhonePeWebhook({
     const payload = parseWebhookPayload(rawBody);
     makePayload = buildPhonePeWebhookPayload({ payload, req });
     await forwardWebhook(makePayload);
+    try {
+      await recordConvexOrder({
+        merchantOrderId: makePayload.merchant_order_id,
+        amountPaise: Number(makePayload.amount_paise || makePayload.amount || 0),
+        state: normalizeConvexState(makePayload.payment_state),
+        occurredAt: Date.now(),
+      });
+    } catch {
+      // Make remains the operational fallback when Convex is unavailable.
+    }
   } catch (error) {
     logger("phonepe.webhook_failed", {
       level: "error",
@@ -84,6 +95,11 @@ export async function handlePhonePeWebhook({
   });
 
   return { received: true };
+}
+
+function normalizeConvexState(state) {
+  const value = String(state || "UNKNOWN").toUpperCase();
+  return ["INITIATED", "PENDING", "COMPLETED", "FAILED", "UNKNOWN"].includes(value) ? value : "UNKNOWN";
 }
 
 /**

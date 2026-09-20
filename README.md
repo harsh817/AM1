@@ -13,6 +13,7 @@ A responsive React and Vite sales page for the AttractiveMen Personalized Style 
 - Optional 20-minute style-review call with a flirting guide for INR 499
 - Live subtotal, GST and payable-total calculations
 - Standalone downloadable HTML build
+- Private Convex-backed experiment dashboard at `/experiment-dashboard`
 
 ## Development
 
@@ -80,6 +81,10 @@ MAKE_WEBHOOK_URL
 Use `.env.example` as the local template. Keep real values in `.env` or deployment environment variables only.
 
 `MAKE_WEBHOOK_URL` receives all tracking events. Every payload includes `event_name`, `event_timestamp`, and `sheet_name` so Make can route each event into a separate Google Sheet tab. Current sheet names are `experiment_landing`, `payment_initiated`, `payment_completed`, `payment_failed`, and `phonepe_webhook`.
+
+The experiment dashboard uses Convex for durable attribution and verified order state. Configure `CONVEX_URL`, `CONVEX_INGEST_TOKEN`, `ADMIN_EMAIL`, `ADMIN_SETUP_TOKEN`, `RESEND_API_KEY`, and `VITE_CONVEX_URL` in the deployment environment. The browser receives only the public Convex URL; ingest and setup tokens stay server-side. Provision the first admin with the one-time `provisionAdmin` Convex action, then sign in at `/experiment-dashboard` with email and password.
+
+The dashboard uses `am-vs-am2-v2` and starts paused. After preview validation, an administrator can enable the experiment and set AM/AM2 percentages totaling 100%. `utm_term` is reserved for the displayed page label (`AM` or `AM2`); the other UTM values and ad click identifiers remain attached to the visitor and order.
 
 Initiated, completed, and failed payment events share the same tracking fields: `location`, `device`, `marketing`, `engagement`, `experiment_id`, `visitor_id`, `page_variant`, and `entry_type`. UTM values are also duplicated into sheet-friendly top-level columns: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `utm_id`, and `referrer`. Checkout saves the browser tracking snapshot by Merchant Order ID and sends it with the completed/failed status check, so `AM` or `AM2` can be matched to the confirmed payment.
 

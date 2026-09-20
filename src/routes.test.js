@@ -12,6 +12,7 @@ test("routes requested marketing, checkout, and thank-you URLs", () => {
     page: "thankyou",
     merchantOrderId: "AM_123",
   });
+  assert.deepEqual(getPageRoute("/experiment-dashboard", ""), { page: "experiment-dashboard" });
 });
 
 test("keeps legacy routes working", () => {
@@ -39,7 +40,7 @@ test("production rewrites expose only current AM1 public routes", () => {
   );
   const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
 
-  assert.deepEqual(rewriteSources, ["/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou"]);
+  assert.deepEqual(rewriteSources, ["/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/experiment-dashboard"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
 
@@ -49,7 +50,7 @@ test("production cache headers are explicit for app routes and assets", () => {
   );
   const headersBySource = new Map(config.headers.map((entry) => [entry.source, entry.headers]));
 
-  for (const source of ["/", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/privacy", "/terms"]) {
+  for (const source of ["/", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/experiment-dashboard", "/privacy", "/terms"]) {
     assertHeader(headersBySource, source, "Cache-Control", "no-store, max-age=0");
   }
 

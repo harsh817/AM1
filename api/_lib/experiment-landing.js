@@ -1,5 +1,6 @@
 import { getHeader } from "./http.js";
 import { forwardMakeWebhookPayload } from "./make.js";
+import { recordConvexLanding } from "./convex.js";
 
 const MAX_TEXT_LENGTH = 128;
 const MAX_REQUESTS_PER_WINDOW = 60;
@@ -40,7 +41,7 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
   pruneRecentRequests(now);
 
   const marketing = payload.marketing || {};
-  await forwardWebhook({
+  const event = {
     event_name: "experiment.landing_view",
     event_timestamp: new Date().toISOString(),
     sheet_name: "experiment_landing",
@@ -56,7 +57,32 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
     utm_content: clean(marketing.content),
     utm_term: clean(marketing.term),
     utm_id: clean(marketing.id),
-  });
+  };
+  await forwardWebhook(event);
+  try {
+    await recordConvexLanding({
+      dedupeKey,
+      occurredAt: now,
+      attribution: {
+        experimentId,
+        visitorId,
+        variant,
+        entryType,
+        utmSource: clean(marketing.source),
+        utmMedium: clean(marketing.medium),
+        utmCampaign: clean(marketing.campaign),
+        utmContent: clean(marketing.content),
+        utmTerm: clean(marketing.term),
+        utmId: clean(marketing.id),
+        gclid: clean(marketing.gclid),
+        gbraid: clean(marketing.gbraid),
+        wbraid: clean(marketing.wbraid),
+        fbclid: clean(marketing.fbclid),
+      },
+    });
+  } catch {
+    // Reporting outages must never block the landing page.
+  }
 
   return { recorded: true };
 }

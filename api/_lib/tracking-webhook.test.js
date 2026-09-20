@@ -25,6 +25,7 @@ test("extracts missing UTM fields from marketing referrer URL", () => {
     content: "Video",
     term: "{{term.name}}",
     id: "120254409818390054",
+    fbclid: "example",
     referrer,
   });
   assert.equal(payload.utm_source, "ig");

@@ -617,3 +617,10 @@ Before shipping an Ink Luxury page:
 - `npm test` passes.
 - `npm run build` passes.
 - `git diff --check` passes.
+
+## Experiment Dashboard
+
+- The private dashboard uses the existing Ink Luxury palette with white reporting surfaces, restrained borders, and responsive metric/table layouts.
+- `/experiment-dashboard` is excluded from landing-page analytics and session recordings.
+- Dashboard access is limited to the configured administrator email through Convex Auth.
+- AM/AM2 controls support a paused state, allocations totaling 100%, and administrator audit history.

@@ -375,3 +375,13 @@ Next skill focus:
 ## Open Questions And TBDs
 
 - Vercel's GitHub integration needs authorization from the target repository owner for this forked PR. This is an external repository configuration gap, not a failing application test or build.
+
+## Private AM vs AM2 experiment dashboard (2026-09-20)
+
+Status: implemented locally; production Convex provisioning remains an environment setup step.
+
+The project now includes Convex storage for experiment exposures, checkout attribution, orders, verified payment receipts, daily metrics, and administrator audit records. Landing, PhonePe initiation/status, and verified webhook paths can write durable attribution records through server-side Convex calls while keeping checkout available if reporting is temporarily unavailable.
+
+`/experiment-dashboard` uses Convex Auth email/password access, approved-admin authorization, password-reset email delivery through Resend, live experiment controls, and AM/AM2 reporting. The new experiment is `am-vs-am2-v2` and defaults to paused. `utm_term` is reserved for the displayed page; other UTM values and click identifiers are retained.
+
+Validation: project tests pass 101/101, production build passes, bundle budget passes, Convex local function deployment and typecheck pass, and an isolated local landing write returned `{ recorded: true }`.

@@ -3,6 +3,7 @@ import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPaymentStatusPayload } from "../payment-status-webhook.js";
 import { getPhonePeOrderStatus } from "../phonepe.js";
 import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
+import { buildConvexAttribution, recordConvexOrder } from "../convex.js";
 
 const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
 const STATUS_ROUTE = "/api/phonepe/status";
@@ -70,6 +71,18 @@ export async function checkPaymentOrderStatus({
       status,
       tracking,
     }));
+  }
+
+  try {
+    await recordConvexOrder({
+      merchantOrderId: normalizedOrderId,
+      amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
+      state: isFinalPaymentState(status.state) ? status.state : "PENDING",
+      attribution: buildConvexAttribution(tracking),
+      occurredAt: Date.now(),
+    });
+  } catch {
+    // Payment status remains authoritative even if reporting is temporarily unavailable.
   }
 
   return buildClientStatusResponse(status, normalizedOrderId);

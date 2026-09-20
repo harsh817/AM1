@@ -6,17 +6,16 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/600-italic.css";
 import { getPageRoute } from "./routes.js";
-import { resolveLandingRoute } from "./lib/ab-testing.js";
+import { resolveLandingRouteAsync } from "./lib/ab-testing.js";
 
-const landingRoute = resolveLandingRoute(window);
-const route = landingRoute || getPageRoute(window.location.pathname, window.location.search);
 const LandingPage = lazy(() => import("./pages/LandingPage.jsx").then((module) => ({ default: module.LandingPage })));
 const LandingPageAM2 = lazy(() => import("./pages/LandingPageAM2.jsx").then((module) => ({ default: module.LandingPageAM2 })));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
 const ThankYouPage = lazy(() => import("./pages/ThankYouPage.jsx").then((module) => ({ default: module.ThankYouPage })));
 const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({ default: module.LegalPage })));
+const ExperimentDashboard = lazy(() => import("./pages/ExperimentDashboard.jsx").then((module) => ({ default: module.ExperimentDashboard })));
 
-function App() {
+function App({ route }) {
   if (route.page === "pending") return null;
   const page = route.page === "checkout" ? (
     <CheckoutPage />
@@ -24,6 +23,8 @@ function App() {
     <LandingPageAM2 />
   ) : route.page === "thankyou" ? (
     <ThankYouPage merchantOrderId={route.merchantOrderId} />
+  ) : route.page === "experiment-dashboard" ? (
+    <ExperimentDashboard />
   ) : route.page === "legal" ? (
     <LegalPage type={route.type} />
   ) : (
@@ -33,8 +34,11 @@ function App() {
   return <Suspense fallback={null}>{page}</Suspense>;
 }
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+resolveLandingRouteAsync(window).then((landingRoute) => {
+  const route = landingRoute || getPageRoute(window.location.pathname, window.location.search);
+  createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <App route={route} />
+    </React.StrictMode>,
+  );
+});
