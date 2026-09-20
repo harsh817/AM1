@@ -34,9 +34,9 @@ Status legend:
 | --- | --- |
 | Release date | 2026-09-20 |
 | Owner | Pending owner signoff |
-| Git commit | Pending AM2 release commit |
-| Vercel deployment URL | Pending AM2 production deployment |
-| Production URL tested | Pending post-deploy verification for https://thriveonp.com/a-m and https://thriveonp.com/AM2 |
+| Git commit | `b3c6da4` (`feat: publish AM2 styleiq landing variant`) |
+| Vercel deployment URL | `https://thriveonp.com/AM2` (production alias; Vercel response confirmed) |
+| Production URL tested | Verified 2026-09-20: `https://thriveonp.com/a-m`, `https://thriveonp.com/AM2`, `https://thriveonp.com/a-m-checkout`, and `https://thriveonp.com/a-m-thankyou` returned HTTP 200 |
 | PhonePe mode | Owner reports real success and failure were already tested; capture final evidence before launch signoff |
 | Make scenario tested | Not verified in Make dashboard during this run |
 | Rollback deployment | AM1 previous: https://am1-lhd03zro5-harsh817s-projects.vercel.app; wrapper previous: https://pg-thriveonp-go2ksxkt2-harsh817s-projects.vercel.app |
@@ -45,9 +45,9 @@ Status legend:
 
 - [x] Local test suite passes. Evidence: `npm test` passed, 94/94 tests after the direct thank-you Pixel fallback change.
 - [x] Production build passes. Evidence: `npm run build` passed after the direct thank-you Pixel fallback change.
-- [ ] AM2 production deployment is Ready. Evidence: pending push and Vercel deployment verification for `/AM2`.
+- [x] AM2 production deployment is Ready. Evidence: commit `b3c6da4` pushed to `main`; `https://thriveonp.com/AM2` returned HTTP 200 from Vercel with `X-Vercel-Cache: HIT`.
 - [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
-- [ ] Public routes return successful responses: /a-m, /AM2, /a-m-checkout, /a-m-thankyou. Evidence: pending post-deploy smoke test; `/a-m` must remain the original control page.
+- [x] Public routes return successful responses: /a-m, /AM2, /a-m-checkout, /a-m-thankyou. Evidence: 2026-09-20 production smoke test returned HTTP 200 for all four routes; `/a-m` remains the original control page and `/AM2` is the separate variant.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
 - [x] No env files, API keys, webhook URLs, credentials, or private tokens are committed. Evidence: `.env` is gitignored, only `.env.example` is tracked, and tracked-source secret scan outside generated artifacts returned no hits.
@@ -493,9 +493,10 @@ For release hardening:
 
 After deployment:
 
-- Confirm the landing page returns a successful HTTP response.
-- Confirm the checkout page returns a successful HTTP response.
-- Confirm the thank-you page returns a successful HTTP response.
+- [x] Confirm the original landing page returns a successful HTTP response: `https://thriveonp.com/a-m` returned HTTP 200 on 2026-09-20.
+- [x] Confirm the AM2 landing page returns a successful HTTP response: `https://thriveonp.com/AM2` returned HTTP 200 on 2026-09-20.
+- [x] Confirm the checkout page returns a successful HTTP response: `https://thriveonp.com/a-m-checkout` returned HTTP 200 on 2026-09-20.
+- [x] Confirm the thank-you page returns a successful HTTP response: `https://thriveonp.com/a-m-thankyou` returned HTTP 200 on 2026-09-20.
 
 ## Current Repo Priorities
 
