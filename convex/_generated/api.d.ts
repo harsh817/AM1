@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as dashboard from "../dashboard.js";
 import type * as events from "../events.js";
+import type * as http from "../http.js";
 import type * as setup from "../setup.js";
 
 import type {
@@ -23,6 +24,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   dashboard: typeof dashboard;
   events: typeof events;
+  http: typeof http;
   setup: typeof setup;
 }>;
 

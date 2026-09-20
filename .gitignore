@@ -19,3 +19,4 @@ design-qa.md
 .vscode/
 .idea/
 .vercel
+.env*
