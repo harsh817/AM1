@@ -8,6 +8,10 @@ AM2 is a separate production landing-page variant at `/AM2`. The original contro
 
 AM2 image assets are delivered through Cloudinary using optimized WebP sources with `f_auto`, `q_auto`, and bounded-width transformations. The local asset files remain available for development and standalone generation, while the page references the Cloudinary delivery URLs in production source.
 
+## Experiment Entry Routing
+
+The shared campaign entry path is `/a-m`. New visitors are assigned before React renders to either the original `AM` page or AM2. AM visitors remain on `/a-m?utm_term=AM`; AM2 visitors move to `/AM2?utm_term=AM2`. The assignment is stored for 90 days and carried into checkout tracking. Direct `/AM2` visits remain available but are excluded from randomized experiment totals.
+
 ## Selected Direction
 
 Use **Option 05 - Ink Luxury** from [artifacts/design-system-combinations.html](artifacts/design-system-combinations.html).

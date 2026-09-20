@@ -15,6 +15,14 @@
 - Asset delivery: optimized WebP assets are uploaded to the Cloudinary `AM - Assets` folder and referenced through optimized Cloudinary URLs.
 - Acceptance criteria: `/a-m` remains the original page, `/AM2` renders the variant, checkout and thank-you routes remain unchanged, secrets are excluded from git, and the required test/build/export checks pass.
 
+## AM vs AM2 Experiment Routing (2026-09-20)
+
+- Outcome: Use the existing `/a-m` campaign link as a 50/50 entry point that assigns new visitors to `AM` or `AM2` before the landing page renders.
+- Routing: `AM` stays on `/a-m?utm_term=AM`; `AM2` redirects to `/AM2?utm_term=AM2`; assignments persist for 90 days.
+- Attribution: experiment ID, anonymous visitor ID, variant, entry type, and UTM fields travel through checkout and are included in Make/Sheets payment events by `merchant_order_id`.
+- Behaviour reporting: landing assignments are sent to the `experiment_landing` sheet; Clarity receives experiment tags for filtering and funnel analysis.
+- Direct access: `/AM2` remains a valid direct route and is classified separately from randomized visitors.
+
 ## Feature Target
 
 - Outcome: Deliver the approved landing-page, testimonial, approach, report-card, social-proof, footer, and checkout presentation changes without regressing AM1's payment integration.

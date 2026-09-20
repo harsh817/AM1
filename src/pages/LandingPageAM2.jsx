@@ -1,6 +1,7 @@
 import { Check, ClockCountdown, SealCheck, Star, X } from "@phosphor-icons/react";
 import { Fragment, useEffect } from "react";
 import { initializeAnalytics, trackLandingView } from "../lib/analytics.js";
+import { sendExperimentLanding } from "../lib/ab-testing.js";
 import { LANDING_AM2_PATH } from "../routes.js";
 import { testimonials } from "../lib/landing-data.js";
 import { Button, PRICE_LABEL, SectionHeading, SoundVideo } from "./landing/shared.jsx";
@@ -260,6 +261,7 @@ export function LandingPageAM2() {
   useEffect(() => {
     initializeAnalytics({ route: LANDING_AM2_PATH });
     trackLandingView({ route: LANDING_AM2_PATH });
+    sendExperimentLanding();
   }, []);
 
   return (

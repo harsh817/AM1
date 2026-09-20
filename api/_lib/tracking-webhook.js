@@ -4,6 +4,7 @@ import {
   DEFAULT_TEXT_MAX_LENGTH,
   IP_ADDRESS_MAX_LENGTH,
   LONG_TEXT_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
 } from "./constants.js";
 import { getHeader } from "./http.js";
 
@@ -17,6 +18,7 @@ import { getHeader } from "./http.js";
  */
 export function buildTrackingFields({ req, tracking = {} } = {}) {
   const marketing = buildMarketing(tracking.marketing);
+  const experiment = buildExperiment(tracking.experiment);
 
   return {
     location: buildLocation(req),
@@ -30,7 +32,23 @@ export function buildTrackingFields({ req, tracking = {} } = {}) {
     utm_id: marketing.id,
     referrer: marketing.referrer,
     engagement: buildEngagement(tracking.engagement),
+    ...(experiment ? {
+      experiment_id: experiment.experiment_id,
+      visitor_id: experiment.visitor_id,
+      page_variant: experiment.page_variant,
+      entry_type: experiment.entry_type,
+    } : {}),
   };
+}
+
+function buildExperiment(experiment = {}) {
+  const normalized = {
+    experiment_id: clean(experiment.experiment_id, SHORT_TEXT_MAX_LENGTH),
+    visitor_id: clean(experiment.visitor_id, SHORT_TEXT_MAX_LENGTH),
+    page_variant: clean(experiment.page_variant, SHORT_TEXT_MAX_LENGTH),
+    entry_type: clean(experiment.entry_type, SHORT_TEXT_MAX_LENGTH),
+  };
+  return Object.values(normalized).some(Boolean) ? normalized : null;
 }
 
 function buildLocation(req) {

@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { ArrowRight, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
 import { CHECKOUT_PATH } from "../../routes.js";
+import { buildCheckoutTarget } from "../../lib/ab-testing.js";
 
-export const CHECKOUT_TARGET = CHECKOUT_PATH;
+export const CHECKOUT_TARGET = buildCheckoutTarget(CHECKOUT_PATH);
 export const PRICE_LABEL = "\u20B91,999 + GST";
 export const HERO_PRICE_LABEL = `Today's Price ${PRICE_LABEL}`;
 

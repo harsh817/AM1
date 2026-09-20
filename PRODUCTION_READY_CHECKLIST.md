@@ -10,6 +10,7 @@ Use this before every release that affects:
 - /AM2 (new production variant)
 - /a-m-checkout
 - /a-m-thankyou
+- /api/experiment/landing
 - /api/phonepe/create-order
 - /api/phonepe/status
 - /api/phonepe/webhook
@@ -43,11 +44,12 @@ Status legend:
 
 ## P0 Go/No-Go Gates
 
-- [x] Local test suite passes. Evidence: `npm test` passed, 94/94 tests after the direct thank-you Pixel fallback change.
-- [x] Production build passes. Evidence: `npm run build` passed after the direct thank-you Pixel fallback change.
+- [x] Local test suite passes. Evidence: `npm test` passed, 100/100 tests after the AM/AM2 experiment routing and attribution changes.
+- [x] Production build passes. Evidence: `npm run build` passed after the AM/AM2 experiment routing and attribution changes.
 - [x] AM2 production deployment is Ready. Evidence: commit `b3c6da4` pushed to `main`; `https://thriveonp.com/AM2` returned HTTP 200 from Vercel with `X-Vercel-Cache: HIT`.
 - [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
 - [x] Public routes return successful responses: /a-m, /AM2, /a-m-checkout, /a-m-thankyou. Evidence: 2026-09-20 production smoke test returned HTTP 200 for all four routes; `/a-m` remains the original control page and `/AM2` is the separate variant.
+- [x] A/B routing and attribution are covered by tests. Evidence: 100 tests pass, including pre-render assignment, AM2 redirect preservation, checkout URL attribution, direct AM2 classification, landing-event validation, and idempotency keys.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
 - [~] Required Vercel environment variables exist for production. Evidence: PhonePe core variables, `BASE_URL`, and `MAKE_WEBHOOK_URL` exist; webhook auth variables still need to match the selected PhonePe webhook authentication method.
 - [x] No env files, API keys, webhook URLs, credentials, or private tokens are committed. Evidence: `.env` is gitignored, only `.env.example` is tracked, and tracked-source secret scan outside generated artifacts returned no hits.
@@ -56,6 +58,7 @@ Status legend:
 - [~] PhonePe webhook credentials are configured and verified. Evidence: current code supports SHA webhook verification through `PHONEPE_WEBHOOK_USERNAME` and `PHONEPE_WEBHOOK_PASSWORD`; if PhonePe dashboard uses HMAC/API-key-style verification, update the code and env naming to match that method.
 - [x] Webhook/event payload contract is documented and tested. Evidence: Make/PhonePe payload sections are documented below, and webhook/status/lead payload tests passed.
 - [ ] Duplicate payment completion/failure events cannot create duplicate operational records. Missing: there is no durable idempotency store or duplicate-event guard; repeated final status checks or repeated verified webhooks can forward again.
+- [~] Experiment landing events have application and Make deduplication keys. Evidence: `experiment_landing` events use `experiment_id:visitor_id:page_variant`; durable deduplication of payment rows remains a Make/Sheets configuration responsibility.
 - [~] Meta Pixel and Microsoft Clarity IDs are verified for the correct business/project accounts. Evidence: IDs are present in `index.html`; account ownership/correct business was not verified in Meta or Clarity dashboards.
 - [~] Pixel and Clarity events are verified on production URLs, not only local preview. Evidence: production `/a-m-thankyou?pixelCheck=1` serves the direct thank-you Pixel fallback and Meta script source; the verified Purchase rule is covered by local tests. Missing: Meta Pixel Helper / Events Manager and Clarity browser-network or dashboard verification still need to be captured.
 - [~] Payment success, failure, and pending states are tested end to end. Evidence: owner reports real success and failure were tested; thank-you now retries pending status before final pending copy; pending-state dashboard evidence and reproducible proof were not captured in this run.

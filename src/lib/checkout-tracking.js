@@ -4,6 +4,7 @@ const BOOLEAN_TEXT_MAX_LENGTH = 8;
 const DEFAULT_TRACKING_TEXT_MAX_LENGTH = 256;
 const LONG_TRACKING_TEXT_MAX_LENGTH = 512;
 const ORDER_TRACKING_ID_MAX_LENGTH = 128;
+import { getExperimentTracking } from "./ab-testing.js";
 
 /**
  * Records a checkout page visit while preserving the first marketing touch.
@@ -47,6 +48,7 @@ export function getCheckoutTrackingPayload(context = getBrowserContext()) {
   return {
     device: buildDevice(context),
     marketing: next.marketing,
+    experiment: getExperimentTracking(context),
     engagement: {
       page_visits: String(next.pageVisits),
       form_submissions: String(next.formSubmissions),
@@ -96,6 +98,7 @@ export function getCheckoutTrackingSnapshot(context = getBrowserContext()) {
   return {
     device: buildDevice(context),
     marketing: normalizeMarketing(state.marketing),
+    experiment: getExperimentTracking(context),
     engagement: {
       page_visits: String(positiveCount(state.pageVisits)),
       form_submissions: String(positiveCount(state.formSubmissions)),
@@ -156,10 +159,20 @@ function normalizeTrackingPayload(tracking = {}) {
   return {
     device: normalizeDevice(tracking.device),
     marketing: normalizeMarketing(tracking.marketing),
+    experiment: normalizeExperiment(tracking.experiment),
     engagement: {
       page_visits: String(positiveCount(tracking.engagement?.page_visits)),
       form_submissions: String(positiveCount(tracking.engagement?.form_submissions)),
     },
+  };
+}
+
+function normalizeExperiment(experiment = {}) {
+  return {
+    experiment_id: clean(experiment.experiment_id),
+    visitor_id: clean(experiment.visitor_id, ORDER_TRACKING_ID_MAX_LENGTH),
+    page_variant: clean(experiment.page_variant, BOOLEAN_TEXT_MAX_LENGTH),
+    entry_type: clean(experiment.entry_type, BOOLEAN_TEXT_MAX_LENGTH),
   };
 }
 

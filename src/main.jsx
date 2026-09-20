@@ -6,8 +6,10 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/600-italic.css";
 import { getPageRoute } from "./routes.js";
+import { resolveLandingRoute } from "./lib/ab-testing.js";
 
-const route = getPageRoute(window.location.pathname, window.location.search);
+const landingRoute = resolveLandingRoute(window);
+const route = landingRoute || getPageRoute(window.location.pathname, window.location.search);
 const LandingPage = lazy(() => import("./pages/LandingPage.jsx").then((module) => ({ default: module.LandingPage })));
 const LandingPageAM2 = lazy(() => import("./pages/LandingPageAM2.jsx").then((module) => ({ default: module.LandingPageAM2 })));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
@@ -15,6 +17,7 @@ const ThankYouPage = lazy(() => import("./pages/ThankYouPage.jsx").then((module)
 const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({ default: module.LegalPage })));
 
 function App() {
+  if (route.page === "pending") return null;
   const page = route.page === "checkout" ? (
     <CheckoutPage />
   ) : route.page === "landing-am2" ? (

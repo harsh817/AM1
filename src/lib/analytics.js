@@ -9,6 +9,7 @@ import {
   toSafeRoute,
   toSafeValue,
 } from "./analytics-utils.js";
+import { getExperimentTracking } from "./ab-testing.js";
 
 export const META_PIXEL_ID = "2647411082380065";
 export const CLARITY_PROJECT_ID = "xx2rulxltt";
@@ -59,6 +60,7 @@ export function trackLandingView({ windowRef = globalThis.window, route = "/a-m"
     clarityEventName: "landing_view",
     funnelStep: "landing_view",
     route,
+    experiment: getExperimentTracking({ location: windowRef?.location, document: windowRef?.document, storage: windowRef?.localStorage, sessionStorage: windowRef?.sessionStorage }),
   });
 }
 
@@ -71,6 +73,7 @@ export function trackCheckoutView({ windowRef = globalThis.window, route = "/a-m
     funnelStep: "checkout_view",
     route,
     currency: ANALYTICS_CURRENCY,
+    experiment: getExperimentTracking({ location: windowRef?.location, document: windowRef?.document, storage: windowRef?.localStorage, sessionStorage: windowRef?.sessionStorage }),
   });
 }
 
@@ -182,6 +185,7 @@ function trackFunnelEvent(windowRef, {
   currency,
   value,
   paymentState,
+  experiment,
 }) {
   if (!windowRef || !eventId) return false;
 
@@ -194,6 +198,7 @@ function trackFunnelEvent(windowRef, {
     currency,
     value,
     paymentState,
+    experiment,
   });
   let sent = false;
 
@@ -213,13 +218,16 @@ function trackFunnelEvent(windowRef, {
   return true;
 }
 
-function buildSafeEventParams({ funnelStep, route, currency, value, paymentState }) {
+function buildSafeEventParams({ funnelStep, route, currency, value, paymentState, experiment }) {
   return removeEmptyValues({
     content_name: PRODUCT_CONTENT_NAME,
     funnel_step: toSafeValue(funnelStep),
     route: toSafeRoute(route),
     currency: toCurrency(currency),
     payment_state: toSafeValue(paymentState),
+    experiment_id: toSafeValue(experiment?.experiment_id),
+    page_variant: toSafeValue(experiment?.page_variant),
+    entry_type: toSafeValue(experiment?.entry_type),
     value,
   });
 }
@@ -231,6 +239,9 @@ function sendClarityEvent(windowRef, eventName, params) {
     route: params.route,
     payment_state: params.payment_state,
     currency: params.currency,
+    experiment_id: params.experiment_id,
+    page_variant: params.page_variant,
+    entry_type: params.entry_type,
   };
 
   for (const [key, value] of Object.entries(removeEmptyValues(tags))) {

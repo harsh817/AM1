@@ -6,6 +6,7 @@ A responsive React and Vite sales page for the AttractiveMen Personalized Style 
 
 - Responsive landing page for desktop and mobile
 - Separate AM2 landing-page variant for future A/B testing
+- A/B entry routing from `/a-m` with persistent `AM` / `AM2` assignment
 - Personalized StyleIQ report offer at INR 1,999 plus GST
 - Cloudinary-optimized before-and-after, report, process and testimonial imagery
 - Checkout form with locally saved contact and bump selections
@@ -78,9 +79,9 @@ MAKE_WEBHOOK_URL
 
 Use `.env.example` as the local template. Keep real values in `.env` or deployment environment variables only.
 
-`MAKE_WEBHOOK_URL` receives all tracking events. Every payload includes `event_name`, `event_timestamp`, and `sheet_name` so Make can route each event into a separate Google Sheet tab. Current sheet names are `payment_initiated`, `payment_completed`, `payment_failed`, and `phonepe_webhook`.
+`MAKE_WEBHOOK_URL` receives all tracking events. Every payload includes `event_name`, `event_timestamp`, and `sheet_name` so Make can route each event into a separate Google Sheet tab. Current sheet names are `experiment_landing`, `payment_initiated`, `payment_completed`, `payment_failed`, and `phonepe_webhook`.
 
-Initiated, completed, and failed payment events share the same tracking fields: `location`, `device`, `marketing`, and `engagement`. UTM values are also duplicated into sheet-friendly top-level columns: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `utm_id`, and `referrer`. All event payloads also include normalized payment columns: `merchant_order_id`, `phonepe_order_id`, `payment_state`, `amount_paise`, `payable_amount_paise`, `fee_amount_paise`, `error_code`, and `error_message`. Checkout saves the original browser tracking snapshot by Merchant Order ID and sends it with the completed/failed status check. Completed and failed payment events also include the full raw PhonePe status response under `phonepe.status`.
+Initiated, completed, and failed payment events share the same tracking fields: `location`, `device`, `marketing`, `engagement`, `experiment_id`, `visitor_id`, `page_variant`, and `entry_type`. UTM values are also duplicated into sheet-friendly top-level columns: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `utm_id`, and `referrer`. Checkout saves the browser tracking snapshot by Merchant Order ID and sends it with the completed/failed status check, so `AM` or `AM2` can be matched to the confirmed payment.
 
 Raw PhonePe webhook events preserve the original provider payload under `phonepe.webhook`. They also include the same tracking keys, but browser-only fields are blank unless that data is available from the webhook request or provider payload.
 
@@ -99,4 +100,4 @@ https://thriveonp.com/a-m-checkout
 https://thriveonp.com/a-m-thankyou
 ```
 
-`/a-m` is the original control page. `/AM2` is a separate production variant; traffic splitting is intentionally not enabled yet.
+`/a-m` is the shared campaign entry link. New visitors are assigned to the original `/a-m` page or redirected to `/AM2`; the assignment is remembered for 90 days. Direct `/AM2` visits remain available and are reported separately from randomized traffic. Use `utm_term=AM` and `utm_term=AM2` as the page labels in Make/Sheets.
