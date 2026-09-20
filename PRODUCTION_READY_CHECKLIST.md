@@ -521,6 +521,8 @@ Based on the current project shape, prioritize these before scaling paid traffic
 
 ## Convex Experiment Dashboard Release
 
+Release commit: `6ee8f66` (`main`, pushed to `origin/main`). Production deployment URL remains pending Convex and Vercel environment provisioning.
+
 - [x] Convex schema added for experiment exposures, orders, payment receipts, daily metrics, and administrator audit records.
 - [x] `/experiment-dashboard` route added with Convex Auth email/password login and admin-only queries/mutations.
 - [x] Password reset flow wired through Resend configuration.
