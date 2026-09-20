@@ -8,7 +8,9 @@
     { "source": "/am2", "destination": "/" },
     { "source": "/a-m-checkout", "destination": "/" },
     { "source": "/a-m-thankyou", "destination": "/" },
-    { "source": "/experiment-dashboard", "destination": "/" }
+    { "source": "/experiment-dashboard", "destination": "/" },
+    { "source": "/dashboard", "destination": "/" },
+    { "source": "/dashboard/(.*)", "destination": "/" }
   ],
   "headers": [
     {
@@ -76,6 +78,15 @@
     },
     {
       "source": "/experiment-dashboard",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard(.*)",
       "headers": [
         {
           "key": "Cache-Control",

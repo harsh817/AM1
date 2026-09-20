@@ -25,6 +25,8 @@ function App({ route }) {
     <ThankYouPage merchantOrderId={route.merchantOrderId} />
   ) : route.page === "experiment-dashboard" ? (
     <ExperimentDashboard />
+  ) : route.page === "dashboard" ? (
+    <ExperimentDashboard initialSection={route.section} />
   ) : route.page === "legal" ? (
     <LegalPage type={route.type} />
   ) : (

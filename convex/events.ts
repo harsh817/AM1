@@ -37,28 +37,55 @@ export const recordLanding = mutation({
   },
 });
 
+export const recordCheckoutVisit = mutation({
+  args: { token: v.string(), dedupeKey: v.string(), attribution, occurredAt: v.number() },
+  returns: v.object({ recorded: v.boolean(), duplicate: v.boolean() }),
+  handler: async (ctx, args) => {
+    assertIngestToken(args.token);
+    const existing = await ctx.db.query("checkoutVisits").withIndex("by_dedupe_key", (query) => query.eq("dedupeKey", args.dedupeKey)).unique();
+    if (existing) return { recorded: false, duplicate: true };
+    await ctx.db.insert("checkoutVisits", { ...args.attribution, dedupeKey: args.dedupeKey, occurredAt: args.occurredAt });
+    return { recorded: true, duplicate: false };
+  },
+});
+
 export const recordOrder = mutation({
-  args: { token: v.string(), merchantOrderId: v.string(), amountPaise: v.number(), state: v.union(v.literal("INITIATED"), v.literal("PENDING"), v.literal("COMPLETED"), v.literal("FAILED"), v.literal("UNKNOWN")), attribution: v.optional(attribution), occurredAt: v.number() },
+  args: { token: v.string(), merchantOrderId: v.string(), amountPaise: v.number(), state: v.union(v.literal("INITIATED"), v.literal("PENDING"), v.literal("COMPLETED"), v.literal("FAILED"), v.literal("UNKNOWN")), attribution: v.optional(attribution), customer: v.optional(v.object({ name: v.string(), email: v.string(), phone: v.string(), selectedAddons: v.array(v.string()), lineItems: v.array(v.object({ id: v.string(), title: v.string(), pricePaise: v.number() })) })), failure: v.optional(v.object({ type: v.union(v.literal("payment_failed"), v.literal("checkout_error"), v.literal("provider_uncertain"), v.literal("reporting_failure")), code: v.optional(v.string()), message: v.optional(v.string()) })), providerEventId: v.optional(v.string()), occurredAt: v.number() },
   returns: v.object({ recorded: v.boolean(), duplicate: v.boolean() }),
   handler: async (ctx, args) => {
     assertIngestToken(args.token);
     const existing = await ctx.db.query("orders").withIndex("by_merchant_order_id", (query) => query.eq("merchantOrderId", args.merchantOrderId)).unique();
+    const finalAttribution = existing?.attribution || args.attribution;
+    const previousPaidOrder = existing?.visitorId ? await ctx.db.query("orders").withIndex("by_visitor_state", (query) => query.eq("visitorId", existing.visitorId).eq("state", "COMPLETED")).take(1) : [];
     if (existing) {
       const completed = existing.state === "COMPLETED";
       const nextState = completed ? "COMPLETED" : args.state;
-      await ctx.db.patch(existing._id, { state: nextState, amountPaise: existing.amountPaise || args.amountPaise, attribution: existing.attribution || args.attribution, visitorId: existing.visitorId || args.attribution?.visitorId, variant: existing.variant || args.attribution?.variant, entryType: existing.entryType || args.attribution?.entryType, updatedAt: args.occurredAt });
-      const finalAttribution = existing.attribution || args.attribution;
+      const timeline = [...(existing.paymentTimeline || []), timelineEvent(args)].slice(-20);
+      await ctx.db.patch(existing._id, { state: nextState, amountPaise: existing.amountPaise || args.amountPaise, attribution: finalAttribution, visitorId: existing.visitorId || args.attribution?.visitorId, variant: existing.variant || args.attribution?.variant, entryType: existing.entryType || args.attribution?.entryType, customerName: existing.customerName || args.customer?.name, customerEmail: existing.customerEmail || args.customer?.email, customerPhone: existing.customerPhone || args.customer?.phone, selectedAddons: existing.selectedAddons || args.customer?.selectedAddons, lineItems: existing.lineItems || args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, completedAt: nextState === "COMPLETED" ? existing.completedAt || args.occurredAt : existing.completedAt, paymentTimeline: timeline, updatedAt: args.occurredAt });
       if (!completed && nextState === "COMPLETED" && finalAttribution?.entryType === "randomized" && finalAttribution.variant) {
         const finalVisitorId = existing.visitorId || finalAttribution.visitorId;
-        const previousPaidOrder = await ctx.db.query("orders").withIndex("by_visitor_state", (query) => query.eq("visitorId", finalVisitorId).eq("state", "COMPLETED")).take(1);
         await adjustDailyMetric(ctx, finalAttribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: previousPaidOrder.length ? 0 : 1 });
       }
       return { recorded: true, duplicate: completed && args.state === "COMPLETED" };
     }
-    await ctx.db.insert("orders", { merchantOrderId: args.merchantOrderId, amountPaise: args.amountPaise, state: args.state, attribution: args.attribution, visitorId: args.attribution?.visitorId, variant: args.attribution?.variant, entryType: args.attribution?.entryType, createdAt: args.occurredAt, updatedAt: args.occurredAt });
+    const newOrder = { merchantOrderId: args.merchantOrderId, amountPaise: args.amountPaise, state: args.state, attribution: args.attribution, visitorId: args.attribution?.visitorId, variant: args.attribution?.variant, entryType: args.attribution?.entryType, customerName: args.customer?.name, customerEmail: args.customer?.email, customerPhone: args.customer?.phone, selectedAddons: args.customer?.selectedAddons, lineItems: args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, paymentTimeline: [timelineEvent(args)], createdAt: args.occurredAt, updatedAt: args.occurredAt, ...(args.state === "COMPLETED" ? { completedAt: args.occurredAt } : {}) };
+    await ctx.db.insert("orders", newOrder);
     if (args.state === "COMPLETED" && args.attribution?.entryType === "randomized" && args.attribution.variant) {
       await adjustDailyMetric(ctx, args.attribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: 1 });
     }
+    return { recorded: true, duplicate: false };
+  },
+});
+
+export const recordPaymentReceipt = mutation({
+  args: { token: v.string(), merchantOrderId: v.string(), providerEventId: v.string(), state: v.string(), amountPaise: v.optional(v.number()), errorCode: v.optional(v.string()), errorMessage: v.optional(v.string()), receivedAt: v.number() },
+  returns: v.object({ recorded: v.boolean(), duplicate: v.boolean() }),
+  handler: async (ctx, args) => {
+    assertIngestToken(args.token);
+    const existing = await ctx.db.query("paymentReceipts").withIndex("by_provider_event", (query) => query.eq("providerEventId", args.providerEventId)).unique();
+    if (existing) return { recorded: false, duplicate: true };
+    const { token: _token, ...receipt } = args;
+    await ctx.db.insert("paymentReceipts", receipt);
     return { recorded: true, duplicate: false };
   },
 });
@@ -74,6 +101,13 @@ export const config = query({
 
 function assertIngestToken(token: string) {
   if (!process.env.CONVEX_INGEST_TOKEN || token !== process.env.CONVEX_INGEST_TOKEN) throw new Error("Invalid ingest token");
+}
+
+function timelineEvent(args: { state: string; occurredAt: number; providerEventId?: string; failure?: { message?: string } }) {
+  const event: { state: string; occurredAt: number; providerEventId?: string; message?: string } = { state: args.state, occurredAt: args.occurredAt };
+  if (args.providerEventId) event.providerEventId = args.providerEventId;
+  if (args.failure?.message) event.message = args.failure.message;
+  return event;
 }
 
 async function adjustDailyMetric(ctx: any, attribution: any, timestamp: number, changes: { visitors?: number; purchasingVisitors?: number; paidOrders?: number; revenuePaise?: number }) {

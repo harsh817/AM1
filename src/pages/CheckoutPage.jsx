@@ -5,6 +5,7 @@ import { trustBadges } from "../lib/landing-data.js";
 import {
   getCheckoutOrderTrackingPayload,
   getCheckoutTrackingPayload,
+  getCheckoutTrackingSnapshot,
   rememberCheckoutOrderTracking,
   rememberCheckoutVisit,
 } from "../lib/checkout-tracking.js";
@@ -75,6 +76,16 @@ export function CheckoutPage() {
 
   useEffect(() => {
     rememberCheckoutVisit();
+    const tracking = getCheckoutTrackingSnapshot();
+    void fetch("/api/experiment/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...tracking.experiment,
+        marketing: tracking.marketing,
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
   }, []);
 
   useEffect(() => {

@@ -1,75 +1,41 @@
-import { mutation, query } from "./_generated/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 const ACTIVE_EXPERIMENT = "am-vs-am2-v2";
+const variantValidator = v.union(v.literal("AM"), v.literal("AM2"));
+const statusValidator = v.union(v.literal("INITIATED"), v.literal("PENDING"), v.literal("COMPLETED"), v.literal("FAILED"), v.literal("UNKNOWN"));
+const filterValidator = v.object({ startAt: v.optional(v.number()), endAt: v.optional(v.number()), variant: v.optional(variantValidator), entryType: v.optional(v.union(v.literal("randomized"), v.literal("direct"), v.literal("test"))), utmSource: v.optional(v.string()), utmMedium: v.optional(v.string()), utmCampaign: v.optional(v.string()), utmContent: v.optional(v.string()), utmTerm: v.optional(v.string()), utmId: v.optional(v.string()) });
 
-export const getExperiment = query({
-  args: {},
-  returns: v.object({ experimentId: v.string(), enabled: v.boolean(), amPercentage: v.number(), am2Percentage: v.number() }),
-  handler: async (ctx) => {
-    await requireAdmin(ctx);
-    const experiment = await ctx.db.query("experiments").withIndex("by_experiment_id", (query) => query.eq("experimentId", ACTIVE_EXPERIMENT)).unique();
-    return experiment ? { experimentId: experiment.experimentId, enabled: experiment.enabled, amPercentage: experiment.amPercentage, am2Percentage: experiment.am2Percentage } : { experimentId: ACTIVE_EXPERIMENT, enabled: false, amPercentage: 50, am2Percentage: 50 };
-  },
-});
+export const getExperiment = query({ args: {}, returns: v.object({ experimentId: v.string(), enabled: v.boolean(), amPercentage: v.number(), am2Percentage: v.number() }), handler: async (ctx) => { await requireAdmin(ctx); const row = await ctx.db.query("experiments").withIndex("by_experiment_id", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).unique(); return row ? pickExperiment(row) : { experimentId: ACTIVE_EXPERIMENT, enabled: false, amPercentage: 50, am2Percentage: 50 }; } });
 
-export const getSummary = query({
-  args: {},
-  returns: v.object({ visitors: v.number(), purchasingVisitors: v.number(), paidOrders: v.number(), conversionRate: v.number(), revenuePaise: v.number(), revenuePerVisitorPaise: v.number(), byVariant: v.any() }),
-  handler: async (ctx) => {
-    await requireAdmin(ctx);
-    const rows = await ctx.db.query("dailyMetrics").withIndex("by_experiment_day_variant", (query) => query.eq("experimentId", ACTIVE_EXPERIMENT)).take(732);
-    const byVariant = { AM: emptyVariant(), AM2: emptyVariant() };
-    for (const row of rows) {
-      const target = byVariant[row.variant];
-      target.visitors += row.visitors;
-      target.purchasingVisitors += row.purchasingVisitors;
-      target.paidOrders += row.paidOrders;
-      target.revenuePaise += row.revenuePaise;
-    }
-    const totals = Object.values(byVariant).reduce((accumulator, row) => addVariant(accumulator, row), emptyVariant());
-    return { ...totals, conversionRate: percentage(totals.purchasingVisitors, totals.visitors), revenuePerVisitorPaise: totals.visitors ? Math.round(totals.revenuePaise / totals.visitors) : 0, byVariant: { AM: { ...byVariant.AM, conversionRate: percentage(byVariant.AM.purchasingVisitors, byVariant.AM.visitors) }, AM2: { ...byVariant.AM2, conversionRate: percentage(byVariant.AM2.purchasingVisitors, byVariant.AM2.visitors) } } };
-  },
-});
+export const getSummary = query({ args: {}, returns: v.any(), handler: async (ctx) => { await requireAdmin(ctx); const rows = await ctx.db.query("dailyMetrics").withIndex("by_experiment_day_variant", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).take(732); return summarizeDaily(rows); } });
 
-export const listOrders = query({
-  args: { limit: v.optional(v.number()) },
-  returns: v.array(v.any()),
-  handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-    return ctx.db.query("orders").withIndex("by_state", (query) => query.eq("state", "COMPLETED")).order("desc").take(Math.min(args.limit || 50, 100));
-  },
-});
+export const getOverview = query({ args: { filters: filterValidator }, returns: v.any(), handler: async (ctx, { filters }) => { await requireAdmin(ctx); const orders = await loadOrders(ctx, filters, 2000); const exposures = (await ctx.db.query("exposures").withIndex("by_experiment_variant", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).take(5000)).filter((row) => matchesAttribution(row, filters) && inRange(row.occurredAt, filters)); const checkouts = (await ctx.db.query("checkoutVisits").withIndex("by_occurred_at").order("desc").take(5000)).filter((row) => matchesAttribution(row, filters) && inRange(row.occurredAt, filters)); return buildOverview(orders, exposures, checkouts); } });
 
-export const updateExperiment = mutation({
-  args: { enabled: v.optional(v.boolean()), amPercentage: v.optional(v.number()), am2Percentage: v.optional(v.number()) },
-  returns: v.object({ updated: v.boolean() }),
-  handler: async (ctx, args) => {
-    const actorUserId = await requireAdmin(ctx);
-    const amPercentage = args.amPercentage ?? 50;
-    const am2Percentage = args.am2Percentage ?? 100 - amPercentage;
-    if (amPercentage < 0 || amPercentage > 100 || am2Percentage < 0 || am2Percentage > 100 || amPercentage + am2Percentage !== 100) throw new Error("Allocation must total 100%.");
-    const existing = await ctx.db.query("experiments").withIndex("by_experiment_id", (query) => query.eq("experimentId", ACTIVE_EXPERIMENT)).unique();
-    const now = Date.now();
-    if (existing) await ctx.db.patch(existing._id, { enabled: args.enabled ?? existing.enabled, amPercentage, am2Percentage, updatedAt: now });
-    else await ctx.db.insert("experiments", { experimentId: ACTIVE_EXPERIMENT, enabled: args.enabled ?? false, amPercentage, am2Percentage, createdAt: now, updatedAt: now });
-    await ctx.db.insert("adminAudit", { action: "experiment.update", actorUserId, details: JSON.stringify({ enabled: args.enabled, amPercentage, am2Percentage }), occurredAt: now });
-    return { updated: true };
-  },
-});
+export const listOrders = query({ args: { limit: v.optional(v.number()), status: v.optional(statusValidator), search: v.optional(v.string()), filters: v.optional(filterValidator) }, returns: v.array(v.any()), handler: async (ctx, args) => { await requireAdmin(ctx); return loadOrders(ctx, { ...(args.filters || {}), status: args.status, search: args.search }, Math.min(args.limit || 50, 200)); } });
 
+export const listOrdersPage = query({ args: { paginationOpts: paginationOptsValidator, status: v.optional(statusValidator), search: v.optional(v.string()), filters: v.optional(filterValidator) }, returns: v.any(), handler: async (ctx, args) => { await requireAdmin(ctx); const base = args.status ? ctx.db.query("orders").withIndex("by_state", (q) => q.eq("state", args.status!)).order("desc") : ctx.db.query("orders").withIndex("by_created_at").order("desc"); const page = await base.paginate(args.paginationOpts); const filters = { ...(args.filters || {}), status: args.status, search: args.search }; return { ...page, page: page.page.filter((row) => matchesOrder(row, filters)) }; } });
+
+export const getCampaigns = query({ args: { filters: filterValidator }, returns: v.array(v.any()), handler: async (ctx, { filters }) => { await requireAdmin(ctx); const exposures = await ctx.db.query("exposures").withIndex("by_experiment_variant", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).take(5000); const checkouts = await ctx.db.query("checkoutVisits").withIndex("by_occurred_at").order("desc").take(5000); const orders = await loadOrders(ctx, filters, 5000); const groups = new Map(); for (const row of [...exposures, ...checkouts.map((item) => ({ ...item, kind: "checkout" }))] as any[]) { if (!inRange(row.occurredAt, filters) || !matchesAttribution(row, filters)) continue; const key = campaignKey(row); const group = groups.get(key) || emptyCampaign(row); if (row.kind === "checkout") group.checkoutVisitors.add(row.visitorId); else group.visitors.add(row.visitorId); groups.set(key, group); } for (const order of orders) { const key = campaignKey(order.attribution || order); const group = groups.get(key) || emptyCampaign(order.attribution || order); group.initiated += 1; if (order.state === "PENDING") group.pending += 1; if (order.state === "FAILED") group.failed += 1; if (order.state === "COMPLETED") { group.paid += 1; group.revenuePaise += order.amountPaise; } groups.set(key, group); } return [...groups.values()].map(serializeCampaign).sort((a, b) => b.revenuePaise - a.revenuePaise); } });
+
+export const getFunnel = query({ args: { filters: filterValidator }, returns: v.array(v.any()), handler: async (ctx, { filters }) => { await requireAdmin(ctx); const exposures = await ctx.db.query("exposures").withIndex("by_experiment_variant", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).take(5000); const checkouts = await ctx.db.query("checkoutVisits").withIndex("by_occurred_at").order("desc").take(5000); const orders = await loadOrders(ctx, filters, 5000); const stages = [new Set(), new Set(), new Set(), new Set()]; for (const row of exposures.filter((item) => inRange(item.occurredAt, filters) && matchesAttribution(item, filters))) stages[0].add(row.visitorId); for (const row of checkouts.filter((item) => inRange(item.occurredAt, filters) && matchesAttribution(item, filters))) stages[1].add(row.visitorId); for (const row of orders) { if (row.visitorId) stages[2].add(row.visitorId); if (row.state === "COMPLETED" && row.visitorId) stages[3].add(row.visitorId); } return ["Recorded landing", "Checkout visited", "Payment initiated", "Confirmed purchase"].map((label, index) => ({ label, count: stages[index].size, conversion: index ? percentage(stages[index].size, stages[index - 1].size) : 100, dropoff: index ? stages[index - 1].size - stages[index].size : 0 })); } });
+
+export const getHealth = query({ args: {}, returns: v.any(), handler: async (ctx) => { await requireAdmin(ctx); const pending = await ctx.db.query("orders").withIndex("by_state", (q) => q.eq("state", "PENDING")).order("desc").take(500); const orders = await ctx.db.query("orders").withIndex("by_created_at").order("desc").take(2000); const receipts = await ctx.db.query("paymentReceipts").withIndex("by_order").order("desc").take(500); const failures = await ctx.db.query("reportingFailures").withIndex("by_kind").order("desc").take(500); const orderIds = new Set(orders.map((row) => row.merchantOrderId)); return { stalePending: pending.filter((row) => Date.now() - row.updatedAt > 24 * 60 * 60 * 1000).length, unmatchedReceipts: receipts.filter((row) => !orderIds.has(row.merchantOrderId)).length, reportingFailures: failures.filter((row) => !row.resolvedAt).length, lastReceiptAt: receipts[0]?.receivedAt || 0, lastOrderAt: orders[0]?.updatedAt || 0 }; } });
+
+export const updateExperiment = mutation({ args: { enabled: v.optional(v.boolean()), amPercentage: v.optional(v.number()), am2Percentage: v.optional(v.number()) }, returns: v.object({ updated: v.boolean() }), handler: async (ctx, args) => { const actorUserId = await requireAdmin(ctx); const existing = await ctx.db.query("experiments").withIndex("by_experiment_id", (q) => q.eq("experimentId", ACTIVE_EXPERIMENT)).unique(); const amPercentage = args.amPercentage ?? existing?.amPercentage ?? 50; const am2Percentage = args.am2Percentage ?? existing?.am2Percentage ?? 100 - amPercentage; if (amPercentage < 0 || amPercentage > 100 || am2Percentage < 0 || am2Percentage > 100 || amPercentage + am2Percentage !== 100) throw new Error("Allocation must total 100%."); const now = Date.now(); if (existing) await ctx.db.patch(existing._id, { enabled: args.enabled ?? existing.enabled, amPercentage, am2Percentage, updatedAt: now }); else await ctx.db.insert("experiments", { experimentId: ACTIVE_EXPERIMENT, enabled: args.enabled ?? false, amPercentage, am2Percentage, createdAt: now, updatedAt: now }); await ctx.db.insert("adminAudit", { action: "experiment.update", actorUserId, details: JSON.stringify({ enabled: args.enabled, amPercentage, am2Percentage }), occurredAt: now }); return { updated: true }; } });
+
+async function loadOrders(ctx: any, filters: any, limit: number) { const rows = filters.status ? await ctx.db.query("orders").withIndex("by_state", (q: any) => q.eq("state", filters.status)).order("desc").take(limit) : await ctx.db.query("orders").withIndex("by_created_at").order("desc").take(limit); return rows.filter((row: any) => matchesOrder(row, filters)); }
+function buildOverview(orders: any[], exposures: any[], checkouts: any[]) { const paid = orders.filter((row) => row.state === "COMPLETED"); const purchasers = new Set(paid.map((row) => row.visitorId).filter(Boolean)); const byVariant: any = { AM: emptyVariant(), AM2: emptyVariant() }; for (const row of exposures) if (byVariant[row.variant]) byVariant[row.variant].visitors += 1; for (const order of paid) if (byVariant[order.variant]) { byVariant[order.variant].paidOrders += 1; byVariant[order.variant].revenuePaise += order.amountPaise; if (order.visitorId) byVariant[order.variant].purchasingVisitors.add(order.visitorId); } for (const row of Object.values(byVariant) as any[]) { row.purchasingVisitors = row.purchasingVisitors instanceof Set ? row.purchasingVisitors.size : row.purchasingVisitors; row.conversionRate = percentage(row.purchasingVisitors, row.visitors); } const revenuePaise = paid.reduce((sum, row) => sum + row.amountPaise, 0); return { visitors: exposures.length, checkoutVisitors: new Set(checkouts.map((row) => row.visitorId)).size, initiatedOrders: orders.length, pendingOrders: orders.filter((row) => row.state === "PENDING").length, failedOrders: orders.filter((row) => row.state === "FAILED").length, paidOrders: paid.length, purchasingVisitors: purchasers.size, conversionRate: percentage(purchasers.size, exposures.length), revenuePaise, averageOrderValuePaise: paid.length ? Math.round(revenuePaise / paid.length) : 0, revenuePerVisitorPaise: exposures.length ? Math.round(revenuePaise / exposures.length) : 0, byVariant }; }
+function summarizeDaily(rows: any[]) { const byVariant: any = { AM: emptyVariant(), AM2: emptyVariant() }; for (const row of rows) { const target = byVariant[row.variant]; if (!target) continue; target.visitors += row.visitors; target.purchasingVisitors += row.purchasingVisitors; target.paidOrders += row.paidOrders; target.revenuePaise += row.revenuePaise; } const totals = [byVariant.AM, byVariant.AM2].reduce((acc, row) => ({ visitors: acc.visitors + row.visitors, purchasingVisitors: acc.purchasingVisitors + row.purchasingVisitors, paidOrders: acc.paidOrders + row.paidOrders, revenuePaise: acc.revenuePaise + row.revenuePaise }), emptyVariant()); return { ...totals, conversionRate: percentage(totals.purchasingVisitors, totals.visitors), revenuePerVisitorPaise: totals.visitors ? Math.round(totals.revenuePaise / totals.visitors) : 0, byVariant: { AM: { ...byVariant.AM, conversionRate: percentage(byVariant.AM.purchasingVisitors, byVariant.AM.visitors) }, AM2: { ...byVariant.AM2, conversionRate: percentage(byVariant.AM2.purchasingVisitors, byVariant.AM2.visitors) } } }; }
 function emptyVariant() { return { visitors: 0, purchasingVisitors: 0, paidOrders: 0, revenuePaise: 0 }; }
-function addVariant(target: VariantSummary, row: VariantSummary) { target.visitors += row.visitors; target.purchasingVisitors += row.purchasingVisitors; target.paidOrders += row.paidOrders; target.revenuePaise += row.revenuePaise; return target; }
+function emptyCampaign(row: any = {}) { return { key: campaignKey(row), source: row.utmSource || "Not recorded", medium: row.utmMedium || "Not recorded", campaign: row.utmCampaign || "Not recorded", visitors: new Set(), checkoutVisitors: new Set(), initiated: 0, pending: 0, failed: 0, paid: 0, revenuePaise: 0 }; }
+function serializeCampaign(row: any) { return { ...row, visitors: row.visitors.size, checkoutVisitors: row.checkoutVisitors.size, conversionRate: percentage(row.paid, row.visitors.size) }; }
+function campaignKey(row: any = {}) { return [row.utmSource || "", row.utmMedium || "", row.utmCampaign || "", row.utmContent || "", row.utmId || ""].join("|") || "not-recorded"; }
+function matchesOrder(row: any, filters: any = {}) { if (!inRange(row.createdAt, filters) || !matchesAttribution(row.attribution || row, filters)) return false; if (filters.search) { const search = filters.search.toLowerCase(); if (![row.merchantOrderId, row.customerName, row.customerEmail, row.customerPhone].some((value) => String(value || "").toLowerCase().includes(search))) return false; } return true; }
+function matchesAttribution(row: any, filters: any = {}) { const fields = ["utmSource", "utmMedium", "utmCampaign", "utmContent", "utmTerm", "utmId"]; if (filters.variant && row.variant !== filters.variant) return false; if (filters.entryType && row.entryType !== filters.entryType) return false; return fields.every((field) => !filters[field] || row[field] === filters[field]); }
+function inRange(timestamp: number, filters: any = {}) { return (!filters.startAt || timestamp >= filters.startAt) && (!filters.endAt || timestamp < filters.endAt); }
 function percentage(numerator: number, denominator: number) { return denominator ? Number(((numerator / denominator) * 100).toFixed(2)) : 0; }
-
-async function requireAdmin(ctx: any) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthenticated");
-  const user = await ctx.db.get(userId);
-  const allowed = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
-  if (!user?.email || !allowed || user.email.toLowerCase() !== allowed) throw new Error("Forbidden");
-  return userId;
-}
-
-type VariantSummary = { visitors: number; purchasingVisitors: number; paidOrders: number; revenuePaise: number };
+function pickExperiment(row: any) { return { experimentId: row.experimentId, enabled: row.enabled, amPercentage: row.amPercentage, am2Percentage: row.am2Percentage }; }
+async function requireAdmin(ctx: any) { const userId = await getAuthUserId(ctx); if (!userId) throw new Error("Unauthenticated"); const user = await ctx.db.get(userId); const allowed = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase(); if (!user?.email || !allowed || user.email.toLowerCase() !== allowed) throw new Error("Forbidden"); return userId; }

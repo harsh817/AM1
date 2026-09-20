@@ -3,7 +3,7 @@ import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPaymentStatusPayload } from "../payment-status-webhook.js";
 import { getPhonePeOrderStatus } from "../phonepe.js";
 import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
-import { buildConvexAttribution, recordConvexOrder } from "../convex.js";
+import { buildConvexAttribution, recordConvexOrder, recordConvexPaymentReceipt } from "../convex.js";
 
 const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
 const STATUS_ROUTE = "/api/phonepe/status";
@@ -79,13 +79,34 @@ export async function checkPaymentOrderStatus({
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       state: isFinalPaymentState(status.state) ? status.state : "PENDING",
       attribution: buildConvexAttribution(tracking),
+      failure: status.state === "FAILED" ? {
+        type: "payment_failed",
+        ...(status.errorCode ? { code: status.errorCode } : {}),
+        ...(status.errorMessage ? { message: status.errorMessage } : {}),
+      } : undefined,
+      providerEventId: buildProviderEventId(normalizedOrderId, status),
       occurredAt: Date.now(),
     });
+    if (isFinalPaymentState(status.state)) {
+      await recordConvexPaymentReceipt({
+        merchantOrderId: normalizedOrderId,
+        providerEventId: buildProviderEventId(normalizedOrderId, status),
+        state: status.state,
+        amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
+        errorCode: status.errorCode,
+        errorMessage: status.errorMessage,
+        receivedAt: Date.now(),
+      });
+    }
   } catch {
     // Payment status remains authoritative even if reporting is temporarily unavailable.
   }
 
   return buildClientStatusResponse(status, normalizedOrderId);
+}
+
+function buildProviderEventId(merchantOrderId, status = {}) {
+  return `${merchantOrderId}:${String(status.orderId || status.phonePeOrderId || "status")}:${String(status.state || "UNKNOWN")}`;
 }
 
 export function normalizeMerchantOrderId(value) {

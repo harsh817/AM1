@@ -64,6 +64,7 @@ export async function createCheckoutPaymentOrder({
       amountPaise: totals.amountPaise,
       state: "INITIATED",
       attribution: buildConvexAttribution(tracking),
+      customer: buildConvexCustomer({ details, phoneNumber, selected, totals }),
       occurredAt: Date.now(),
     });
   } catch (error) {
@@ -87,6 +88,19 @@ export async function createCheckoutPaymentOrder({
       metaInfo,
     });
   } catch (error) {
+    try {
+      await recordConvexOrder({
+        merchantOrderId,
+        amountPaise: totals.amountPaise,
+        state: "FAILED",
+        attribution: buildConvexAttribution(tracking),
+        customer: buildConvexCustomer({ details, phoneNumber, selected, totals }),
+        failure: { type: "checkout_error", message: "Payment checkout could not be created." },
+        occurredAt: Date.now(),
+      });
+    } catch {
+      // The payment error remains the source of truth when reporting is unavailable.
+    }
     logger("phonepe.payment_create_failed", {
       level: "error",
       operation: CREATE_PAYMENT_OPERATION,
@@ -131,6 +145,17 @@ export async function createCheckoutPaymentOrder({
     state: payment.state,
     redirectUrl: payment.redirectUrl,
     amountPaise: totals.amountPaise,
+  };
+}
+
+function buildConvexCustomer({ details = {}, phoneNumber = "", selected = [], totals = {} } = {}) {
+  const selectedBumps = Array.isArray(totals.selectedBumps) ? totals.selectedBumps : [];
+  return {
+    name: String(details.name || "").trim().slice(0, 128),
+    email: String(details.email || "").trim().toLowerCase().slice(0, 256),
+    phone: String(phoneNumber || "").trim().slice(0, 32),
+    selectedAddons: selected.map((item) => String(item).slice(0, 64)),
+    lineItems: [{ id: "style-report", title: PRODUCT_NAME, pricePaise: Math.round(Number(totals.basePrice || 0) * 100) }, ...selectedBumps.map((bump) => ({ id: String(bump.id), title: String(bump.title), pricePaise: Math.round(Number(bump.price || 0) * 100) }))],
   };
 }
 
