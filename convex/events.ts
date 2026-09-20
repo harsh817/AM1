@@ -61,14 +61,15 @@ export const recordOrder = mutation({
       const completed = existing.state === "COMPLETED";
       const nextState = completed ? "COMPLETED" : args.state;
       const timeline = [...(existing.paymentTimeline || []), timelineEvent(args)].slice(-20);
-      await ctx.db.patch(existing._id, { state: nextState, amountPaise: existing.amountPaise || args.amountPaise, attribution: finalAttribution, visitorId: existing.visitorId || args.attribution?.visitorId, variant: existing.variant || args.attribution?.variant, entryType: existing.entryType || args.attribution?.entryType, customerName: existing.customerName || args.customer?.name, customerEmail: existing.customerEmail || args.customer?.email, customerPhone: existing.customerPhone || args.customer?.phone, selectedAddons: existing.selectedAddons || args.customer?.selectedAddons, lineItems: existing.lineItems || args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, completedAt: nextState === "COMPLETED" ? existing.completedAt || args.occurredAt : existing.completedAt, paymentTimeline: timeline, updatedAt: args.occurredAt });
+      const orderPatch = withoutUndefined({ state: nextState, amountPaise: existing.amountPaise || args.amountPaise, attribution: finalAttribution, visitorId: existing.visitorId || args.attribution?.visitorId, variant: existing.variant || args.attribution?.variant, entryType: existing.entryType || args.attribution?.entryType, customerName: existing.customerName || args.customer?.name, customerEmail: existing.customerEmail || args.customer?.email, customerPhone: existing.customerPhone || args.customer?.phone, selectedAddons: existing.selectedAddons || args.customer?.selectedAddons, lineItems: existing.lineItems || args.customer?.lineItems, lastProviderCheckAt: args.occurredAt, completedAt: nextState === "COMPLETED" ? existing.completedAt || args.occurredAt : existing.completedAt, paymentTimeline: timeline, updatedAt: args.occurredAt, ...(args.failure ? { failureType: args.failure.type, failureCode: args.failure.code, failureMessage: args.failure.message } : {}) });
+      await ctx.db.patch(existing._id, orderPatch);
       if (!completed && nextState === "COMPLETED" && finalAttribution?.entryType === "randomized" && finalAttribution.variant) {
         const finalVisitorId = existing.visitorId || finalAttribution.visitorId;
         await adjustDailyMetric(ctx, finalAttribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: previousPaidOrder.length ? 0 : 1 });
       }
       return { recorded: true, duplicate: completed && args.state === "COMPLETED" };
     }
-    const newOrder = { merchantOrderId: args.merchantOrderId, amountPaise: args.amountPaise, state: args.state, attribution: args.attribution, visitorId: args.attribution?.visitorId, variant: args.attribution?.variant, entryType: args.attribution?.entryType, customerName: args.customer?.name, customerEmail: args.customer?.email, customerPhone: args.customer?.phone, selectedAddons: args.customer?.selectedAddons, lineItems: args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, paymentTimeline: [timelineEvent(args)], createdAt: args.occurredAt, updatedAt: args.occurredAt, ...(args.state === "COMPLETED" ? { completedAt: args.occurredAt } : {}) };
+    const newOrder = withoutUndefined({ merchantOrderId: args.merchantOrderId, amountPaise: args.amountPaise, state: args.state, attribution: args.attribution, visitorId: args.attribution?.visitorId, variant: args.attribution?.variant, entryType: args.attribution?.entryType, customerName: args.customer?.name, customerEmail: args.customer?.email, customerPhone: args.customer?.phone, selectedAddons: args.customer?.selectedAddons, lineItems: args.customer?.lineItems, failureType: args.failure?.type, failureCode: args.failure?.code, failureMessage: args.failure?.message, lastProviderCheckAt: args.occurredAt, paymentTimeline: [timelineEvent(args)], createdAt: args.occurredAt, updatedAt: args.occurredAt, ...(args.state === "COMPLETED" ? { completedAt: args.occurredAt } : {}) }) as any;
     await ctx.db.insert("orders", newOrder);
     if (args.state === "COMPLETED" && args.attribution?.entryType === "randomized" && args.attribution.variant) {
       await adjustDailyMetric(ctx, args.attribution, args.occurredAt, { paidOrders: 1, revenuePaise: args.amountPaise, purchasingVisitors: 1 });
@@ -108,6 +109,10 @@ function timelineEvent(args: { state: string; occurredAt: number; providerEventI
   if (args.providerEventId) event.providerEventId = args.providerEventId;
   if (args.failure?.message) event.message = args.failure.message;
   return event;
+}
+
+function withoutUndefined<T extends Record<string, unknown>>(value: T) {
+  return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined));
 }
 
 async function adjustDailyMetric(ctx: any, attribution: any, timestamp: number, changes: { visitors?: number; purchasingVisitors?: number; paidOrders?: number; revenuePaise?: number }) {
