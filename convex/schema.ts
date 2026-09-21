@@ -22,7 +22,7 @@ const attributionFields = {
 export default defineSchema({
   ...authTables,
   experiments: defineTable({ experimentId: v.string(), enabled: v.boolean(), amPercentage: v.number(), am2Percentage: v.number(), createdAt: v.number(), updatedAt: v.number() }).index("by_experiment_id", ["experimentId"]),
-  exposures: defineTable({ ...attributionFields, dedupeKey: v.string(), occurredAt: v.number() }).index("by_dedupe_key", ["dedupeKey"]).index("by_experiment_variant", ["experimentId", "variant", "occurredAt"]),
+  exposures: defineTable({ ...attributionFields, dedupeKey: v.string(), occurredAt: v.number() }).index("by_dedupe_key", ["dedupeKey"]).index("by_experiment_variant", ["experimentId", "variant", "occurredAt"]).index("by_occurred_at", ["occurredAt"]),
   checkoutVisits: defineTable({ ...attributionFields, dedupeKey: v.optional(v.string()), occurredAt: v.number(), eventType: v.optional(v.union(v.literal("checkout_visit"), v.literal("checkout_submit"), v.literal("thankyou_visit"))) }).index("by_visitor", ["visitorId", "occurredAt"]).index("by_dedupe_key", ["dedupeKey"]).index("by_occurred_at", ["occurredAt"]),
   orders: defineTable({
     merchantOrderId: v.string(),
