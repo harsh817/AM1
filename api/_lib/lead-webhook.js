@@ -28,6 +28,8 @@ export function buildCheckoutLeadPayload({
   const name = clean(details.name);
   const email = clean(details.email);
   const phone = clean(phoneNumber, PHONE_NUMBER_MAX_LENGTH);
+  const phoneDigits = phone.replace(/\D/g, "");
+  const isIndianPhone = phoneDigits.length === 10;
   const event = {
     name: clean(eventName),
     timestamp: clean(timestamp, EVENT_TIMESTAMP_MAX_LENGTH),
@@ -52,9 +54,9 @@ export function buildCheckoutLeadPayload({
       name,
       email,
       phone: {
-        country_code: "+91",
+        country_code: phone ? (isIndianPhone ? "+91" : "") : "+91",
         number: phone,
-        full: phone ? `+91${phone}` : "",
+        full: phone ? (isIndianPhone ? `+91${phone}` : `+${phoneDigits}`) : "",
       },
       identity: email || phone,
       status: clean(leadStatus),

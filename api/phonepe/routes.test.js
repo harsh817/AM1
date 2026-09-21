@@ -36,7 +36,7 @@ test("create-order returns validation errors before provider calls", async () =>
     errors: {
       name: "Please enter your full name.",
       email: "Please enter a valid email address.",
-      phone: "Please enter a valid 10-digit mobile number.",
+      phone: "Please enter a valid phone number.",
       selected: "Please refresh and try again.",
     },
   });

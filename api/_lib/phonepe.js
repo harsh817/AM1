@@ -68,9 +68,9 @@ export async function createPhonePePayment({
         redirectUrl,
       },
     },
-    prefillUserLoginDetails: {
-      phoneNumber: `+91${phoneNumber}`,
-    },
+    ...(phoneNumber.length === 10
+      ? { prefillUserLoginDetails: { phoneNumber: `+91${phoneNumber}` } }
+      : {}),
     disablePaymentRetry: true,
     metaInfo,
   };

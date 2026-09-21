@@ -5,3 +5,7 @@ export function normalizeIndianMobile(phone) {
   if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
   return digits;
 }
+
+export function normalizeInternationalPhone(phone) {
+  return String(phone ?? "").replace(/\D/g, "");
+}

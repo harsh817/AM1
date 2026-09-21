@@ -51,7 +51,7 @@ export function getCheckoutValidationErrors({ details = {}, selected = [] } = {}
 
   if (name.length < 2) errors.name = "Please enter your full name.";
   if (!/^\S+@\S+\.\S+$/.test(email)) errors.email = "Please enter a valid email address.";
-  if (!/^\d{10}$/.test(phone)) errors.phone = "Please enter a valid 10-digit mobile number.";
+  if (!/^\d{7,15}$/.test(phone)) errors.phone = "Please enter a valid phone number.";
   if (!Array.isArray(selected) || selected.some((id) => !BUMP_BY_ID.has(id))) {
     errors.selected = "Please refresh and try again.";
   }
@@ -60,7 +60,11 @@ export function getCheckoutValidationErrors({ details = {}, selected = [] } = {}
 }
 
 export function normalizePhone(phone) {
-  return String(phone ?? "").replace(/\D/g, "").slice(-10);
+  const digits = String(phone ?? "").replace(/\D/g, "");
+  if (digits.length === 13 && digits.startsWith("091")) return digits.slice(3);
+  if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
+  if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
+  return digits;
 }
 
 /**

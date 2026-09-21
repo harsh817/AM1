@@ -53,7 +53,7 @@ test("rejects invalid contact fields and unknown bump ids", () => {
 
   assert.equal(errors.name, "Please enter your full name.");
   assert.equal(errors.email, "Please enter a valid email address.");
-  assert.equal(errors.phone, "Please enter a valid 10-digit mobile number.");
+  assert.equal(errors.phone, "Please enter a valid phone number.");
   assert.equal(errors.selected, "Please refresh and try again.");
 });
 

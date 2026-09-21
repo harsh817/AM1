@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Check, InstagramLogo, LockKey, PhoneCall, ShieldCheck } from "@phosphor-icons/react";
+import { Check, InstagramLogo, LockKey, PhoneCall } from "@phosphor-icons/react";
 import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../lib/checkout-config.js";
-import { trustBadges } from "../lib/landing-data.js";
 import {
   getCheckoutOrderTrackingPayload,
   getCheckoutTrackingPayload,
@@ -10,11 +9,18 @@ import {
   rememberCheckoutVisit,
 } from "../lib/checkout-tracking.js";
 import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
-import { normalizeIndianMobile } from "../lib/phone.js";
+import { normalizeInternationalPhone } from "../lib/phone.js";
 import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
-const DRAFT_KEY = "attractivemen-checkout-draft";
+const DRAFT_KEY = "attractivemen-checkout-draft:v2";
+const REPORT_PREVIEW_URL = "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/product/attractivemen-style-report-mockup-v2.webp";
+const PAYMENT_TRUST_IMAGE_URL = "https://res.cloudinary.com/dm49wi6j4/image/upload/f_webp,q_auto,w_1200/AM%20-%20Assets/checkout/payment-trust.png";
+const COUNTRY_CODES = [
+  ["+91", "🇮🇳"], ["+1", "🇺🇸"], ["+44", "🇬🇧"], ["+61", "🇦🇺"], ["+971", "🇦🇪"], ["+65", "🇸🇬"],
+  ["+49", "🇩🇪"], ["+33", "🇫🇷"], ["+81", "🇯🇵"], ["+82", "🇰🇷"], ["+86", "🇨🇳"], ["+27", "🇿🇦"],
+  ["+234", "🇳🇬"], ["+64", "🇳🇿"], ["+880", "🇧🇩"], ["+92", "🇵🇰"], ["+94", "🇱🇰"], ["+977", "🇳🇵"],
+];
 const VALID_BUMP_IDS = new Set(CHECKOUT_BUMPS.map((bump) => bump.id));
 const BUMP_DETAILS = {
   "style-consultation": {
@@ -40,18 +46,33 @@ const formatMoney = (amount) =>
   }).format(amount);
 
 function loadDraft() {
+  const defaultCountryCode = getDefaultCountryCode();
   try {
     const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
-    const selected = Array.isArray(saved?.selected)
-      ? [...new Set(saved.selected.filter((id) => VALID_BUMP_IDS.has(id)))]
-      : [];
+    const selected = [];
     return {
-      details: saved?.details ?? { name: "", email: "", phone: "" },
+      details: { name: "", email: "", phone: "", phoneCountryCode: defaultCountryCode, ...saved?.details },
       selected,
     };
   } catch {
-    return { details: { name: "", email: "", phone: "" }, selected: [] };
+    return { details: { name: "", email: "", phone: "", phoneCountryCode: defaultCountryCode }, selected: [] };
   }
+}
+
+function getDefaultCountryCode() {
+  const locale = typeof navigator === "undefined" ? "" : String(navigator.language || "").toLowerCase();
+  if (locale.includes("-gb")) return "+44";
+  if (locale.includes("-us") || locale.includes("-ca")) return "+1";
+  if (locale.includes("-au")) return "+61";
+  if (locale.includes("-ae")) return "+971";
+  if (locale.includes("-sg")) return "+65";
+  return "+91";
+}
+
+function getFullPhone(details = {}) {
+  const countryCode = String(details.phoneCountryCode || "+91").replace(/\D/g, "");
+  const localNumber = String(details.phone || "").replace(/\D/g, "");
+  return countryCode && localNumber ? `+${countryCode}${localNumber}` : "";
 }
 
 const formatAddOnPrice = (amount) =>
@@ -164,7 +185,7 @@ export function CheckoutPage() {
     const next = {};
     if (details.name.trim().length < 2) next.name = "Please enter your full name.";
     if (!/^\S+@\S+\.\S+$/.test(details.email.trim())) next.email = "Please enter a valid email address.";
-    if (!/^\d{10}$/.test(normalizeIndianMobile(details.phone))) next.phone = "Please enter a valid 10-digit mobile number.";
+    if (!/^\d{7,15}$/.test(normalizeInternationalPhone(getFullPhone(details)))) next.phone = "Please enter a valid phone number.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -177,14 +198,14 @@ export function CheckoutPage() {
     }
 
     setIsPaying(true);
-    setStatus("Opening secure payment...");
+    setStatus("Processing");
 
     try {
       const tracking = getCheckoutTrackingPayload();
       const response = await fetch("/api/phonepe/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ details, selected, tracking }),
+        body: JSON.stringify({ details: { ...details, phone: getFullPhone(details) }, selected, tracking }),
       });
       const data = await response.json().catch(() => ({}));
 
@@ -211,10 +232,8 @@ export function CheckoutPage() {
   return (
     <div className="checkout-page">
       <section className="checkout-intro" aria-labelledby="checkout-title">
-        <h1 id="checkout-title">Complete Your Order for Personal Style Report</h1>
-        <div className="checkout-trust-row" aria-label="StyleIQ proof points">
-          {trustBadges.map((badge) => <span key={badge}>{badge}</span>)}
-        </div>
+        <h1 id="checkout-title">You're One Step Closer to Looking Like A Smart Handsome Gentleman</h1>
+        <p className="checkout-intro-copy">Enter your details below and receive a personalised style report within 48 hours.</p>
       </section>
 
       <main className="checkout-main">
@@ -226,6 +245,25 @@ export function CheckoutPage() {
         ) : null}
 
         <form className="checkout-card" onSubmit={handleSubmit} noValidate data-clarity-mask="true">
+          <section className="checkout-product" aria-label="Personal style report preview">
+            <div className="checkout-report-heading">
+              <span className="checkout-kicker">YOUR PERSONAL STYLE REPORT</span>
+              <p>Built around your face, body, complexion, lifestyle and budget.</p>
+            </div>
+            <div className="checkout-report-body">
+              <figure className="checkout-report-preview">
+                <img src={REPORT_PREVIEW_URL} alt="Preview of the personalised style report" width="1200" height="1200" fetchPriority="high" decoding="async" />
+              </figure>
+              <ul className="checkout-report-points">
+                <li><Check size={15} weight="bold" /> Hairstyle &amp; beard ideas + Bonus Skin &amp; Hair Care</li>
+                <li><Check size={15} weight="bold" /> Exact clothing fits &amp; colour combinations</li>
+                <li><Check size={15} weight="bold" /> 20 ready-to-wear looks for every occasion</li>
+                <li><Check size={15} weight="bold" /> Shoe, watch &amp; perfume ideas + Smart Shopping Plan</li>
+                <li><Check size={15} weight="bold" /> Bonus 90-Day Action Plan + Lifetime Access</li>
+              </ul>
+            </div>
+          </section>
+
           <section className="checkout-block" aria-labelledby="contact-title">
             <div className="checkout-block-heading">
               <h2 id="contact-title">Where should we send your report?</h2>
@@ -243,14 +281,14 @@ export function CheckoutPage() {
             </label>
             <label className="checkout-field">
               <span>WhatsApp number</span>
-              <div className="checkout-phone"><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel" value={details.phone} onChange={(event) => updateDetail("phone", event.target.value)} placeholder="10-digit mobile number" aria-invalid={Boolean(errors.phone)} /></div>
+              <div className="checkout-phone"><select className="checkout-country-code" autoComplete="tel-country-code" value={details.phoneCountryCode || "+91"} onChange={(event) => updateDetail("phoneCountryCode", event.target.value)} aria-label="Country calling code">{COUNTRY_CODES.map(([code, country]) => <option value={code} key={code}>{country} {code}</option>)}</select><input type="tel" inputMode="tel" autoComplete="tel-national" value={details.phone} onChange={(event) => updateDetail("phone", event.target.value)} placeholder="98765 43210" aria-invalid={Boolean(errors.phone)} /></div>
               {errors.phone ? <small>{errors.phone}</small> : null}
             </label>
           </section>
 
           <section className="checkout-block checkout-addons" aria-labelledby="addons-title">
             <div className="checkout-block-heading checkout-addons-heading">
-              <h2 id="addons-title">100X Add-Ons</h2>
+              <h2 id="addons-title">Optional Upgrades</h2>
             </div>
             <div className="checkout-bumps">
               {BUMPS.map(({ id, title, price, Icon, summary }) => {
@@ -294,16 +332,19 @@ export function CheckoutPage() {
 
           <section className="checkout-block checkout-payment" aria-label="Secure payment">
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
-              <LockKey size={20} weight="fill" /> {isPaying ? "Opening secure payment..." : "Proceed My Order"}
+              <LockKey size={20} weight="fill" /> {isPaying ? "Processing" : "Complete My Order"}
             </button>
             {status ? <p className="checkout-status" role="status">{status}</p> : null}
 
-            <div className="payment-confidence" aria-label="Checkout trust points">
-              <span><Check size={18} weight="bold" /> Completely Customized</span>
-              <span><Check size={18} weight="bold" /> One-Time Payment</span>
-              <span><ShieldCheck size={18} weight="fill" /> Secure Payment</span>
-              <span><LockKey size={18} weight="fill" /> Encrypted Details</span>
+            <figure className="checkout-payment-trust">
+              <img src={PAYMENT_TRUST_IMAGE_URL} alt="Secure payment options including UPI, Visa, Mastercard, RuPay, netbanking and wallets" width="1600" height="420" loading="lazy" decoding="async" />
+            </figure>
+
+            <div className="checkout-testimonials" aria-label="Customer feedback">
+              <article><span aria-hidden="true">★★★★★</span><p>“It felt like someone actually looked at my face and body instead of giving random tips.”</p><strong>Rishi · Pune</strong></article>
+              <article><span aria-hidden="true">★★★★★</span><p>“I finally understood what fits to choose and what to stop buying.”</p><strong>Vikram · Chennai</strong></article>
             </div>
+
           </section>
         </form>
 

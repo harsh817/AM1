@@ -72,14 +72,16 @@ export function buildPaymentStatusPayload({
 
 function buildLead(metaInfo = {}) {
   const phone = cleanPhone(metaInfo.udf3);
+  const isIndianPhone = phone.length === 10 || (phone.length === 12 && phone.startsWith("91"));
+  const nationalPhone = phone.length === 12 && phone.startsWith("91") ? phone.slice(2) : phone;
 
   return {
     name: clean(metaInfo.udf1),
     email: clean(metaInfo.udf2),
     phone: {
-      country_code: phone ? "+91" : "",
-      number: phone,
-      full: phone ? `+91${phone}` : "",
+      country_code: phone ? (isIndianPhone ? "+91" : "") : "",
+      number: nationalPhone,
+      full: phone ? (isIndianPhone ? `+91${nationalPhone}` : `+${phone}`) : "",
     },
     identity: clean(metaInfo.udf2) || phone,
   };

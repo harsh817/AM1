@@ -142,7 +142,7 @@ test("rejects invalid checkout details before provider calls", async () => {
       assert.deepEqual(error.errors, {
         name: "Please enter your full name.",
         email: "Please enter a valid email address.",
-        phone: "Please enter a valid 10-digit mobile number.",
+        phone: "Please enter a valid phone number.",
         selected: "Please refresh and try again.",
       });
       return true;
