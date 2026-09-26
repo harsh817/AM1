@@ -271,7 +271,7 @@ export function LandingPageAM2({ variant = "AM", preview = false }) {
   return (
     <div className={`am2-site${isDarkVariant ? " am2-theme-dark" : ""}`} data-page-variant={variant}>
       <main className="am2-page">
-        <AM2Hero />
+        <AM2Hero isDarkVariant={isDarkVariant} />
         <TrustSection />
         <ReportHighlights />
         <PersonaSection />
@@ -292,7 +292,7 @@ export function LandingPageAM2({ variant = "AM", preview = false }) {
   );
 }
 
-function AM2Hero() {
+function AM2Hero({ isDarkVariant }) {
   return (
     <section className="hero styleiq-hero am2-styleiq-hero" id="top">
       <div className="shell styleiq-page-shell">
