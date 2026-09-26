@@ -1,5 +1,14 @@
 # Feature Delivery
 
+## AM2 Promoted Control and Dark Variant (2026-09-26)
+
+- Outcome: The current AM2 composition is shared at `/a-m` as the promoted light control; `/AM2` uses the same content and functionality with a dark theme.
+- Archive: The previous `/a-m` implementation is preserved under `retired-pages/am-original/`, including a source-based local preview, source/dependencies, local assets, hashes, and restoration notes. `artifacts/AttractiveMen-original.html` remains untouched.
+- Experiment: New ID `am-vs-am2-v3`; variants are AM — Promoted Control and AM2 — Dark Variant. Local preview accepts `/a-m?previewVariant=AM` or `/a-m?previewVariant=AM2` without assignment or marketing analytics.
+- Status: Local implementation only; no production push/deployment. Production experiment must remain paused until review and approval.
+- Verification: Both variants rendered 12 sections at 360/390/768/1440px without broken images or horizontal overflow. Checkout links retained the visible variant label. The archive source rendered with analytics stubbed. Final `npm test` passed 110/110; production build and standalone export passed. Coverage was 94.59% statements, 78.97% branches, and 95.75% functions overall; `src/lib/ab-testing.js` reached 85.63% statement coverage. The production dependency audit could not reach the npm audit endpoint and remains unverified. Production push/deployment is intentionally excluded from this review.
+- Archive limitation: The manifest validates 151 archived files and records 26 Cloudinary media URLs. Original remote URLs are preserved, but the binaries are not locally mirrored, so those archived media still depend on the URLs remaining available.
+
 ## Read This First
 
 - Feature: AttractiveMen landing-page visual polish and checkout offer cleanup.
@@ -7,9 +16,9 @@
 - Related documents: `AGENTS.md`, `design-qa.md`.
 - Current status: Delivered in pull request https://github.com/harsh817/AM1/pull/1.
 
-## AM2 Production Variant (2026-09-20)
+## AM2 Production Variant (2026-09-20, Historical)
 
-- Outcome: Publish the redesigned StyleIQ page as a separate production route at `/AM2` while preserving the original `/a-m` control page.
+- Outcome at that release: Publish the redesigned StyleIQ page as a separate production route at `/AM2` while preserving the original `/a-m` control page. This route relationship was superseded by the 2026-09-26 local-only promotion review above.
 - Included: AM2 page composition, responsive editorial styling, Cloudinary-optimized WebP assets, report/process/bonus sections, testimonial video behavior, route tests, and standalone export.
 - Deployment: `https://thriveonp.com/AM2` through the existing Vercel project; no automatic traffic splitting is enabled.
 - Asset delivery: optimized WebP assets are uploaded to the Cloudinary `AM - Assets` folder and referenced through optimized Cloudinary URLs.
@@ -382,6 +391,6 @@ Status: implemented locally; production Convex provisioning remains an environme
 
 The project now includes Convex storage for experiment exposures, checkout attribution, orders, verified payment receipts, daily metrics, and administrator audit records. Landing, PhonePe initiation/status, and verified webhook paths can write durable attribution records through server-side Convex calls while keeping checkout available if reporting is temporarily unavailable.
 
-`/experiment-dashboard` uses Convex Auth email/password access, approved-admin authorization, password-reset email delivery through Resend, live experiment controls, and AM/AM2 reporting. The new experiment is `am-vs-am2-v2` and defaults to paused. `utm_term` is reserved for the displayed page; other UTM values and click identifiers are retained.
+`/experiment-dashboard` uses Convex Auth email/password access, approved-admin authorization, password-reset email delivery through Resend, experiment controls, and AM/AM2 reporting. Historical v2 results remain available. The new v3 experiment compares the promoted AM light control with the AM2 dark variant and defaults to paused. `utm_term` is reserved for the displayed page; other UTM values and click identifiers are retained.
 
 Validation: project tests pass 101/101, production build passes, bundle budget passes, Convex local function deployment and typecheck pass, and an isolated local landing write returned `{ recorded: true }`.

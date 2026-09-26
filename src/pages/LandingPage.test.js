@@ -3,17 +3,18 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const readSource = (relativePath) => readFileSync(new URL(relativePath, import.meta.url), "utf8");
+const retiredSource = "../../retired-pages/am-original/source/";
 
 const sources = {
-  page: readSource("./LandingPage.jsx"),
-  shared: readSource("./landing/shared.jsx"),
-  hero: readSource("./landing/Hero.jsx"),
-  trust: readSource("./landing/TrustSection.jsx"),
-  sticky: readSource("./landing/StickyBuyBar.jsx"),
-  editorial: readSource("./landing/EditorialSections.jsx"),
-  offer: readSource("./landing/OfferSections.jsx"),
-  social: readSource("./landing/SocialProofSections.jsx"),
-  data: readSource("../lib/landing-data.js"),
+  page: readSource(`${retiredSource}pages/LandingPage.jsx`),
+  shared: readSource(`${retiredSource}pages/landing/shared.jsx`),
+  hero: readSource(`${retiredSource}pages/landing/Hero.jsx`),
+  trust: readSource(`${retiredSource}pages/landing/TrustSection.jsx`),
+  sticky: readSource(`${retiredSource}pages/landing/StickyBuyBar.jsx`),
+  editorial: readSource(`${retiredSource}pages/landing/EditorialSections.jsx`),
+  offer: readSource(`${retiredSource}pages/landing/OfferSections.jsx`),
+  social: readSource(`${retiredSource}pages/landing/SocialProofSections.jsx`),
+  data: readSource(`${retiredSource}lib/landing-data.js`),
 };
 const allLandingSource = Object.values(sources).join("\n\n");
 

@@ -1,0 +1,257 @@
+.problem-rhythm p {
+  margin: 0;
+  font-size: var(--text-body);
+}
+
+.problem-rhythm span {
+  width: 56px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.problem-explanation {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+}
+
+.problem-consequences {
+  display: grid;
+  gap: var(--gap-card);
+  max-width: var(--content-narrow);
+  margin: 30px auto 22px;
+}
+
+.problem-consequences p {
+  margin: 0;
+  padding: 0 10px;
+  text-align: center;
+  font-size: var(--text-body);
+}
+
+.problem-close {
+  margin-top: 52px;
+  text-align: center;
+}
+
+.problem-close h3 {
+  margin: 0 0 24px;
+  font-size: var(--heading-section);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--letter-heading);
+  line-height: var(--line-heading);
+}
+
+.problem-close > p {
+  margin: 10px 0;
+  font-size: var(--text-body);
+}
+
+.strike-price {
+  font-size: 22px !important;
+}
+
+.strike-price s {
+  font-size: 30px;
+  text-decoration-color: var(--accent-dark);
+}
+
+.until-now {
+  display: block;
+  margin-top: 32px;
+  color: var(--accent-dark);
+  font-size: 16px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.approach .section-heading {
+  width: min(100%, 940px);
+}
+
+.approach .section-heading h2 .approach-heading-line {
+  display: block;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.approach .section-heading h2 .approach-heading-accent {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .approach .section-heading h2 {
+    font-size: clamp(23px, 6.6vw, 27px);
+    letter-spacing: -0.045em;
+  }
+}
+
+/* Approach */
+.approach-shell {
+  max-width: 1000px;
+  text-align: center;
+}
+.approach-content {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+  font-size: 18px;
+  line-height: 1.72;
+}
+
+.approach-content > p,
+.approach-conclusion p {
+  margin: 0;
+}
+
+.approach-method-panel {
+  width: min(100%, 790px);
+  margin-inline: auto;
+  padding: clamp(28px, 4vw, 46px);
+  border: 1px solid rgba(var(--palette-background-rgb), 0.14);
+  border-radius: 22px;
+  background: var(--palette-brand);
+  box-shadow: 0 18px 42px rgba(var(--palette-ink-rgb), 0.14);
+  color: var(--palette-background);
+  text-align: left;
+}
+
+.approach-method-lead {
+  margin: 0;
+  color: var(--palette-background);
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: 0.025em;
+  line-height: 1.15;
+}
+
+.approach-method {
+  max-width: 680px;
+  margin: 0;
+  color: var(--palette-background);
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.24;
+}
+
+.approach-method strong {
+  color: var(--visual);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: var(--visual-strong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+.approach-gif-frame {
+  display: grid;
+  place-content: center;
+  width: min(100%, 540px);
+  aspect-ratio: 16 / 9;
+  margin: 24px 0;
+  border: 1px dashed rgba(var(--palette-background-rgb), 0.52);
+  border-radius: 14px;
+  background: var(--palette-brand);
+  color: var(--palette-background);
+  text-align: center;
+}
+
+.approach-gif-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.approach-content > h3 {
+  margin: 8px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.approach-content > p,
+.approach-content > h3,
+.approach-content > .approach-conclusion {
+  width: min(100%, 790px);
+  margin-inline: auto;
+}
+
+.approach-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  width: 100%;
+  text-align: left;
+}
+
+.report-card.approach-analysis-card {
+  min-width: 0;
+  aspect-ratio: 1.155;
+}
+
+.approach-analysis-visual {
+  position: relative;
+  min-height: 0;
+  padding: 0;
+}
+
+.report-card-visual.approach-analysis-visual img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+.approach-image-placeholder {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--visual-strong);
+  border-radius: 9px;
+  color: var(--accent-dark);
+  background: rgba(var(--palette-background-rgb), 0.46);
+}
+
+.approach-image-placeholder span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.approach-analysis-copy {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.approach-analysis-copy p {
+  font-size: 14px;
+  line-height: 1.42;
+}
+
+.approach-analysis-copy strong {
+  color: var(--accent-dark);
+  font-weight: 650;
+}
+
+.approach-conclusion {
+  margin-top: 4px;
+  padding: 24px 20px;
+  border-block: 1px solid var(--border);
+}
+
+.approach-contrast {
+  margin-top: 12px;
+  display: grid;
+  gap: 7px;
+}

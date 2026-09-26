@@ -10,11 +10,11 @@ export function getPageRoute(pathname, search = "") {
   const path = normalizePath(pathname);
 
   if (path === LANDING_PATH) {
-    return { page: "landing" };
+    return { page: "landing", variant: "AM" };
   }
 
   if (path.toLowerCase() === LANDING_AM2_PATH.toLowerCase()) {
-    return { page: "landing-am2" };
+    return { page: "landing-am2", variant: "AM2" };
   }
 
   if (query.get("page") === "checkout" || path === CHECKOUT_PATH || path === "/checkout" || path === "/checkout.html") {
@@ -36,7 +36,7 @@ export function getPageRoute(pathname, search = "") {
   if (query.get("page") === "privacy" || path === "/privacy") return { page: "legal", type: "privacy" };
   if (query.get("page") === "terms" || path === "/terms") return { page: "legal", type: "terms" };
 
-  return { page: "landing" };
+  return { page: "landing", variant: "AM" };
 }
 
 function normalizePath(pathname) {

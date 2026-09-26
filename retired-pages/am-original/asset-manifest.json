@@ -1,0 +1,897 @@
+{
+  "sourceCommit": "878f5797e72d8e040573a0eb4c5d44a0447399c1",
+  "archivedAt": "2026-09-26",
+  "route": "/a-m",
+  "files": [
+    {
+      "path": "preview-entry.jsx",
+      "bytes": 350,
+      "sha256": "20ceb22887829c94e8b83e3573ce41c1b8d4749595c28775547cf6498f8b57ae"
+    },
+    {
+      "path": "preview-original.snapshot",
+      "bytes": 2095484,
+      "sha256": "08c7f6aca9e32fe28415b8dafd06e7f18dc05a1af93a234e82cd0020c5edc1ff"
+    },
+    {
+      "path": "preview-services.js",
+      "bytes": 204,
+      "sha256": "231ad5da4ea7dc0a1fb45bcabc01266a122377bb06a14e9ebbafc10cd0ea4912"
+    },
+    {
+      "path": "preview.html",
+      "bytes": 372,
+      "sha256": "1ba731998d8b7a9beb36b05825c9d9889a25addf25006bc74519e0a329523d13"
+    },
+    {
+      "path": "public/assets/analysis/accessory-analysis.png",
+      "bytes": 2333513,
+      "sha256": "db13b3156f89743693d74ab164167f8bf3c42c94357709613976fd4fb6ac66de"
+    },
+    {
+      "path": "public/assets/analysis/accessory-analysis.webp",
+      "bytes": 196748,
+      "sha256": "57e25e82f806812f60ce4706b855fd39a88f3a1490679c344475d6f1db4e00cb"
+    },
+    {
+      "path": "public/assets/analysis/body-proportion-analysis.png",
+      "bytes": 1741177,
+      "sha256": "7956b85252aa80102d53a9011cbae66373ed17782eb4f14a9c888d2691d24661"
+    },
+    {
+      "path": "public/assets/analysis/body-proportion-analysis.webp",
+      "bytes": 102304,
+      "sha256": "77c0774cbae076d37ed0180e0c8cc5dc212ccf18ea5e5ab13ba1be2bd59c2b56"
+    },
+    {
+      "path": "public/assets/analysis/clothing-fit-analysis.png",
+      "bytes": 2062082,
+      "sha256": "b3bc3081fc6c0a01f989fef9c24ce84eba02ee3a2088bf10a6cf3165f7155975"
+    },
+    {
+      "path": "public/assets/analysis/clothing-fit-analysis.webp",
+      "bytes": 136624,
+      "sha256": "bda3ce218170e61bbf88a46f574655dd8fc4034174eeba6f7680e609258db954"
+    },
+    {
+      "path": "public/assets/analysis/complexion-analysis.png",
+      "bytes": 2197322,
+      "sha256": "a12aa6cf427a4207ed42bbedb0784eec2daa7d32d8e9e72d913dc2b31a1a007b"
+    },
+    {
+      "path": "public/assets/analysis/complexion-analysis.webp",
+      "bytes": 163944,
+      "sha256": "96f9dffe1b009494c02348c29b2333939f4754a3abe2d490ac727a4e3a97b295"
+    },
+    {
+      "path": "public/assets/analysis/face-shape-analysis.png",
+      "bytes": 2240739,
+      "sha256": "9b6a521e2f32c420a1f7f92aed146fa0ed3f350546aad13e8c8b9ec7d5cb3145"
+    },
+    {
+      "path": "public/assets/analysis/face-shape-analysis.webp",
+      "bytes": 171434,
+      "sha256": "c80266fcd423b269f5fa80909d7a7fd95e6f25d8c5d47e6af7b52e10799582d1"
+    },
+    {
+      "path": "public/assets/analysis/facial-hair-analysis.png",
+      "bytes": 2450901,
+      "sha256": "6b784a53da477fd6aefc9583140a41ba219fe0031ca450ae986dbef4fc7e872d"
+    },
+    {
+      "path": "public/assets/analysis/facial-hair-analysis.webp",
+      "bytes": 219352,
+      "sha256": "58edf28dc72d828a8e1cc288c71493b0f1dce93b2da40165b3a9973a6ff8b247"
+    },
+    {
+      "path": "public/assets/analysis/jawline-analysis.png",
+      "bytes": 2184709,
+      "sha256": "5ed34f1f54e9e255bc3c8821cb18eb0b8bb86c5ac00edb751c312a04ff327272"
+    },
+    {
+      "path": "public/assets/analysis/jawline-analysis.webp",
+      "bytes": 154426,
+      "sha256": "e83a1b5bbcb1f0d2e41c7377510b4b463261aaa5fb11060493bbb35f94177a4d"
+    },
+    {
+      "path": "public/assets/analysis/lifestyle-analysis.png",
+      "bytes": 2160415,
+      "sha256": "3e5a48f390a73be8de116f80a3e140090837266d4db1110380a6ba64425aaa90"
+    },
+    {
+      "path": "public/assets/analysis/lifestyle-analysis.webp",
+      "bytes": 146482,
+      "sha256": "5582e15e7914b16263696bb79aca6bf22def82add8904cf27d31f4f523ecbee9"
+    },
+    {
+      "path": "public/assets/approach/body-type.png",
+      "bytes": 1891273,
+      "sha256": "d9fcd5c2d53caccdfa6323326e859b370f53e14bd50a2b7ce0bf4ee7f06ed62f"
+    },
+    {
+      "path": "public/assets/approach/body-type.webp",
+      "bytes": 76868,
+      "sha256": "f34ccd8b1f88ad903f5d252c5e9fd7a243d6e375d2a3f23229df8122614792e1"
+    },
+    {
+      "path": "public/assets/approach/face-shape.png",
+      "bytes": 2025370,
+      "sha256": "25d5a4267e0c0e54d566b6beb897711b4a2fde0e3901632671736189830c7a8d"
+    },
+    {
+      "path": "public/assets/approach/face-shape.webp",
+      "bytes": 110138,
+      "sha256": "27d4e2d4f903970bcffd4453c1376e6add0236460be59227969b5519ccef79d3"
+    },
+    {
+      "path": "public/assets/approach/skin-undertone.png",
+      "bytes": 2079450,
+      "sha256": "508e5c086a173f76505708d39b3d672348e519b276766c98b64c6e07b02193a9"
+    },
+    {
+      "path": "public/assets/approach/skin-undertone.webp",
+      "bytes": 108208,
+      "sha256": "04d8e6c7daba19f5d489b6989c9304c2a4c6e7e04b9e5f5b4e68e2c8a12e86f7"
+    },
+    {
+      "path": "public/assets/bonuses/grooming-guide.png",
+      "bytes": 1981361,
+      "sha256": "258241fabf354fc4417b1bfbb6996bedfa738a914bdf45e2a9143cd2d8127add"
+    },
+    {
+      "path": "public/assets/bonuses/grooming-guide.webp",
+      "bytes": 110378,
+      "sha256": "c8290c507ba9e08334a88f0746b386e26b915d0f92767f976ff227ca72665e1c"
+    },
+    {
+      "path": "public/assets/bonuses/style-upgrade-roadmap.png",
+      "bytes": 1811766,
+      "sha256": "eeb8ef2f262cddef3d1c99dbbef099c37228cf5930ddd0133d9cbff05664e198"
+    },
+    {
+      "path": "public/assets/bonuses/style-upgrade-roadmap.webp",
+      "bytes": 75724,
+      "sha256": "d4ef1454d4168edf5fcb4a171e092e55ac80942d272749fb7004fe32277a11a4"
+    },
+    {
+      "path": "public/assets/deliverables/01-hairstyle-options.png",
+      "bytes": 2135015,
+      "sha256": "62c03be63d927d30e57fa63aaf0fa69270802bbf6667f4a44a852d4a8d7d1ed4"
+    },
+    {
+      "path": "public/assets/deliverables/01-hairstyle-options.webp",
+      "bytes": 127546,
+      "sha256": "5999703219d162f16485cfcb963074f7defa81f51ff40d7fc62e055e06709379"
+    },
+    {
+      "path": "public/assets/deliverables/02-beard-options.png",
+      "bytes": 2140610,
+      "sha256": "ccb5baf844196ed10e851e9a3d7dc597ec0e4c1b1b36b57cca83dbe4e5dd0f45"
+    },
+    {
+      "path": "public/assets/deliverables/02-beard-options.webp",
+      "bytes": 133532,
+      "sha256": "a40e62d4a16fa7bc7d263778123f06e25b04321a928983d2639df1c23bf8099b"
+    },
+    {
+      "path": "public/assets/deliverables/03-colour-options.png",
+      "bytes": 2046061,
+      "sha256": "3308c079393714dac5fd8d19045314fe9b3a429068daf975fa6b09687796eae9"
+    },
+    {
+      "path": "public/assets/deliverables/03-colour-options.webp",
+      "bytes": 109632,
+      "sha256": "02d1dd90707e036603ff0a68e2ceabfaafad025f1e9ef38eda71ee6ca7c63bf5"
+    },
+    {
+      "path": "public/assets/deliverables/04-fit-options.png",
+      "bytes": 1718114,
+      "sha256": "480d342776e8cb9ffbca786551cefa9ba9aed28ac69980b89ce471b66f914514"
+    },
+    {
+      "path": "public/assets/deliverables/04-fit-options.webp",
+      "bytes": 66490,
+      "sha256": "30bb3a978ff1afad2cf3361972061bcb6ce643c8d40a86d5b1a6e132b7c73cd0"
+    },
+    {
+      "path": "public/assets/deliverables/05-shoe-options.png",
+      "bytes": 1722280,
+      "sha256": "e0a0b0f87c6e5ae2afebb38c7ad72562721728a02621a59f6c3feb986d78e340"
+    },
+    {
+      "path": "public/assets/deliverables/05-shoe-options.webp",
+      "bytes": 67124,
+      "sha256": "c6fbabfafebf0863bdcba657efdcffbd68b2e68f75a788121a67c284ce4123ae"
+    },
+    {
+      "path": "public/assets/deliverables/06-perfume-options.png",
+      "bytes": 1947616,
+      "sha256": "4f35f8d918f597d9e27bf52b4b12b3075f9b73a0a36585d9aa17fc381be423f0"
+    },
+    {
+      "path": "public/assets/deliverables/06-perfume-options.webp",
+      "bytes": 108302,
+      "sha256": "319c6862bbd28f039ba0d1842ca10eced07540fec3598e669aaaad076805ed2e"
+    },
+    {
+      "path": "public/assets/deliverables/07-eyewear-options.png",
+      "bytes": 1941882,
+      "sha256": "9338816f1d54c8421549269a2b5f06d3bac8fc1d8de83a02914b0389099bce16"
+    },
+    {
+      "path": "public/assets/deliverables/07-eyewear-options.webp",
+      "bytes": 107822,
+      "sha256": "83b119193faf86243b2f45545ba13de4b71a2e0dfe3b0bfe5b128f71cedf4ee6"
+    },
+    {
+      "path": "public/assets/deliverables/08-accessory-options.png",
+      "bytes": 1709787,
+      "sha256": "8c2c598b31e1d7e09559d08452e2b3b1ede39ec3092688abb850e63b88f3ebfd"
+    },
+    {
+      "path": "public/assets/deliverables/08-accessory-options.webp",
+      "bytes": 71254,
+      "sha256": "e779dc8db1939ab6009d88b10a5cb69ed4a0ff292ff4532d2cecbf1a6c851b8f"
+    },
+    {
+      "path": "public/assets/deliverables/09-outfit-options.png",
+      "bytes": 1872705,
+      "sha256": "7a13c5a3182544cbfc2ad0067e1b341c16a08d67df58662ae41a4d31ec996216"
+    },
+    {
+      "path": "public/assets/deliverables/09-outfit-options.webp",
+      "bytes": 103804,
+      "sha256": "71c6bd19be0636b572c7849ea2651b7d3d92616bea93206d6d4294163af04530"
+    },
+    {
+      "path": "public/assets/deliverables/10-shopping-options.png",
+      "bytes": 1793464,
+      "sha256": "bee9dcb63739778941635d13b46e153a5261718c6b03e0d2248bc277d069c496"
+    },
+    {
+      "path": "public/assets/deliverables/10-shopping-options.webp",
+      "bytes": 88080,
+      "sha256": "f5701dfc60306da477e4d0cd24b5ec7376f4c6ea46652288de68579949310bbb"
+    },
+    {
+      "path": "public/assets/hero/after.webp",
+      "bytes": 26716,
+      "sha256": "73590f0ed3ce7c67343b7f85325b2244c19333335b48e50b9d43fd25ee32bad8"
+    },
+    {
+      "path": "public/assets/hero/before-after-square.png",
+      "bytes": 1980708,
+      "sha256": "97d3e62ea0d57bc49632f63aa281dbe3ec7908bd7bebfd275621711495c00c02"
+    },
+    {
+      "path": "public/assets/hero/before-after-square.webp",
+      "bytes": 95446,
+      "sha256": "61bcc04b955ad99fac66c74772e4b8265e9149adf18dc8eab61ce631f62fc6f5"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-annotated-v2.png",
+      "bytes": 1812869,
+      "sha256": "0eeece05f711f9b0117ab14b9d9f7522b2663d03735c551cd2ec10e3adf20b78"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-annotated-v2.webp",
+      "bytes": 135678,
+      "sha256": "15df70941e74f48ce0e6b866c07e137a834059051c7510004750af979bc2b9b7"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-annotated.png",
+      "bytes": 1823212,
+      "sha256": "23dc703e3240eb1cc36afbf1fb194740b099ae52ea2f38e47cfb1e822108c4a3"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-annotated.webp",
+      "bytes": 131362,
+      "sha256": "aadfb7de5ce91b5f7c0e6c22ea6852336b9ca2af8328c92063c918d042fb7d7b"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-clean.png",
+      "bytes": 1694488,
+      "sha256": "14b5a541230505f7a5a2c0902cc5e012d148a1d2d6778ab845cf6f47774ebe0c"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-clean.webp",
+      "bytes": 75370,
+      "sha256": "605d993ab757c0e158808118c2d1846ce82f3416c2d78857154e4d884834e7a9"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-original-reference.png",
+      "bytes": 1725498,
+      "sha256": "402fd98bfd20cc5db7be96c83f70cc54c02d0016c94815c12f72f6a41966b28c"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report-original-reference.webp",
+      "bytes": 74480,
+      "sha256": "086fecd8d955390613248943a46ce00930c92f216aa7daa1f12733aff3ca4bcd"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report.png",
+      "bytes": 1661703,
+      "sha256": "a82f4844dfc7086fcfccab4814634c41f2379b489b1a41bc9fb7d2f9ec50ab46"
+    },
+    {
+      "path": "public/assets/hero/before-after-style-report.webp",
+      "bytes": 54100,
+      "sha256": "097d97bf576150cd64c043c40dcfff4712a84b951d331c138ba14bdf4ad6aecd"
+    },
+    {
+      "path": "public/assets/hero/before.webp",
+      "bytes": 39772,
+      "sha256": "4f03393200de32be39418ecc10f76fde6b4da4fdacb506f8c4da0add355a1468"
+    },
+    {
+      "path": "public/assets/problem/reel-vs-real.webp",
+      "bytes": 22218,
+      "sha256": "eae684cceb94f20601cc0156dd2673f7ad406a044b7d72745136c7a3e50950bf"
+    },
+    {
+      "path": "public/assets/process/analysis-v2.png",
+      "bytes": 1821485,
+      "sha256": "7cc22c5c85dd6a3eab1d39af6351ab52b33d282d66bf089f423b91a1d8109c08"
+    },
+    {
+      "path": "public/assets/process/analysis-v2.webp",
+      "bytes": 60168,
+      "sha256": "c04568b7b1f4c35f40ba8f0701f63faf5cfd6eebbf21f0748c10353ae193dcf9"
+    },
+    {
+      "path": "public/assets/process/analysis.webp",
+      "bytes": 10212,
+      "sha256": "009e00e974d4ef8f38245f735ee0a0454f85151200ed3b51a9c7487d249b6819"
+    },
+    {
+      "path": "public/assets/process/assessment.webp",
+      "bytes": 12666,
+      "sha256": "9e6f973f80b1cce850876ca949f680186e77149c6b58cf8f02fa2dc9ae40d651"
+    },
+    {
+      "path": "public/assets/process/report-stack.webp",
+      "bytes": 9938,
+      "sha256": "afef68553e1a626099131fcba7384fd2a5eda6fbb7893f26c71f966f01305702"
+    },
+    {
+      "path": "public/assets/process/styleiq-report-outcome.png",
+      "bytes": 1923226,
+      "sha256": "43d0662a26895a82f0199a2f49a39c21a7a80e07167a37afc72ae3c80b577109"
+    },
+    {
+      "path": "public/assets/process/styleiq-report-outcome.webp",
+      "bytes": 103784,
+      "sha256": "56dada583668e03c853e8c1833753fcc6cc8313a1e56b0ce16a7e13d54c89ac6"
+    },
+    {
+      "path": "public/assets/process/styleiq-upload-photos.png",
+      "bytes": 1718337,
+      "sha256": "9484e78b54abdf693c23e0bf78ec8b351b0fea04a8bdf6d2d84a7cbb0f55a7e6"
+    },
+    {
+      "path": "public/assets/process/styleiq-upload-photos.webp",
+      "bytes": 73486,
+      "sha256": "7066898977d6ba1e7e3605eee8081d63ebe530636fdc97ca56542d4502a21af0"
+    },
+    {
+      "path": "public/assets/process/styleiq-variable-mapping.png",
+      "bytes": 2143621,
+      "sha256": "c289fbe015fbf3ec556490c79b3be236e824613c32936351ecebcdb24050a128"
+    },
+    {
+      "path": "public/assets/process/styleiq-variable-mapping.webp",
+      "bytes": 142902,
+      "sha256": "a1f64cba69fdedbb044bda0691e0c7caf830c45de0cd385d71e8901a60672572"
+    },
+    {
+      "path": "public/assets/product/attractivemen-style-report-mockup-v2.png",
+      "bytes": 560848,
+      "sha256": "8acf605a8bd480edec5a7f92fb6e0b4880907d5f1e71f362aa2f8a6a50e21bf6"
+    },
+    {
+      "path": "public/assets/product/attractivemen-style-report-mockup-v2.webp",
+      "bytes": 41638,
+      "sha256": "a8a84c22efeb5dae627fff37b9e7f27a1cfcdbd215e6ef0aa62879c294c10550"
+    },
+    {
+      "path": "public/assets/product/attractivemen-style-report-mockup.png",
+      "bytes": 1700491,
+      "sha256": "8e88308f119007856f8f10e17cad5f9873247a8f291881ba2434963776456471"
+    },
+    {
+      "path": "public/assets/product/attractivemen-style-report-mockup.webp",
+      "bytes": 71982,
+      "sha256": "c62620f31fb2a2eb7e504da8959da455d6b54e5397a4f6218a72143d31c484cb"
+    },
+    {
+      "path": "public/assets/product/report-stack.webp",
+      "bytes": 9938,
+      "sha256": "afef68553e1a626099131fcba7384fd2a5eda6fbb7893f26c71f966f01305702"
+    },
+    {
+      "path": "public/assets/product/style-report.png",
+      "bytes": 1594231,
+      "sha256": "2d2a0ec3cbae128b8c1d38cb2ad0ed50d3c885c8f318c81ff9e60151acc30814"
+    },
+    {
+      "path": "public/assets/product/style-report.webp",
+      "bytes": 66006,
+      "sha256": "fd6aadf6705940f521974b12348fa9de8199f882c38fc52547ebc9b39d12833f"
+    },
+    {
+      "path": "public/assets/report/accessories.webp",
+      "bytes": 14374,
+      "sha256": "74871527959d11942bd809294f43c16d0c9fe74f25bacb971c8edbd3e5fdaf10"
+    },
+    {
+      "path": "public/assets/report/beard.webp",
+      "bytes": 14054,
+      "sha256": "11d6e8822b16245680b7f12574ed33717fdafad94f265e8301db163624c5e542"
+    },
+    {
+      "path": "public/assets/report/best-hairstyle-recommendation.png",
+      "bytes": 1779255,
+      "sha256": "e830c18d66bbc18d9b745071050fb13129758504a841ce0aa651aab7c1971de7"
+    },
+    {
+      "path": "public/assets/report/best-hairstyle-recommendation.webp",
+      "bytes": 66390,
+      "sha256": "3f551c8dca961bc0d1cfb92638dab27805637b96804e111aaa931a6a29f3abc1"
+    },
+    {
+      "path": "public/assets/report/body.webp",
+      "bytes": 4628,
+      "sha256": "4720147c18517a7b2ff71a17b7a5ff2e14422a4c98f5a675579ee33dcca99aa9"
+    },
+    {
+      "path": "public/assets/report/face.webp",
+      "bytes": 9964,
+      "sha256": "3569b6bdc5ccf677528bb038a2c17bf6129f858f82e630972ac7aa01350c6775"
+    },
+    {
+      "path": "public/assets/report/hair.webp",
+      "bytes": 15340,
+      "sha256": "64ebcb4ac70b18b9b909f1b96d86ebccf70adcf2d96227b2b4089024d15e2e82"
+    },
+    {
+      "path": "public/assets/report/outfits.webp",
+      "bytes": 16200,
+      "sha256": "55de4fd572a66b3d30208afe00fa680d3dc7e450e8c59280e6e42f96a6a08e1b"
+    },
+    {
+      "path": "public/assets/report/perfume.webp",
+      "bytes": 11998,
+      "sha256": "a37e74905ee6fd19e9fc2b0248734f4ac2fd39aac7a2fe2faca444f2ce7663cb"
+    },
+    {
+      "path": "public/assets/report/plan.webp",
+      "bytes": 10568,
+      "sha256": "21090abcdcd1bf1b74de5b4a0c77020a951c5232108283734a391f1da2cf293d"
+    },
+    {
+      "path": "public/assets/report/skin.webp",
+      "bytes": 10246,
+      "sha256": "6d679368f262479d5ea32b19efffc6d928c9ab3cc6dd2a07b1d3a8cd6db22fb5"
+    },
+    {
+      "path": "public/assets/report/styleiq/colour-analysis-v2.png",
+      "bytes": 2180425,
+      "sha256": "05a3f64a4351ad92bbc4b26da609cbddf19e950a0bf6f45f03a79f65622313af"
+    },
+    {
+      "path": "public/assets/report/styleiq/colour-analysis-v2.webp",
+      "bytes": 140914,
+      "sha256": "18cdf2497b2b84067c2b52f32ee11e47ee5243e5955f0e44268973756a2dc1f2"
+    },
+    {
+      "path": "public/assets/report/styleiq/colour-analysis.png",
+      "bytes": 2079051,
+      "sha256": "f810d2fc01793906bd6b42d6c063d28911538740f3fb3208bf6b99373438782a"
+    },
+    {
+      "path": "public/assets/report/styleiq/colour-analysis.webp",
+      "bytes": 147138,
+      "sha256": "3fc1bfd2458945ea0e7052e9a05f078d2aaeb5228c8166b1a6930471155990b3"
+    },
+    {
+      "path": "public/assets/report/styleiq/fit-analysis-v2.png",
+      "bytes": 1955294,
+      "sha256": "65b508a9fb57773353c92ca73e1e8b2617f5544376232b527bb3d1b2a9f44ebe"
+    },
+    {
+      "path": "public/assets/report/styleiq/fit-analysis-v2.webp",
+      "bytes": 132704,
+      "sha256": "595927a6ba8c3bad47a46f1d1130c367c1fa9fd01c02a52d6fdaa0dbabeb3fef"
+    },
+    {
+      "path": "public/assets/report/styleiq/fit-analysis.png",
+      "bytes": 1747826,
+      "sha256": "5e5aeeb4b520de1f6f716f4f7404fb6d52cc775104753e8c98b0d54ccacf4612"
+    },
+    {
+      "path": "public/assets/report/styleiq/fit-analysis.webp",
+      "bytes": 73892,
+      "sha256": "83451071e1f3c8529dd48e1e4b14bcc382ef3bc42d703e9fab612f84d14795c3"
+    },
+    {
+      "path": "public/assets/report/styleiq/grooming-analysis.png",
+      "bytes": 2110875,
+      "sha256": "c1c75f3bff66cd4cbc951b6ce012075f60e413a3a7ad41171be1423cf6360337"
+    },
+    {
+      "path": "public/assets/report/styleiq/grooming-analysis.webp",
+      "bytes": 123948,
+      "sha256": "58c4c6161be9e7a3518deae87ece61ce57329505c3f25c0b1c573d05f20ea04a"
+    },
+    {
+      "path": "public/assets/report/styleiq/hairstyle-analysis.png",
+      "bytes": 1957166,
+      "sha256": "8ee49b786255f2c54eec541599de89b706ba9a063d5f3d1efee723c2a84c23ea"
+    },
+    {
+      "path": "public/assets/report/styleiq/hairstyle-analysis.webp",
+      "bytes": 108816,
+      "sha256": "5017b731a3b94e34afbfe8c6b2fff5779ebb72ee7280180bcf90297ffa33247b"
+    },
+    {
+      "path": "public/assets/report/styleiq/outfit-planning-v2.png",
+      "bytes": 2267657,
+      "sha256": "a03420094f211f7d363a31aa99fdd1316e19ec7d3a0b959dbcc8d65efa62d2e0"
+    },
+    {
+      "path": "public/assets/report/styleiq/outfit-planning-v2.webp",
+      "bytes": 156106,
+      "sha256": "4722dbdc095db28a1e299b80935f939e2d4224295f0a5d44706e2c291c26be03"
+    },
+    {
+      "path": "public/assets/report/styleiq/outfit-planning.png",
+      "bytes": 2362507,
+      "sha256": "031acba5da466ddbd95f141e9f26ba800662bad7f7983432251e8d1079f4746f"
+    },
+    {
+      "path": "public/assets/report/styleiq/outfit-planning.webp",
+      "bytes": 158446,
+      "sha256": "f71f928b849d4e7a94d0b77c4ed1c3f03e3768fa189b5aa448f0115fec901f72"
+    },
+    {
+      "path": "public/assets/testimonials/customer-1.webp",
+      "bytes": 55518,
+      "sha256": "5b5423738ddbf9dfd9c4cec0a72fddd90b7eaae1c34d84e55d412e49cc883a44"
+    },
+    {
+      "path": "public/assets/testimonials/customer-2.webp",
+      "bytes": 159468,
+      "sha256": "016e8da03c3be6e589fe0408de0f503cc3d8c0532d898fb7c9fe73db6b51fd00"
+    },
+    {
+      "path": "public/assets/testimonials/customer-3.webp",
+      "bytes": 160264,
+      "sha256": "a5d0ad636224c4f1bbec1b4b23dfec09de62751548b7bd3658952f04c70cdecf"
+    },
+    {
+      "path": "public/assets/testimonials/customer-4.webp",
+      "bytes": 149096,
+      "sha256": "e17a7758bda71f6e6f11e154c4cab80beeeb670d54e925b8080859c6d5222688"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1893,
+      "sha256": "c56ad143a88683ad2615cb05759c44f35fa2d39ad45e1c90ffdeb32380f11244"
+    },
+    {
+      "path": "source/lib/ab-testing.js",
+      "bytes": 8462,
+      "sha256": "3fbec8d8f9253be6acd89332d109bb762cd93f295968d0a17aaac47a5e23d2cf"
+    },
+    {
+      "path": "source/lib/analytics-utils.js",
+      "bytes": 2255,
+      "sha256": "a514b6295fc064b900e351c5019cae8d88ddd65c01a832177a1757d9ad9af071"
+    },
+    {
+      "path": "source/lib/analytics.js",
+      "bytes": 9424,
+      "sha256": "c1c40a5f2c648a848cc17dce1ea37cc68f31560cc06686bd6bfc765bb4268a96"
+    },
+    {
+      "path": "source/lib/checkout-config.js",
+      "bytes": 360,
+      "sha256": "c2a3c0970fd24333fb94deff94ecdaf4f20c7a24b9ae01ace8934ab0c23c4667"
+    },
+    {
+      "path": "source/lib/landing-data.js",
+      "bytes": 12162,
+      "sha256": "642fd7eb907dc2edfeefa039d63df277e8681e84589d3b0d6bda2759cd2baffa"
+    },
+    {
+      "path": "source/main.jsx",
+      "bytes": 2059,
+      "sha256": "cbdbd2bc9689f473ec7827b8231ffd5e57aaccbba88f995470beb34243027c7f"
+    },
+    {
+      "path": "source/pages/landing/EditorialSections.jsx",
+      "bytes": 10634,
+      "sha256": "4934161715d065b8fe3d7360c14f156ac6ef5c37871a83bc24987ced7475cdc0"
+    },
+    {
+      "path": "source/pages/landing/Hero.jsx",
+      "bytes": 1574,
+      "sha256": "94fc2ce9d76beaf12cd66ac53f1376a4878e1974b029d47deb0b8f3216d36801"
+    },
+    {
+      "path": "source/pages/landing/OfferSections.jsx",
+      "bytes": 12790,
+      "sha256": "3dee1fd6724b432499c141f627338b659a774823ca1f888434fb50de6def0aef"
+    },
+    {
+      "path": "source/pages/landing/shared.jsx",
+      "bytes": 2611,
+      "sha256": "57796a5a76a2cf51af16d6875f7a56a3a031479c7de7e271a524a7ce250b1b51"
+    },
+    {
+      "path": "source/pages/landing/SocialProofSections.jsx",
+      "bytes": 3609,
+      "sha256": "0f60b1db101f4e9b1d4245cb5a5944843642bac43d4b17161f41f8bfb169d23d"
+    },
+    {
+      "path": "source/pages/landing/StickyBuyBar.jsx",
+      "bytes": 2670,
+      "sha256": "f1886044ceb11045a3aad7a73211878e0bce45ad3f9b2d9866e86e229b2f1f69"
+    },
+    {
+      "path": "source/pages/landing/TrustSection.jsx",
+      "bytes": 483,
+      "sha256": "832781fbf0cc5707196e3ea10f6fd98b233070c5b237d76c42be6e39438efd34"
+    },
+    {
+      "path": "source/pages/LandingPage.jsx",
+      "bytes": 1448,
+      "sha256": "991fe0e5763bf552af4f5729771782ee8ea51b7120b80e19986a25486569577c"
+    },
+    {
+      "path": "source/routes.js",
+      "bytes": 1578,
+      "sha256": "a4da85377ed5dd76feb0fd535bcbefae99341c46acb293085345094343666a05"
+    },
+    {
+      "path": "source/styles/landing.css",
+      "bytes": 680,
+      "sha256": "f7d9affd19d788333448e5f67d446e4710fb2aa685306d130101e7f64e461352"
+    },
+    {
+      "path": "source/styles/landing/part-01.css",
+      "bytes": 6143,
+      "sha256": "a5302b7e5b8347f248d7aaf14f19cd896751d31e164d4ed6d3544b416e209781"
+    },
+    {
+      "path": "source/styles/landing/part-02.css",
+      "bytes": 5435,
+      "sha256": "da4e73625bbfe01ea406da2ee2bdd9cde0a8ce51cba5760dc71ec6105a8bc092"
+    },
+    {
+      "path": "source/styles/landing/part-03.css",
+      "bytes": 5348,
+      "sha256": "37d04f5881947255cdd5a92402125db6630e2e5dc5666025b1f2f2e9ad3b407f"
+    },
+    {
+      "path": "source/styles/landing/part-04.css",
+      "bytes": 5026,
+      "sha256": "c7ba8bee4cbff5e29802c32a653705f666c815586f0403e6edf725df06773b70"
+    },
+    {
+      "path": "source/styles/landing/part-05.css",
+      "bytes": 4774,
+      "sha256": "67317eb1a4d6f443fcef336916d1449d22ba9e8f00745100b00b8ac209341215"
+    },
+    {
+      "path": "source/styles/landing/part-06.css",
+      "bytes": 4785,
+      "sha256": "fd74a029d80bdd63d1233adc8b75f0b59dce8edfda897a421b147bfaf253b90c"
+    },
+    {
+      "path": "source/styles/landing/part-07.css",
+      "bytes": 6019,
+      "sha256": "e37274fa98dd90594cf564fd255f3ed406dc89e7d241fd04a319ead750bc0a55"
+    },
+    {
+      "path": "source/styles/landing/part-08.css",
+      "bytes": 5195,
+      "sha256": "d6ee0f68efa542090f3bf15d428447fb7f95a2c97b42361108562cc2e1392461"
+    },
+    {
+      "path": "source/styles/landing/part-09.css",
+      "bytes": 5666,
+      "sha256": "795ef3eb094749f5af2654e840be712d31aaa0d3c621d2349985411d59d9ff76"
+    },
+    {
+      "path": "source/styles/landing/part-10.css",
+      "bytes": 6453,
+      "sha256": "1b4883996ac220718767547f67ff6b1e410576b3aca4484ad14defaae0dfeef7"
+    },
+    {
+      "path": "source/styles/landing/part-11.css",
+      "bytes": 6197,
+      "sha256": "617b554296001bd8089ff1cd1cef0a8267a852393c5d6cfd613c2f71f2089ffb"
+    },
+    {
+      "path": "source/styles/landing/part-12.css",
+      "bytes": 5928,
+      "sha256": "d754c09980f44d0e261903075bd6b8b7c14d0e1ea154c9b3757ecef1e6276e6c"
+    },
+    {
+      "path": "source/styles/landing/part-13.css",
+      "bytes": 6058,
+      "sha256": "c977c60aede783e9ed6ef288fb4b15012f7de0d49e6fe6e1723beab77fe5a437"
+    },
+    {
+      "path": "source/styles/landing/part-14.css",
+      "bytes": 5671,
+      "sha256": "cc24057f4cf15f5b4389690b5992629eae9d09df0580caf6e898d5e381261e88"
+    },
+    {
+      "path": "source/styles/landing/part-15.css",
+      "bytes": 5744,
+      "sha256": "2d027c5bd172ac0a78387b31e60e89109cb9f8ecbb60ff1084e6c607470725f2"
+    },
+    {
+      "path": "source/styles/landing/part-16.css",
+      "bytes": 5167,
+      "sha256": "12634e2720f4e43f3075591d5b9a0a3893b5e0d48171cd406a91739846332dae"
+    },
+    {
+      "path": "source/styles/landing/part-17.css",
+      "bytes": 4386,
+      "sha256": "0c577aaed45395784d5a9b83589267cf6a7376435a3df6a5e9f02c04415d19bf"
+    },
+    {
+      "path": "source/styles/landing/part-18.css",
+      "bytes": 85,
+      "sha256": "3f9f4dd058ef3acdc9b45000eb1a3b4949ab920440b6b31cb5e2b4c4ac20d66a"
+    },
+    {
+      "path": "source/styles/landing/part-19.css",
+      "bytes": 4393,
+      "sha256": "ba8bebef7a69cebf56fa3eeaf379ae9ac049918ab3f89affb1d1f5c6ec595941"
+    },
+    {
+      "path": "source/styles/landing/part-20.css",
+      "bytes": 1273,
+      "sha256": "9a1a45354dafc2b7a641fc662170a4a11739b11419168a5da4a86bcdfb6038a8"
+    }
+  ],
+  "externalAssetUrls": [
+    "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/ankur_hhdjc8.png",
+    "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/rahul_j5oyv6.png",
+    "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628151/satyam_ttlk1w.png",
+    "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
+    "https://res.cloudinary.com/dhjsqmejb/video/upload/v1787990480/Style_Report_overview_2_sm1mmx.mp4",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787994025/internet-random-advice_cht9si.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_1_adbvxg.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_2_vc4kcu.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_40_PM_3_uailwn.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_4_dbups8.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_5_cqgesu.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/problem/reel-vs-real.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/analysis-v2.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/assessment.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/product/style-report.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-1.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-2.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-3.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-4.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787996066/ChatGPT_Image_Aug_29_2026_03_03_27_PM_jd4kve.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787997317/ChatGPT_Image_Aug_29_2026_03_24_27_PM_pgk0dk.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_20_PM_1_a6bo6i.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_21_PM_2_nbdoi9.webp",
+    "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788004059/ChatGPT_Image_Aug_29_2026_05_15_55_PM_b6cubf.webp",
+    "https://res.cloudinary.com/dm49wi6j4/video/upload/v1788007305/grooming_silence_edit_final_1_m4w53i.mp4"
+  ],
+  "externalAssetsDownloaded": false,
+  "archiveGaps": [
+    {
+      "url": "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/ankur_hhdjc8.png",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628150/rahul_j5oyv6.png",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628151/satyam_ttlk1w.png",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dhjsqmejb/image/upload/f_auto,q_auto,c_limit,w_900/v1784628303/ChatGPT_Image_Jul_21_2026_03_34_51_PM_qi3dmf.png",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dhjsqmejb/video/upload/v1787990480/Style_Report_overview_2_sm1mmx.mp4",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787994025/internet-random-advice_cht9si.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_1_adbvxg.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_39_PM_2_vc4kcu.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_40_PM_3_uailwn.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_4_dbups8.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1000/v1787999365/ChatGPT_Image_Aug_29_2026_03_57_41_PM_5_cqgesu.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/problem/reel-vs-real.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/analysis-v2.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/process/assessment.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/product/style-report.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-1.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-2.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-3.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/testimonials/customer-4.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787996066/ChatGPT_Image_Aug_29_2026_03_03_27_PM_jd4kve.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1787997317/ChatGPT_Image_Aug_29_2026_03_24_27_PM_pgk0dk.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_760/v1788003564/ChatGPT_Image_Aug_29_2026_05_06_07_PM_bf2kfj.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_20_PM_1_a6bo6i.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788000316/ChatGPT_Image_Aug_29_2026_04_14_21_PM_2_nbdoi9.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_900/v1788004059/ChatGPT_Image_Aug_29_2026_05_15_55_PM_b6cubf.webp",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    },
+    {
+      "url": "https://res.cloudinary.com/dm49wi6j4/video/upload/v1788007305/grooming_silence_edit_final_1_m4w53i.mp4",
+      "reason": "Original remote URL preserved; binary copy not included in the archive."
+    }
+  ]
+}

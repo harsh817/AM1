@@ -32,7 +32,7 @@ try {
   $env:STANDALONE_BUILD = '1'
   $env:VITE_STANDALONE_OUT_DIR = $distRoot
   Push-Location $projectRoot
-  & npx vite build --config (Join-Path $projectRoot 'vite.config.mjs')
+  & npx vite build --configLoader runner --config (Join-Path $projectRoot 'vite.config.mjs')
   if ($LASTEXITCODE -ne 0) { throw 'Standalone Vite build failed.' }
 }
 finally {

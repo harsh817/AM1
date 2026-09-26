@@ -1,13 +1,25 @@
 # Production Ready Checklist
 
-Last updated: 2026-09-20
+Last updated: 2026-09-26
 
-Scope: AttractiveMen landing pages, cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
+Scope: AttractiveMen landing pages (including the AM promoted control and AM2 dark variant), cart/offer state, checkout, PhonePe payment routes, thank-you page, Make tracking, Vercel deployment, and support operations.
 
-Use this before every release that affects:
+## 2026-09-26 AM2 Promotion Review (Local Only)
 
-- /a-m (original control page)
-- /AM2 (new production variant)
+- `/a-m` now renders the promoted AM2 composition in its existing light appearance; `/AM2` renders that same composition in the dark theme.
+- Previous AM source, dependencies, and local assets are archived in `retired-pages/am-original/`, with a source-based local preview, restoration notes, and SHA-256 asset manifest. The earlier `artifacts/AttractiveMen-original.html` remains unchanged. Cloudinary URLs are preserved, but their remote binaries are not mirrored locally.
+- New comparison ID: `am-vs-am2-v3` (AM — Promoted Control, AM2 — Dark Variant). Keep paused in production until local review is approved.
+- Local deterministic previews: `/a-m?previewVariant=AM` and `/a-m?previewVariant=AM2`. Local landing analytics are disabled.
+- Production status: not pushed or deployed. Do not mark the promotion released until the owner reviews both variants and the archive preview.
+- Local verification: both variants render all 12 sections at 360, 390, 768, and 1440px with no broken images, browser errors, or horizontal overflow. Checkout links retain `utm_term=AM` or `utm_term=AM2`; campaign parameters survive the deterministic AM2 redirect. The archived source renders with analytics stubbed.
+- Local checks (2026-09-26): `npm test` passed 110/110; `npm run build` and standalone export passed. `node --test --experimental-test-coverage` passed 110/110 with 94.59% statements, 78.97% branches, and 95.75% functions overall; `src/lib/ab-testing.js` is 85.63% statements and 85.83% branches. `npm run check:bundle` passed after the final build (see current run below). `npm audit --omit=dev --audit-level=moderate` could not reach the npm audit endpoint, so dependency audit status is unverified for this review.
+- Pre-change source commit: `878f5797e72d8e040573a0eb4c5d44a0447399c1`.
+- Rollback: restore the prior route/module dispatch and v2 experiment identity from the pre-change commit; retain v3 records and the retired archive. Do not delete historical records or change checkout/payment behavior.
+
+The release evidence below is historical for the 2026-09-20 AM2 route launch. It does not describe the current local-only promotion review above. Use this before every release that affects:
+
+- /a-m (AM — promoted control)
+- /AM2 (AM2 — dark variant)
 - /a-m-checkout
 - /a-m-thankyou
 - /api/experiment/landing
@@ -48,7 +60,7 @@ Status legend:
 - [x] Production build passes. Evidence: `npm run build` passed after the AM/AM2 experiment routing and attribution changes.
 - [x] AM2 production deployment is Ready. Evidence: commit `b3c6da4` pushed to `main`; `https://thriveonp.com/AM2` returned HTTP 200 from Vercel with `X-Vercel-Cache: HIT`.
 - [x] Production Vercel deployment is Ready. Evidence: after pushing `c21574c`, production `/a-m-thankyou?pixelCheck=1` served `__attractiveMenThankYouPixelLoaded` and the Meta Pixel script source; `/a-m`, `/a-m-checkout`, and `/a-m-thankyou` returned 200.
-- [x] Public routes return successful responses: /a-m, /AM2, /a-m-checkout, /a-m-thankyou. Evidence: 2026-09-20 production smoke test returned HTTP 200 for all four routes; `/a-m` remains the original control page and `/AM2` is the separate variant.
+- [x] Public routes returned successful responses in the historical 2026-09-20 production smoke test. At that time `/a-m` was the original control and `/AM2` was the separate variant; the new route meanings are documented in the 2026-09-26 local-only promotion review above and have not been deployed.
 - [x] A/B routing and attribution are covered by tests. Evidence: 101 tests pass, including pre-render assignment, AM2 redirect preservation, checkout URL attribution, direct AM2 classification, landing-event validation, and idempotency keys.
 - [x] A/B landing endpoint is live. Evidence: production `POST /api/experiment/landing` accepted a marked `test` event after commit `a12fc47` deployed.
 - [x] Root domain and www DNS point to Vercel correctly. Evidence: root A record resolves to `76.76.21.21`; www CNAME resolves to `cname.vercel-dns.com`.
@@ -531,7 +543,7 @@ Release commit: `6ee8f66` (`main`, pushed to `origin/main`). Production deployme
 - [x] Convex local deployment typecheck and isolated landing-write smoke test passed on 2026-09-20.
 - [x] `npm test` passes 101/101; `npm run build` and `npm run check:bundle` pass.
 - [~] Production Convex and Resend environments still require project configuration, environment variables, and one-time administrator provisioning.
-- [~] Start `am-vs-am2-v2` paused, verify preview login/reporting, then enable the 50/50 split from the dashboard and record the start time.
+- [~] Start `am-vs-am2-v3` paused, review both themes and reporting in preview, then enable the 50/50 split only as a separate approved production release and record the start time.
 
 ## Official References
 

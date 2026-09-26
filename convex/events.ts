@@ -97,8 +97,9 @@ export const config = query({
   args: {},
   returns: v.object({ experimentId: v.string(), enabled: v.boolean(), amPercentage: v.number(), am2Percentage: v.number() }),
   handler: async (ctx) => {
-    const current = await ctx.db.query("experiments").withIndex("by_experiment_id", (query) => query.eq("experimentId", process.env.ACTIVE_EXPERIMENT_ID || "am-vs-am2-v2")).unique();
-    return current ? { experimentId: current.experimentId, enabled: current.enabled, amPercentage: current.amPercentage, am2Percentage: current.am2Percentage } : { experimentId: process.env.ACTIVE_EXPERIMENT_ID || "am-vs-am2-v2", enabled: false, amPercentage: 50, am2Percentage: 50 };
+    const experimentId = "am-vs-am2-v3";
+    const current = await ctx.db.query("experiments").withIndex("by_experiment_id", (query) => query.eq("experimentId", experimentId)).unique();
+    return current ? { experimentId: current.experimentId, enabled: current.enabled, amPercentage: current.amPercentage, am2Percentage: current.am2Percentage } : { experimentId, enabled: false, amPercentage: 50, am2Percentage: 50 };
   },
 });
 

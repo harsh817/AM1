@@ -151,6 +151,7 @@ function DashboardWorkspace({ initialSection }) {
   const [orderStatus, setOrderStatus] = useState("");
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState("");
+  const [selectedExperimentId, setSelectedExperimentId] = useState("am-vs-am2-v3");
   const filterArgs = useMemo(
     () => ({
       startAt: filters.startAt,
@@ -166,7 +167,7 @@ function DashboardWorkspace({ initialSection }) {
   const overview = useQuery(
     convexFunctions.overview,
     section === "overview" || section === "experiments"
-      ? { filters: filterArgs }
+      ? { filters: filterArgs, ...(section === "experiments" ? { experimentId: selectedExperimentId } : {}) }
       : "skip",
   );
   const campaigns = useQuery(
@@ -183,8 +184,9 @@ function DashboardWorkspace({ initialSection }) {
   );
   const experiment = useQuery(
     convexFunctions.experiment,
-    section === "experiments" ? {} : "skip",
+    section === "experiments" ? { experimentId: selectedExperimentId } : "skip",
   );
+  const experiments = useQuery(convexFunctions.experiments, section === "experiments" ? {} : "skip");
   const detail = useQuery(
     convexFunctions.order,
     selectedOrder ? { merchantOrderId: selectedOrder } : "skip",
@@ -311,6 +313,9 @@ function DashboardWorkspace({ initialSection }) {
           {section === "experiments" ? (
             <Experiments
               experiment={experiment}
+              experiments={experiments}
+              selectedExperimentId={selectedExperimentId}
+              setSelectedExperimentId={setSelectedExperimentId}
               overview={overview}
               update={saveExperiment}
               status={status}
@@ -724,32 +729,38 @@ function Funnel({ rows }) {
     </Panel>
   );
 }
-function Experiments({ experiment, overview, update, status }) {
+function Experiments({ experiment, experiments, selectedExperimentId, setSelectedExperimentId, overview, update, status }) {
+  const [am, setAm] = useState(experiment?.amPercentage ?? 50);
+  useEffect(() => setAm(experiment?.amPercentage ?? 50), [experiment?.amPercentage, experiment?.experimentId]);
   if (!experiment || !overview)
     return <DashboardState message="Loading experiment..." inline />;
-  const [am, setAm] = useState(experiment.amPercentage);
-  useEffect(() => setAm(experiment.amPercentage), [experiment.amPercentage]);
   return (
     <>
       <section className="dashboard-metrics">
         <Metric
-          label="AM randomized visitors"
+          label="AM — Promoted Control visitors"
           value={`${overview.byVariant.AM.visitors} (${overview.byVariant.AM.share}%)`}
         />
         <Metric
-          label="AM2 randomized visitors"
+          label="AM2 — Dark Variant visitors"
           value={`${overview.byVariant.AM2.visitors} (${overview.byVariant.AM2.share}%)`}
         />
         <Metric
-          label="AM conversion"
+          label="AM — Promoted Control conversion"
           value={`${overview.byVariant.AM.conversionRate}%`}
         />
         <Metric
-          label="AM2 conversion"
+          label="AM2 — Dark Variant conversion"
           value={`${overview.byVariant.AM2.conversionRate}%`}
         />
       </section>
-      <Panel title="AM vs AM2" kicker="Experiment controls">
+      <Panel title="AM vs AM2" kicker="Experiment comparison">
+        <label className="dashboard-experiment-select">
+          Experiment
+          <select value={selectedExperimentId} onChange={(event) => setSelectedExperimentId(event.target.value)}>
+            {(experiments || []).map((item) => <option value={item.experimentId} key={item.experimentId}>{item.experimentId}</option>)}
+          </select>
+        </label>
         <div className="dashboard-experiment-header">
           <div>
             <strong>{experiment.experimentId}</strong>
@@ -759,9 +770,9 @@ function Experiments({ experiment, overview, update, status }) {
           </div>
           <StatusBadge value={experiment.enabled ? "RUNNING" : "PAUSED"} />
         </div>
-        <div className="dashboard-control-row">
+        {experiment.experimentId === "am-vs-am2-v3" ? <div className="dashboard-control-row">
           <label>
-            AM share
+            AM — Promoted Control share
             <input
               type="number"
               min="0"
@@ -771,7 +782,7 @@ function Experiments({ experiment, overview, update, status }) {
             />
           </label>
           <label>
-            AM2 share
+            AM2 — Dark Variant share
             <input type="number" min="0" max="100" value={100 - am} readOnly />
           </label>
           <button
@@ -790,7 +801,7 @@ function Experiments({ experiment, overview, update, status }) {
           >
             {experiment.enabled ? "Pause experiment" : "Resume experiment"}
           </button>
-        </div>
+        </div> : <p className="dashboard-muted">Historical experiment. Controls are available only for the current v3 test.</p>}
         {status ? <p className="dashboard-success">{status}</p> : null}
       </Panel>
     </>

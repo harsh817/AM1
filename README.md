@@ -5,8 +5,8 @@ A responsive React and Vite sales page for the AttractiveMen Personalized Style 
 ## Features
 
 - Responsive landing page for desktop and mobile
-- Separate AM2 landing-page variant for future A/B testing
-- A/B entry routing from `/a-m` with persistent `AM` / `AM2` assignment
+- Shared StyleIQ landing implementation with a promoted light control and dark AM2 variant
+- `/a-m` control and `/AM2` dark variant, with configurable experiment routing
 - Personalized StyleIQ report offer at INR 1,999 plus GST
 - Cloudinary-optimized before-and-after, report, process and testimonial imagery
 - Checkout form with locally saved contact and bump selections
@@ -28,7 +28,7 @@ Open the local URL shown by Vite. The checkout is available at:
 /a-m-checkout
 ```
 
-The original landing page is available at `/a-m`. The AM2 variant is available at `/AM2`.
+The promoted StyleIQ page is available at `/a-m`; `/AM2` renders the same copy and sections in a dark theme. The previous `/a-m` page is preserved locally in `retired-pages/am-original/`, with its standalone reference, source snapshot, assets, hashes, and restoration notes. The retired folder is excluded from Vite's development watcher and production output.
 
 ## Project structure
 
@@ -84,7 +84,7 @@ Use `.env.example` as the local template. Keep real values in `.env` or deployme
 
 The experiment dashboard uses Convex for durable attribution and verified order state. Configure `CONVEX_URL`, `CONVEX_INGEST_TOKEN`, `ADMIN_EMAIL`, `ADMIN_SETUP_TOKEN`, `RESEND_API_KEY`, and `VITE_CONVEX_URL` in the deployment environment. The browser receives only the public Convex URL; ingest and setup tokens stay server-side. Provision the first admin with the one-time `provisionAdmin` Convex action, then sign in at `/experiment-dashboard` with email and password.
 
-The dashboard uses `am-vs-am2-v2` and starts paused. After preview validation, an administrator can enable the experiment and set AM/AM2 percentages totaling 100%. `utm_term` is reserved for the displayed page label (`AM` or `AM2`); the other UTM values and ad click identifiers remain attached to the visitor and order.
+The new experiment is `am-vs-am2-v3` and must remain paused until separately approved for production. Its variants are **AM — Promoted Control** (`/a-m`) and **AM2 — Dark Variant** (`/AM2`). Assignments are configured in Convex and persist for 90 days. `utm_term` is reserved for the displayed page label (`AM` or `AM2`); the other UTM values and ad click identifiers remain attached to the visitor and order. In local Vite development, routing assignment and marketing analytics are disabled; use `/a-m?previewVariant=AM` or `/a-m?previewVariant=AM2` to inspect either theme without creating experiment traffic.
 
 Initiated, completed, and failed payment events share the same tracking fields: `location`, `device`, `marketing`, `engagement`, `experiment_id`, `visitor_id`, `page_variant`, and `entry_type`. UTM values are also duplicated into sheet-friendly top-level columns: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `utm_id`, and `referrer`. Checkout saves the browser tracking snapshot by Merchant Order ID and sends it with the completed/failed status check, so `AM` or `AM2` can be matched to the confirmed payment.
 
@@ -105,4 +105,4 @@ https://thriveonp.com/a-m-checkout
 https://thriveonp.com/a-m-thankyou
 ```
 
-`/a-m` is the shared campaign entry link. New visitors are assigned to the original `/a-m` page or redirected to `/AM2`; the assignment is remembered for 90 days. Direct `/AM2` visits remain available and are reported separately from randomized traffic. Use `utm_term=AM` and `utm_term=AM2` as the page labels in Make/Sheets.
+`/a-m` is the shared campaign entry link. With `am-vs-am2-v3` paused it serves the promoted control; when enabled, new visitors are assigned to **AM — Promoted Control** or redirected to **AM2 — Dark Variant**. Direct `/AM2` visits remain available and are reported separately from randomized traffic. Use `utm_term=AM` and `utm_term=AM2` as the page labels in Make/Sheets.

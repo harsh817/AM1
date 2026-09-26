@@ -1,14 +1,26 @@
-export const EXPERIMENT_ID = "am-vs-am2-v2";
+export const EXPERIMENT_ID = "am-vs-am2-v3";
 export const ORIGINAL_VARIANT = "AM";
 export const AM2_VARIANT = "AM2";
-export const EXPERIMENT_COOKIE = "attractivemen-ab-v1";
-export const EXPERIMENT_STORAGE = "attractivemen-ab-v1";
-export const LANDING_ENTRY_STORAGE = "attractivemen-ab-landing-v1";
-export const EXPERIMENT_ENABLED = true;
+export const EXPERIMENT_COOKIE = "attractivemen-ab-v3";
+export const EXPERIMENT_STORAGE = "attractivemen-ab-v3";
+export const LANDING_ENTRY_STORAGE = "attractivemen-ab-landing-v3";
+export const EXPERIMENT_ENABLED = false;
 export const ASSIGNMENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 
 export async function resolveLandingRouteAsync(windowRef = globalThis.window) {
   if (!windowRef?.location || !["/a-m", "/AM2", "/am2"].includes(normalizePath(windowRef.location.pathname))) return null;
+  if (import.meta.env?.DEV) {
+    const previewVariant = new URL(windowRef.location.href).searchParams.get("previewVariant");
+    if (normalizePath(windowRef.location.pathname) === "/a-m" && [ORIGINAL_VARIANT, AM2_VARIANT].includes(previewVariant)) {
+      const previewUrl = new URL(windowRef.location.href);
+      previewUrl.searchParams.delete("previewVariant");
+      if (previewVariant === AM2_VARIANT) previewUrl.pathname = "/AM2";
+      previewUrl.searchParams.set("utm_term", previewVariant);
+      windowRef.history?.replaceState?.({}, "", `${previewUrl.pathname}${previewUrl.search}${previewUrl.hash}`);
+      return { page: "landing", variant: previewVariant, preview: true };
+    }
+    return null;
+  }
   let config = { enabled: false, amPercentage: 50, am2Percentage: 50 };
   try {
     const response = await fetch("/api/experiment/config", { headers: { Accept: "application/json" } });
@@ -36,6 +48,11 @@ export function resolveLandingRoute(windowRef = globalThis.window, config = null
 
   const assignment = readAssignment(windowRef);
   const nextAssignment = assignment || assignVariant(windowRef, config);
+
+  if (!nextAssignment) {
+    replaceLandingQuery(windowRef, ORIGINAL_VARIANT);
+    return { page: "landing", experiment: null };
+  }
 
   if (nextAssignment.variant === AM2_VARIANT) {
     const destination = buildVariantUrl(windowRef.location, AM2_VARIANT);
@@ -78,11 +95,11 @@ export function sendExperimentLanding(windowRef = globalThis.window) {
   const context = getExperimentContext({
     location: windowRef?.location,
     document: windowRef?.document,
-    storage: windowRef?.localStorage,
-    sessionStorage: windowRef?.sessionStorage,
+    storage: getWindowStorage(windowRef, "localStorage"),
+    sessionStorage: getWindowStorage(windowRef, "sessionStorage"),
   });
   const dedupeKey = `${context.experiment_id || "direct"}:${context.visitor_id}:${context.page_variant}`;
-  const sessionStorage = windowRef?.sessionStorage;
+  const sessionStorage = getWindowStorage(windowRef, "sessionStorage");
 
   if (!context.page_variant || readLandingMarker(sessionStorage) === dedupeKey) return false;
   writeLandingMarker(sessionStorage, dedupeKey);
@@ -112,18 +129,22 @@ function assignVariant(windowRef, config = null) {
   const assignment = {
     experimentId: EXPERIMENT_ID,
     variant,
-    visitorId: createVisitorId(windowRef),
+    visitorId: readPreviousVisitorId(windowRef) || createVisitorId(windowRef),
   };
-  writeAssignment(windowRef, assignment);
-  return assignment;
+  return writeAssignment(windowRef, assignment) ? assignment : null;
 }
 
 function readAssignment(context) {
   const cookieAssignment = parseAssignment(context.document?.cookie || "");
   if (cookieAssignment) return cookieAssignment;
 
+  const localAssignment = readStoredAssignment(getContextStorage(context, "storage", "localStorage"));
+  if (localAssignment) return localAssignment;
+  return readStoredAssignment(getContextStorage(context, "sessionStorage"));
+}
+
+function readStoredAssignment(storage) {
   try {
-    const storage = context.storage || context.localStorage;
     const stored = JSON.parse(storage?.getItem(EXPERIMENT_STORAGE) || "null");
     return isValidAssignment(stored) ? stored : null;
   } catch {
@@ -133,17 +154,26 @@ function readAssignment(context) {
 
 function writeAssignment(windowRef, assignment) {
   const value = encodeURIComponent(JSON.stringify(assignment));
+  let persisted = false;
   try {
     windowRef.document.cookie = `${EXPERIMENT_COOKIE}=${value}; Max-Age=${ASSIGNMENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax`;
+    persisted = parseAssignment(windowRef.document.cookie || "")?.visitorId === assignment.visitorId;
   } catch {
     // Storage failures must not block the landing page.
   }
   try {
     windowRef.localStorage?.setItem(EXPERIMENT_STORAGE, JSON.stringify(assignment));
-    windowRef.sessionStorage?.setItem(EXPERIMENT_STORAGE, JSON.stringify(assignment));
+    persisted = true;
   } catch {
-    // Storage failures are handled by the original-page fallback.
+    // Try session storage independently when persistent storage is unavailable.
   }
+  try {
+    windowRef.sessionStorage?.setItem(EXPERIMENT_STORAGE, JSON.stringify(assignment));
+    persisted = true;
+  } catch {
+    // The caller falls back to the control page if every storage option fails.
+  }
+  return persisted;
 }
 
 function parseAssignment(cookieHeader) {
@@ -158,22 +188,61 @@ function parseAssignment(cookieHeader) {
   }
 }
 
+function readPreviousVisitorId(context) {
+  const priorCookie = context.document?.cookie?.match(/(?:^|;\s*)attractivemen-ab-v1=([^;]+)/)?.[1];
+  const priorStorage = (() => {
+    try {
+      return getContextStorage(context, "storage", "localStorage")?.getItem("attractivemen-ab-v1") || "";
+    } catch {
+      return "";
+    }
+  })();
+
+  for (const value of [priorCookie, priorStorage]) {
+    if (!value) continue;
+    try {
+      const assignment = JSON.parse(decodeURIComponent(value));
+      if (typeof assignment?.visitorId === "string" && assignment.visitorId) return assignment.visitorId;
+    } catch {
+      continue;
+    }
+  }
+
+  return "";
+}
+
 function isValidAssignment(value) {
   return value?.experimentId === EXPERIMENT_ID && [ORIGINAL_VARIANT, AM2_VARIANT].includes(value.variant) && Boolean(value.visitorId);
 }
 
 function readOrCreateVisitorId(context) {
   const key = "attractivemen-ab-visitor-v1";
+  const sessionStorage = getContextStorage(context, "sessionStorage");
+  const storage = getContextStorage(context, "storage", "localStorage");
+  let current = readStorageValue(sessionStorage, key);
+  if (!current) current = readStorageValue(storage, key);
+  if (current) return current;
+
+  const visitorId = createVisitorId({ crypto: globalThis.crypto });
+  const savedInSession = writeStorageValue(sessionStorage, key, visitorId);
+  const savedPersistently = writeStorageValue(storage, key, visitorId);
+  return savedInSession || savedPersistently ? visitorId : "anonymous";
+}
+
+function readStorageValue(storage, key) {
   try {
-    const storage = context.storage || context.localStorage;
-    const current = context.sessionStorage?.getItem(key) || storage?.getItem(key);
-    if (current) return current;
-    const visitorId = createVisitorId({ crypto: globalThis.crypto });
-    context.sessionStorage?.setItem(key, visitorId);
-    storage?.setItem(key, visitorId);
-    return visitorId;
+    return storage?.getItem(key) || "";
   } catch {
-    return "anonymous";
+    return "";
+  }
+}
+
+function writeStorageValue(storage, key, value) {
+  try {
+    storage?.setItem(key, value);
+    return Boolean(storage);
+  } catch {
+    return false;
   }
 }
 
@@ -220,12 +289,32 @@ function normalizePath(pathname) {
   return path || "/";
 }
 
+function getContextStorage(context, ...keys) {
+  try {
+    for (const key of keys) {
+      const storage = context?.[key];
+      if (storage) return storage;
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
+function getWindowStorage(windowRef, key) {
+  try {
+    return windowRef?.[key];
+  } catch {
+    return undefined;
+  }
+}
+
 function getBrowserContext() {
   const windowRef = globalThis.window;
   return {
     location: windowRef?.location,
     document: windowRef?.document,
-    storage: windowRef?.localStorage,
-    sessionStorage: windowRef?.sessionStorage,
+    storage: getWindowStorage(windowRef, "localStorage"),
+    sessionStorage: getWindowStorage(windowRef, "sessionStorage"),
   };
 }

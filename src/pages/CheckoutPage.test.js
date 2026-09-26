@@ -4,10 +4,11 @@ import test from "node:test";
 
 const checkoutSource = readFileSync(new URL("./CheckoutPage.jsx", import.meta.url), "utf8");
 const thankyouSource = readFileSync(new URL("./ThankYouPage.jsx", import.meta.url), "utf8");
-const landingSource = readFileSync(new URL("./LandingPage.jsx", import.meta.url), "utf8");
+const landingSource = readFileSync(new URL("./LandingPageAM2.jsx", import.meta.url), "utf8");
 const legalSource = readFileSync(new URL("./LegalPage.jsx", import.meta.url), "utf8");
 const mainSource = readFileSync(new URL("../main.jsx", import.meta.url), "utf8");
 const checkoutCss = readFileSync(new URL("../styles/checkout.css", import.meta.url), "utf8");
+const landingAm2Css = readFileSync(new URL("../styles/landing-am2.css", import.meta.url), "utf8");
 const checkoutConfigSource = readFileSync(new URL("../lib/checkout-config.js", import.meta.url), "utf8");
 
 test("checkout page uses a simplified Ink Luxury checkout structure", () => {
@@ -50,9 +51,9 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
 
 test("funnel pages own analytics side effects by route", () => {
   assert.doesNotMatch(mainSource, /initializeAnalytics|trackLandingView|trackCheckoutView|trackPayment/);
-  assert.match(landingSource, /import \{ useEffect \} from "react";/);
-  assert.match(landingSource, /initializeAnalytics\(\{ route: LANDING_PATH \}\);/);
-  assert.match(landingSource, /trackLandingView\(\{ route: LANDING_PATH \}\);/);
+  assert.match(landingSource, /import \{ Fragment, useEffect \} from "react";/);
+  assert.match(landingSource, /initializeAnalytics\(\{ route \}\);/);
+  assert.match(landingSource, /trackLandingView\(\{ route \}\);/);
   assert.match(checkoutSource, /initializeAnalytics\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
@@ -64,16 +65,47 @@ test("funnel pages own analytics side effects by route", () => {
 
 test("route entry lazy-loads page modules and keeps landing styles out of checkout", () => {
   assert.match(mainSource, /import React, \{ Suspense, lazy \} from "react";/);
-  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LandingPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LandingPageAM2\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/CheckoutPage\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/ThankYouPage\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LegalPage\.jsx"\)/);
   assert.doesNotMatch(mainSource, /from "\.\/pages\/LandingPage\.jsx"|from "\.\/pages\/CheckoutPage\.jsx"|from "\.\/styles\/landing\.css"/);
   assert.match(landingSource, /import "\.\.\/styles\/landing\.css";/);
+  assert.match(landingSource, /data-page-variant=\{variant\}/);
+  assert.match(landingSource, /className=\{`am2-site\$\{isDarkVariant \? " am2-theme-dark" : ""\}`\}/);
+  assert.match(landingSource, /if \(preview \|\| import\.meta\.env\?\.DEV\) return;/);
   assert.match(checkoutSource, /import "\.\.\/styles\/checkout\.css";/);
   assert.match(legalSource, /import "\.\.\/styles\/legal\.css";/);
   assert.doesNotMatch(checkoutSource, /landing\.css|\.\/landing\//);
   assert.doesNotMatch(legalSource, /landing\.css|checkout\.css/);
+});
+
+test("AM2 dark theme uses bright text and dark surfaces for copy panels", () => {
+  assert.match(landingAm2Css, /\.am2-page \.am2-styleiq-hero,[\s\S]*\.am2-page \.trust-section-shell\s*\{\s*background: var\(--palette-hero-black\);/);
+  assert.match(landingAm2Css, /body:has\(\.am2-site\.am2-theme-dark\)\s*\{\s*background: var\(--palette-hero-black\);/);
+  assert.match(landingAm2Css, /\.am2-page \.am2-styleiq-hero \.hero-eyebrow\s*\{\s*color: var\(--palette-accent\);/);
+  assert.match(landingAm2Css, /--am2-dark-text: var\(--palette-soft-linen\);/);
+  assert.match(landingAm2Css, /--am2-dark-muted: color-mix\(in srgb, var\(--palette-ice-slate\) 70%, var\(--palette-soft-linen\)\);/);
+  assert.match(landingAm2Css, /--am2-dark-page: var\(--palette-brand\);/);
+  assert.match(landingAm2Css, /--am2-dark-surface: color-mix\(in srgb, var\(--palette-brand\) 78%, var\(--palette-hero-black\)\);/);
+  assert.match(landingAm2Css, /--am2-dark-raised: color-mix\(in srgb, var\(--palette-brand\) 88%, var\(--palette-soft-linen\) 12%\);/);
+  assert.match(landingAm2Css, /--am2-dark-highlight: color-mix\(in srgb, var\(--palette-accent\) 58%, var\(--palette-soft-linen\)\);/);
+  assert.match(landingAm2Css, /--am2-dark-edge: var\(--palette-hero-black\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-page :is\(h1, h2, h3, h4, summary\)\s*\{\s*color: var\(--am2-dark-text\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-page :is\(p, li, small, label, blockquote, figcaption, dt, dd\)\s*\{\s*color: var\(--am2-dark-muted\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-narrative-subsection,[\s\S]*\.am2-theme-dark \.faq-editorial \.faq-answer p\s*\{[^}]*background-color: var\(--am2-dark-surface\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-page > \.section,[\s\S]*background: var\(--am2-dark-page\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.styleiq-page-shell,[\s\S]*\.am2-theme-dark \.am2-process-heading\s*\{[^}]*background-color: var\(--am2-dark-raised\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.report-content-subsection-heading,[\s\S]*\.am2-theme-dark \.am2-bonus-heading\s*\{\s*background-color: var\(--am2-dark-heading\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.report-content-subsection-heading \+ \.report-content-subsection-body,[\s\S]*border-radius: 0 0 7px 7px;/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.section-editorial-preview \.section-heading h2\s*\{[\s\S]*padding: 16px 20px;[\s\S]*background: var\(--am2-dark-heading\);/);
+  assert.match(landingAm2Css, /\.am2-comparison \.comparison-subsections\s*\{[\s\S]*display: block;/);
+  assert.match(landingAm2Css, /\.am2-comparison \.comparison-table-row\s*\{[\s\S]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-comparison \.comparison-cell-without\s*\{[\s\S]*background: color-mix\(in srgb, var\(--am2-dark-edge\)/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-comparison \.comparison-cell-with\s*\{[\s\S]*background: var\(--am2-dark-raised\);/);
+  assert.match(landingAm2Css, /\.am2-comparison \.comparison-cell\s*\{[\s\S]*grid-template-columns: 18px minmax\(0, 1fr\);[\s\S]*line-height: 1\.45;/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.section-heading h2 span,[\s\S]*\.am2-theme-dark \.am2-process-heading span\s*\{\s*color: var\(--am2-dark-highlight\);/);
+  assert.match(landingAm2Css, /\.am2-theme-dark \.am2-comparison \.comparison-heading-with h3\s*\{\s*color: var\(--am2-dark-highlight\);/);
 });
 
 test("checkout add-ons use the approved shared config", () => {

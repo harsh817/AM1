@@ -11,5 +11,6 @@ export const convexFunctions = {
   funnel: makeFunctionReference("dashboard:getFunnel"),
   health: makeFunctionReference("dashboard:getHealth"),
   experiment: makeFunctionReference("dashboard:getExperiment"),
+  experiments: makeFunctionReference("dashboard:getExperiments"),
   updateExperiment: makeFunctionReference("dashboard:updateExperiment"),
 };

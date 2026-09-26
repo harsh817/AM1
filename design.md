@@ -2,15 +2,15 @@
 
 This file defines the selected visual direction for the StyleIQ landing page. Use it when editing `src/styles/landing.css`, `src/pages/LandingPage.jsx`, and generated artifacts.
 
-## AM2 Variant
+## Promoted Control and Dark Variant
 
-AM2 is a separate production landing-page variant at `/AM2`. The original control page remains at `/a-m`; do not replace or redirect it. AM2 uses the same StyleIQ offer and checkout flow with a distinct editorial page composition, responsive section treatment, conversion copy, and report-focused visuals.
+The current StyleIQ composition is shared by both landing routes. `/a-m` is the promoted light control (**AM**); `/AM2` is the same page with a dark theme (**AM2**). Copy, imagery, section order, offer, checkout destinations, and responsive structure must remain aligned between variants. Keep the retired pre-promotion page in `retired-pages/am-original/`; it is a local archive, not a deployed route.
 
 AM2 image assets are delivered through Cloudinary using optimized WebP sources with `f_auto`, `q_auto`, and bounded-width transformations. The local asset files remain available for development and standalone generation, while the page references the Cloudinary delivery URLs in production source.
 
 ## Experiment Entry Routing
 
-The shared campaign entry path is `/a-m`. New visitors are assigned before React renders to either the original `AM` page or AM2. AM visitors remain on `/a-m?utm_term=AM`; AM2 visitors move to `/AM2?utm_term=AM2`. The assignment is stored for 90 days and carried into checkout tracking. Direct `/AM2` visits remain available but are excluded from randomized experiment totals.
+The shared campaign entry path is `/a-m`. Experiment `am-vs-am2-v3` assigns new visitors before React renders to AM (promoted control) or AM2 (dark variant). AM visitors remain on `/a-m?utm_term=AM`; AM2 visitors move to `/AM2?utm_term=AM2`. Assignments persist for 90 days. Direct `/AM2` visits remain available but are excluded from randomized experiment totals. The experiment must be paused for local review and enabled only as a separate production release action.
 
 ## Selected Direction
 

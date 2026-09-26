@@ -2,7 +2,7 @@ import { Check, ClockCountdown, SealCheck, Star, X } from "@phosphor-icons/react
 import { Fragment, useEffect } from "react";
 import { initializeAnalytics, trackLandingView } from "../lib/analytics.js";
 import { sendExperimentLanding } from "../lib/ab-testing.js";
-import { LANDING_AM2_PATH } from "../routes.js";
+import { LANDING_AM2_PATH, LANDING_PATH } from "../routes.js";
 import { testimonials } from "../lib/landing-data.js";
 import { Button, PRICE_LABEL, SectionHeading, SoundVideo } from "./landing/shared.jsx";
 import { FAQ, Footer } from "./landing/SocialProofSections.jsx";
@@ -257,15 +257,19 @@ const recapItems = [
   "Lifetime Access",
 ];
 
-export function LandingPageAM2() {
+export function LandingPageAM2({ variant = "AM", preview = false }) {
+  const isDarkVariant = variant === "AM2";
+  const route = globalThis.window?.location?.pathname || (isDarkVariant ? LANDING_AM2_PATH : LANDING_PATH);
+
   useEffect(() => {
-    initializeAnalytics({ route: LANDING_AM2_PATH });
-    trackLandingView({ route: LANDING_AM2_PATH });
+    if (preview || import.meta.env?.DEV) return;
+    initializeAnalytics({ route });
+    trackLandingView({ route });
     sendExperimentLanding();
-  }, []);
+  }, [preview, route]);
 
   return (
-    <>
+    <div className={`am2-site${isDarkVariant ? " am2-theme-dark" : ""}`} data-page-variant={variant}>
       <main className="am2-page">
         <AM2Hero />
         <TrustSection />
@@ -284,7 +288,7 @@ export function LandingPageAM2() {
       </main>
       <Footer />
       <StickyBuyBar />
-    </>
+    </div>
   );
 }
 
@@ -295,13 +299,15 @@ function AM2Hero() {
         <div className="styleiq-hero-shell">
           <div className="hero-copy">
             <p className="hero-eyebrow">Dear Men</p>
-            <h1 aria-label="Want To Look More Stylish And Handsome By Knowing Exactly What Suits You?">
-              <span className="hero-title-line">Want To Look More Stylish</span>
-              <span className="hero-title-line">And Handsome By Knowing</span>
-              <span className="hero-title-line">Exactly What Suits You?</span>
+            <h1 aria-label="DO YOU WANT TO DRESS LIKE A TRUE STYLISH GENTLEMAN STARTING TODAY WITHOUT COPYING OTHERS ON INTERNET OR PAYING CELEBRITY PRICES?">
+              <span className="hero-title-line">DO YOU WANT TO DRESS LIKE A</span>
+              <span className="hero-title-line"><strong className="hero-title-accent">TRUE STYLISH</strong> <em>GENTLEMAN</em></span>
+              <span className="hero-title-line"><em className="hero-title-today">STARTING TODAY</em> WITHOUT COPYING OTHERS ON INTERNET OR PAYING <strong className="hero-title-accent">CELEBRITY PRICES?</strong></span>
             </h1>
             <p className="hero-lead">
-              Get a personalised style report built after analyzing your face, body, complexion, lifestyle and preferences so you know which hairstyles, beard styles, colours, fits and clothes work best for you.
+              <span className="hero-lead-copy">
+                Get A Personalised Style Report Built After Analyzing Your Face, Body, Complexion, Lifestyle And Preferences So You Know Which Hairstyles, Beard Styles, Colours, Fits And Clothes Work Best For You.
+              </span>
             </p>
             <div className="am2-hero-transformation-wrap">
               <figure className="am2-hero-transformation">
@@ -550,23 +556,27 @@ function Comparison() {
           <SectionHeading>
             With And Without <span>StyleIQ</span>
           </SectionHeading>
-          <div className="comparison-subsections" aria-label="Without StyleIQ versus With StyleIQ">
-            <article className="comparison-subsection comparison-subsection-without">
-              <div className="comparison-subsection-heading">
+          <div className="comparison-subsections" role="table" aria-label="Without StyleIQ versus With StyleIQ">
+            <div className="comparison-table-row comparison-table-header" role="row">
+              <div className="comparison-subsection-heading comparison-heading-without" role="columnheader">
                 <h3>Without StyleIQ</h3>
               </div>
-              <ul className="comparison-subsection-list">
-                {comparisonRows.map(([without]) => <li key={without}><X size={18} weight="bold" aria-hidden="true" /><span>{without}</span></li>)}
-              </ul>
-            </article>
-            <article className="comparison-subsection comparison-subsection-with">
-              <div className="comparison-subsection-heading">
+              <div className="comparison-subsection-heading comparison-heading-with" role="columnheader">
                 <h3>With StyleIQ</h3>
               </div>
-              <ul className="comparison-subsection-list">
-                {comparisonRows.map(([, withStyleIq]) => <li key={withStyleIq}><Check size={18} weight="bold" aria-hidden="true" /><span>{withStyleIq}</span></li>)}
-              </ul>
-            </article>
+            </div>
+            {comparisonRows.map(([without, withStyleIq]) => (
+              <div className="comparison-table-row" role="row" key={`${without}-${withStyleIq}`}>
+                <div className="comparison-cell comparison-cell-without" role="cell">
+                  <X size={18} weight="bold" aria-hidden="true" />
+                  <span>{without}</span>
+                </div>
+                <div className="comparison-cell comparison-cell-with" role="cell">
+                  <Check size={18} weight="bold" aria-hidden="true" />
+                  <span>{withStyleIq}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

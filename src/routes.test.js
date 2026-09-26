@@ -4,9 +4,9 @@ import test from "node:test";
 import { getPageRoute } from "./routes.js";
 
 test("routes requested marketing, checkout, and thank-you URLs", () => {
-  assert.deepEqual(getPageRoute("/a-m", ""), { page: "landing" });
-  assert.deepEqual(getPageRoute("/AM2", ""), { page: "landing-am2" });
-  assert.deepEqual(getPageRoute("/am2", ""), { page: "landing-am2" });
+  assert.deepEqual(getPageRoute("/a-m", ""), { page: "landing", variant: "AM" });
+  assert.deepEqual(getPageRoute("/AM2", ""), { page: "landing-am2", variant: "AM2" });
+  assert.deepEqual(getPageRoute("/am2", ""), { page: "landing-am2", variant: "AM2" });
   assert.deepEqual(getPageRoute("/a-m-checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/a-m-thankyou", "?merchantOrderId=AM_123"), {
     page: "thankyou",
@@ -16,7 +16,7 @@ test("routes requested marketing, checkout, and thank-you URLs", () => {
 });
 
 test("keeps legacy routes working", () => {
-  assert.deepEqual(getPageRoute("/", ""), { page: "landing" });
+  assert.deepEqual(getPageRoute("/", ""), { page: "landing", variant: "AM" });
   assert.deepEqual(getPageRoute("/checkout", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/checkout.html", ""), { page: "checkout" });
   assert.deepEqual(getPageRoute("/", "?page=checkout"), { page: "checkout" });

@@ -8,7 +8,6 @@ import "@fontsource/inter/600-italic.css";
 import { getPageRoute } from "./routes.js";
 import { resolveLandingRouteAsync } from "./lib/ab-testing.js";
 
-const LandingPage = lazy(() => import("./pages/LandingPage.jsx").then((module) => ({ default: module.LandingPage })));
 const LandingPageAM2 = lazy(() => import("./pages/LandingPageAM2.jsx").then((module) => ({ default: module.LandingPageAM2 })));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
 const ThankYouPage = lazy(() => import("./pages/ThankYouPage.jsx").then((module) => ({ default: module.ThankYouPage })));
@@ -19,8 +18,8 @@ function App({ route }) {
   if (route.page === "pending") return null;
   const page = route.page === "checkout" ? (
     <CheckoutPage />
-  ) : route.page === "landing-am2" ? (
-    <LandingPageAM2 />
+  ) : route.page === "landing" || route.page === "landing-am2" ? (
+    <LandingPageAM2 variant={route.variant || (route.page === "landing-am2" ? "AM2" : "AM")} preview={route.preview} />
   ) : route.page === "thankyou" ? (
     <ThankYouPage merchantOrderId={route.merchantOrderId} />
   ) : route.page === "experiment-dashboard" ? (
@@ -30,7 +29,7 @@ function App({ route }) {
   ) : route.page === "legal" ? (
     <LegalPage type={route.type} />
   ) : (
-    <LandingPage />
+    <LandingPageAM2 variant="AM" />
   );
 
   return <Suspense fallback={null}>{page}</Suspense>;
