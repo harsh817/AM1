@@ -299,11 +299,19 @@ function AM2Hero() {
         <div className="styleiq-hero-shell">
           <div className="hero-copy">
             <p className="hero-eyebrow">Dear Men</p>
-            <h1 aria-label="DO YOU WANT TO DRESS LIKE A TRUE STYLISH GENTLEMAN STARTING TODAY WITHOUT COPYING OTHERS ON INTERNET OR PAYING CELEBRITY PRICES?">
-              <span className="hero-title-line">DO YOU WANT TO DRESS LIKE A</span>
-              <span className="hero-title-line"><strong className="hero-title-accent">TRUE STYLISH</strong> <em>GENTLEMAN</em></span>
-              <span className="hero-title-line"><em className="hero-title-today">STARTING TODAY</em> WITHOUT COPYING OTHERS ON INTERNET OR PAYING <strong className="hero-title-accent">CELEBRITY PRICES?</strong></span>
-            </h1>
+            {isDarkVariant ? (
+              <h1 aria-label="DO YOU WANT TO DRESS LIKE A TRUE STYLISH GENTLEMAN STARTING TODAY WITHOUT COPYING OTHERS ON INTERNET OR PAYING CELEBRITY PRICES?">
+                <span className="hero-title-line">DO YOU WANT TO DRESS LIKE A</span>
+                <span className="hero-title-line"><strong className="hero-title-accent">TRUE STYLISH</strong> <em>GENTLEMAN</em></span>
+                <span className="hero-title-line"><em className="hero-title-today">STARTING TODAY</em> WITHOUT COPYING OTHERS ON INTERNET OR PAYING <strong className="hero-title-accent">CELEBRITY PRICES?</strong></span>
+              </h1>
+            ) : (
+              <h1 aria-label="Want To Look More Stylish And Handsome By Knowing Exactly What Suits You?">
+                <span className="hero-title-line">Want To Look More Stylish</span>
+                <span className="hero-title-line">And Handsome By Knowing</span>
+                <span className="hero-title-line">Exactly What Suits You?</span>
+              </h1>
+            )}
             <p className="hero-lead">
               <span className="hero-lead-copy">
                 Get A Personalised Style Report Built After Analyzing Your Face, Body, Complexion, Lifestyle And Preferences So You Know Which Hairstyles, Beard Styles, Colours, Fits And Clothes Work Best For You.
