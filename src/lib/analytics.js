@@ -20,7 +20,7 @@ const META_PIXEL_SCRIPT_ID = "meta-pixel-sdk";
 const CLARITY_SCRIPT_ID = "clarity-sdk";
 const META_PIXEL_SRC = "https://connect.facebook.net/en_US/fbevents.js";
 const CLARITY_SRC = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`;
-const PRODUCT_CONTENT_NAME = "AttractiveMen Personalized Style Report";
+const PRODUCT_CONTENT_NAME = "StyleIQ System";
 
 /**
  * Loads Meta Pixel and Microsoft Clarity after the app can render.

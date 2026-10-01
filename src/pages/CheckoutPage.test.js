@@ -12,10 +12,8 @@ const landingAm2Css = readFileSync(new URL("../styles/landing-am2.css", import.m
 const checkoutConfigSource = readFileSync(new URL("../lib/checkout-config.js", import.meta.url), "utf8");
 
 test("checkout page uses a simplified Ink Luxury checkout structure", () => {
-  assert.match(checkoutSource, /<h1 id="checkout-title">You're One Step Closer to Looking Like A Smart Handsome Gentleman<\/h1>/);
-  assert.match(checkoutSource, /className="checkout-intro-copy"/);
-  assert.match(checkoutSource, /className="checkout-product"/);
-  assert.match(checkoutSource, /REPORT_PREVIEW_URL/);
+  assert.match(checkoutSource, /<h1 id="checkout-title">Get Your Personal Style Report<\/h1>/);
+  assert.doesNotMatch(checkoutSource, /className="checkout-intro-copy"|className="checkout-product"|REPORT_PREVIEW_URL/);
   assert.match(checkoutSource, /<div className="checkout-page">\s*<section className="checkout-intro"/);
   assert.match(checkoutSource, /aria-label="Secure payment"/);
   assert.match(checkoutSource, /PAYMENT_TRUST_IMAGE_URL/);
@@ -27,26 +25,49 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.match(checkoutSource, /data-clarity-mask="true"/);
   assert.match(checkoutSource, /const \[initialDraft\] = useState\(loadDraft\);/);
   assert.doesNotMatch(checkoutSource, /useMemo\(loadDraft/);
-  assert.match(checkoutSource, /<h2 id="contact-title">Where should we send your report\?<\/h2>/);
-  assert.match(checkoutSource, /<h2 id="addons-title">Optional Upgrades<\/h2>/);
+  assert.match(checkoutSource, /Enter your details below to receive your StyleIQ System report\./);
+  assert.doesNotMatch(checkoutSource, /<h2 id="contact-title">Your details<\/h2>/);
+  assert.match(checkoutSource, /className="checkout-sr-only">Full name/);
+  assert.match(checkoutSource, /placeholder="Enter your full name"/);
+  assert.match(checkoutSource, /placeholder="Enter your email address"/);
+  assert.match(checkoutSource, /placeholder="Enter your number"/);
+  assert.match(checkoutSource, /aria-label="Outfit visualisation upgrade"/);
   assert.match(checkoutSource, /CHECKOUT_BUMPS\.map\(\(bump\) =>/);
-  assert.match(checkoutSource, /Get a private style review call to understand your report/);
-  assert.match(checkoutSource, /Get your Instagram profile reviewed for photos/);
-  assert.match(checkoutSource, /\+\{formatAddOnPrice\(price\)\} \+ GST/);
-  assert.doesNotMatch(checkoutSource, /20-Minute Style Review Call \+ Flirting Guide|Optional 20-minute style review call/);
+  assert.match(checkoutSource, /className="bump-benefits"/);
+  assert.match(checkoutSource, /Special one-time upgrade: ₹499/);
+  assert.match(checkoutSource, /headline: "Yes, I want to see how outfits look on me"/);
+  assert.doesNotMatch(checkoutSource, /Camera|<Icon size=\{20\}/);
+  assert.match(checkoutSource, /emphasis: "face and body type"/);
+  assert.match(checkoutSource, /emphasis: "before buying anything"/);
+  assert.match(checkoutSource, /emphasis: "tailor or clothing store"/);
+  assert.match(checkoutSource, /emphasis: "outfits chosen specifically for you"/);
+  assert.doesNotMatch(checkoutSource, /Instagram Profile Analysis|Personal Style Consultation/);
   assert.match(checkoutSource, /const orderItems = \[/);
   assert.match(checkoutSource, /<h2 id="order-title">Recap of Your Order<\/h2>/);
   assert.match(checkoutSource, /className="checkout-recap-items"/);
   assert.match(checkoutSource, /orderItems\.map\(\(item\) =>/);
-  assert.match(checkoutSource, /<span>GST \(18%\)<\/span><b>\{formatMoney\(gst\)\}<\/b>/);
+  assert.match(checkoutSource, /title: "StyleIQ System", detail: "One-time payment", priceLabel: `\$\{formatMoney\(BASE_PRICE\)\} \+ GST`/);
+  assert.match(checkoutSource, /<span className="checkout-recap-price">\s*<b>\{item\.priceLabel\}<\/b>\s*\{item\.detail \? <small>\{item\.detail\}<\/small> : null\}/);
+  assert.match(checkoutSource, /title,\s*priceLabel: formatMoney\(Math\.round\(price \* \(1 \+ GST_RATE\)\)\)/);
+  assert.doesNotMatch(checkoutSource, /<span>GST \(18%\)<\/span>/);
+  assert.match(checkoutSource, /className="checkout-savings"/);
+  assert.match(checkoutSource, /Today&apos;s saving: <b>\{formatMoney\(savings\)\}<\/b>/);
+  assert.match(checkoutCss, /\.bump-title-row > span \{ display: block; \}/);
+  assert.match(checkoutSource, /const savings = Math\.max\(0, 2999 - BASE_PRICE\)/);
+  assert.match(checkoutSource, /className="checkout-offer-price"/);
+  assert.match(checkoutSource, /Today only: ₹1,999 \+ GST/);
+  assert.match(checkoutSource, /Normal price: <del>₹2,999<\/del>/);
   assert.doesNotMatch(checkoutSource, /Review your order|See exactly what you are paying|className="checkout-selected-items"|<span>Subtotal<\/span>/);
-  assert.match(checkoutSource, /isPaying \? "Processing" : "Complete My Order"/);
+  assert.match(checkoutSource, /isPaying \? "Processing" : "Complete Order"/);
+  assert.doesNotMatch(checkoutSource, /checkout-after-payment|After payment, complete a short assessment/);
   assert.doesNotMatch(checkoutSource, /Proceed to secure payment|Proceed My Order [`$+{]/);
   assert.doesNotMatch(checkoutSource, /<span>1<\/span>\s*<h2 id="contact-title"|<span>2<\/span>[\s\S]*<h2 id="order-title"/);
-  assert.match(checkoutSource, /<section className="checkout-next">/);
+  assert.match(checkoutSource, /<section className="checkout-next" aria-labelledby="report-recap-title">/);
+  assert.match(checkoutSource, /className="checkout-report-recap"/);
+  assert.doesNotMatch(checkoutSource, /What happens after payment|6 to 8-Minute Assessment/);
   assert.doesNotMatch(checkoutSource, /checkout-intro-panel|checkout-layout|checkout-sidebar|checkout-reassurance/);
   assert.doesNotMatch(checkoutSource, /src="\/assets\/product\/style-report\.png"/);
-  assert.doesNotMatch(checkoutSource, /className="bump-benefits"/);
+  assert.match(checkoutSource, /className="bump-benefits"/);
 });
 
 test("funnel pages own analytics side effects by route", () => {
@@ -109,9 +130,8 @@ test("AM2 dark theme uses bright text and dark surfaces for copy panels", () => 
 });
 
 test("checkout add-ons use the approved shared config", () => {
-  assert.match(checkoutConfigSource, /id: "style-consultation",[\s\S]*title: "Personal Style Consultation",[\s\S]*price: 499,/);
-  assert.match(checkoutConfigSource, /id: "instagram-makeover",[\s\S]*title: "Instagram Profile Analysis \+ Makeover",[\s\S]*price: 299,/);
-  assert.doesNotMatch(checkoutConfigSource, /20-Minute Style Review Call \+ Flirting Guide|id: "call"/);
+  assert.match(checkoutConfigSource, /id: "outfit-visualizer",[\s\S]*title: "Face-Matched Outfit Preview",[\s\S]*price: 422\.88/);
+  assert.doesNotMatch(checkoutConfigSource, /style-consultation|instagram-makeover|20-Minute Style Review Call \+ Flirting Guide/);
 });
 
 test("thank-you page uses the same status and next-step treatment", () => {
@@ -153,17 +173,16 @@ test("checkout stylesheet follows the approved Ink Luxury tokens", () => {
   assert.match(checkoutCss, /--checkout-detail-size: 0\.9rem;/);
   assert.match(checkoutCss, /\.checkout-intro\s*{[^}]*background: var\(--checkout-deep\);[^}]*box-shadow: none;/s);
   assert.match(checkoutCss, /\.checkout-intro h1\s*{[^}]*text-align: center;/s);
-  assert.match(checkoutCss, /\.checkout-intro-copy\s*{[^}]*font-size: 0\.98rem;/s);
-  assert.match(checkoutCss, /\.checkout-report-body\s*{[^}]*grid-template-columns: 88px minmax\(0, 1fr\);/s);
+  assert.match(checkoutCss, /\.checkout-after-payment\s*{/);
   assert.doesNotMatch(checkoutCss, /checkout-summary-line|--checkout-subheadline-size/);
   assert.doesNotMatch(checkoutCss, /\.checkout-block-heading > span/);
   assert.match(checkoutCss, /\.checkout-block-heading h2\s*{[^}]*font-size: var\(--checkout-form-heading-size\);/s);
   assert.match(checkoutCss, /\.checkout-addons-heading\s*{[^}]*margin-bottom: 16px;/s);
   assert.match(checkoutCss, /\.checkout-field\s*{[^}]*font-size: var\(--checkout-body-size\);/s);
-  assert.match(checkoutCss, /\.bump-summary\s*{[^}]*font-size: var\(--checkout-detail-size\);/s);
+  assert.match(checkoutCss, /\.bump-benefits\s*{[^}]*font-size: 0\.82rem;/s);
   assert.match(checkoutCss, /\.bump-price\s*{[^}]*text-align: right;/s);
   assert.match(checkoutCss, /\.checkout-recap-item\s*{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;/s);
-  assert.match(checkoutCss, /\.checkout-pay\s*{[^}]*background: var\(--checkout-copper\);[^}]*font-size: 1\.05rem;[^}]*font-weight: 900;/s);
+  assert.match(checkoutCss, /\.checkout-pay\s*{[^}]*background: var\(--checkout-success\);[^}]*font-size: 1\.05rem;[^}]*font-weight: 900;/s);
   assert.match(checkoutCss, /\.checkout-page button\.checkout-pay\s*{[^}]*font-size: 1\.05rem;[^}]*font-weight: 900;[^}]*}/s);
   assert.match(checkoutCss, /\.thankyou-status-panel\s*{[^}]*background: var\(--checkout-black\);/s);
 });
@@ -173,7 +192,7 @@ test("checkout stylesheet stays compact and mobile-safe", () => {
   assert.match(checkoutCss, /\.checkout-main,[\s\S]*\.checkout-recap-item span\s*{ min-width: 0; }/);
   assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.checkout-intro h1 \{ font-size: var\(--checkout-headline-size\); \}/s);
   assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.checkout-report-body \{ grid-template-columns: 72px minmax\(0, 1fr\);/s);
-  assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.bump-title-row,[\s\S]*\.checkout-recap-item,[\s\S]*\.checkout-total \{ display: grid; gap: 8px; \}/s);
+  assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.bump-title-row \{ display: block; \}[\s\S]*\.checkout-recap-item,[\s\S]*\.checkout-total \{ display: grid; gap: 8px; \}/s);
   assert.doesNotMatch(checkoutCss, /checkout-selected-items/);
   assert.doesNotMatch(checkoutCss, /\.checkout-sidebar|\.checkout-reassurance|\.checkout-intro-panel|\.checkout-layout/);
   assert.match(checkoutCss, /\.thankyou-page\s*{[^}]*overflow-x: hidden;/s);

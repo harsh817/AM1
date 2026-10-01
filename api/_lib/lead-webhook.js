@@ -73,7 +73,7 @@ function buildOrder(selected = [], totals = {}) {
 
   return {
     currency: "INR",
-    product: "AttractiveMen Personalized Style Report",
+    product: "StyleIQ System",
     selected_item_ids: selectedIds.map((id) => clean(id, SHORT_TEXT_MAX_LENGTH)),
     selected_bumps: selectedBumps.map((bump) => ({
       id: clean(bump.id, SHORT_TEXT_MAX_LENGTH),

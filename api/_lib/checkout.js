@@ -21,8 +21,8 @@ export function calculateCheckoutTotals(selected = []) {
     .filter(Boolean);
   const bumpsTotal = selectedBumps.reduce((sum, bump) => sum + bump.price, 0);
   const subtotal = BASE_PRICE + bumpsTotal;
-  const gst = roundMoney(subtotal * GST_RATE);
-  const total = roundMoney(subtotal + gst);
+  const gst = Math.round(subtotal * GST_RATE);
+  const total = Math.round(subtotal + gst);
 
   return {
     basePrice: BASE_PRICE,
@@ -100,8 +100,4 @@ export function buildRedirectUrl(baseUrl, merchantOrderId) {
  */
 export function sanitizeMeta(value, maxLength = DEFAULT_TEXT_MAX_LENGTH) {
   return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxLength);
-}
-
-function roundMoney(amount) {
-  return Math.round((amount + Number.EPSILON) * 100) / 100;
 }

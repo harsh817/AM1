@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, InstagramLogo, LockKey, PhoneCall } from "@phosphor-icons/react";
+import { Check, LockKey } from "@phosphor-icons/react";
 import { BASE_PRICE, CHECKOUT_BUMPS, GST_RATE } from "../lib/checkout-config.js";
 import {
   getCheckoutOrderTrackingPayload,
@@ -9,12 +9,11 @@ import {
   rememberCheckoutVisit,
 } from "../lib/checkout-tracking.js";
 import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
-import { normalizeInternationalPhone } from "../lib/phone.js";
+import { normalizeInternationalPhone, normalizePhoneInput } from "../lib/phone.js";
 import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
 const DRAFT_KEY = "attractivemen-checkout-draft:v2";
-const REPORT_PREVIEW_URL = "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/product/attractivemen-style-report-mockup-v2.webp";
 const PAYMENT_TRUST_IMAGE_URL = "https://res.cloudinary.com/dm49wi6j4/image/upload/f_webp,q_auto,w_1200/AM%20-%20Assets/checkout/payment-trust.png";
 const COUNTRY_CODES = [
   ["+91", "🇮🇳"], ["+1", "🇺🇸"], ["+44", "🇬🇧"], ["+61", "🇦🇺"], ["+971", "🇦🇪"], ["+65", "🇸🇬"],
@@ -23,26 +22,29 @@ const COUNTRY_CODES = [
 ];
 const VALID_BUMP_IDS = new Set(CHECKOUT_BUMPS.map((bump) => bump.id));
 const BUMP_DETAILS = {
-  "style-consultation": {
-    Icon: PhoneCall,
-    summary: "Get a private style review call to understand your report, clear your doubts, and know exactly what to do next.",
-  },
-  "instagram-makeover": {
-    Icon: InstagramLogo,
-    summary: "Get your Instagram profile reviewed for photos, outfits, bio, highlights, and first impression so it looks sharper.",
+  "outfit-visualizer": {
+    headline: "Yes, I want to see how outfits look on me",
+    offer: "Special one-time upgrade: ₹499",
+    benefits: [
+      { before: "Preview outfits on your ", emphasis: "face and body type", after: "." },
+      { before: "See how you’ll look ", emphasis: "before buying anything", after: "." },
+      { before: "Show the visuals to your ", emphasis: "tailor or clothing store", after: "." },
+      { before: "Make shopping easier with ", emphasis: "outfits chosen specifically for you", after: "." },
+    ],
   },
 };
 const BUMPS = CHECKOUT_BUMPS.map((bump) => ({
   ...bump,
-  Icon: BUMP_DETAILS[bump.id]?.Icon ?? PhoneCall,
-  summary: BUMP_DETAILS[bump.id]?.summary ?? "",
+  headline: BUMP_DETAILS[bump.id]?.headline ?? bump.title,
+  offer: BUMP_DETAILS[bump.id]?.offer ?? "Optional upgrade",
+  benefits: BUMP_DETAILS[bump.id]?.benefits ?? [],
 }));
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    minimumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(amount);
 
 function loadDraft() {
@@ -60,12 +62,6 @@ function loadDraft() {
 }
 
 function getDefaultCountryCode() {
-  const locale = typeof navigator === "undefined" ? "" : String(navigator.language || "").toLowerCase();
-  if (locale.includes("-gb")) return "+44";
-  if (locale.includes("-us") || locale.includes("-ca")) return "+1";
-  if (locale.includes("-au")) return "+61";
-  if (locale.includes("-ae")) return "+971";
-  if (locale.includes("-sg")) return "+65";
   return "+91";
 }
 
@@ -159,12 +155,17 @@ export function CheckoutPage() {
   const selectedBumps = BUMPS.filter((bump) => selected.includes(bump.id));
   const bumpsTotal = selectedBumps.reduce((sum, bump) => sum + bump.price, 0);
   const subtotal = BASE_PRICE + bumpsTotal;
-  const gst = subtotal * GST_RATE;
-  const total = subtotal + gst;
+  const gst = Math.round(subtotal * GST_RATE);
+  const total = Math.round(subtotal + gst);
   const orderItems = [
-    { id: "style-report", title: "Personalized Style Report", price: BASE_PRICE },
-    ...selectedBumps.map(({ id, title, price }) => ({ id, title, price })),
+    { id: "style-report", title: "StyleIQ System", detail: "One-time payment", priceLabel: `${formatMoney(BASE_PRICE)} + GST` },
+    ...selectedBumps.map(({ id, title, price }) => ({
+      id,
+      title,
+      priceLabel: formatMoney(Math.round(price * (1 + GST_RATE))),
+    })),
   ];
+  const savings = Math.max(0, 2999 - BASE_PRICE);
 
   const updateDetail = (field, value) => {
     setDetails((current) => ({ ...current, [field]: value }));
@@ -232,8 +233,7 @@ export function CheckoutPage() {
   return (
     <div className="checkout-page">
       <section className="checkout-intro" aria-labelledby="checkout-title">
-        <h1 id="checkout-title">You're One Step Closer to Looking Like A Smart Handsome Gentleman</h1>
-        <p className="checkout-intro-copy">Enter your details below and receive a personalised style report within 48 hours.</p>
+        <h1 id="checkout-title">Get Your Personal Style Report</h1>
       </section>
 
       <main className="checkout-main">
@@ -245,53 +245,29 @@ export function CheckoutPage() {
         ) : null}
 
         <form className="checkout-card" onSubmit={handleSubmit} noValidate data-clarity-mask="true">
-          <section className="checkout-product" aria-label="Personal style report preview">
-            <div className="checkout-report-heading">
-              <span className="checkout-kicker">YOUR PERSONAL STYLE REPORT</span>
-              <p>Built around your face, body, complexion, lifestyle and budget.</p>
-            </div>
-            <div className="checkout-report-body">
-              <figure className="checkout-report-preview">
-                <img src={REPORT_PREVIEW_URL} alt="Preview of the personalised style report" width="1200" height="1200" fetchPriority="high" decoding="async" />
-              </figure>
-              <ul className="checkout-report-points">
-                <li><Check size={15} weight="bold" /> Hairstyle &amp; beard ideas + Bonus Skin &amp; Hair Care</li>
-                <li><Check size={15} weight="bold" /> Exact clothing fits &amp; colour combinations</li>
-                <li><Check size={15} weight="bold" /> 20 ready-to-wear looks for every occasion</li>
-                <li><Check size={15} weight="bold" /> Shoe, watch &amp; perfume ideas + Smart Shopping Plan</li>
-                <li><Check size={15} weight="bold" /> Bonus 90-Day Action Plan + Lifetime Access</li>
-              </ul>
-            </div>
-          </section>
-
-          <section className="checkout-block" aria-labelledby="contact-title">
-            <div className="checkout-block-heading">
-              <h2 id="contact-title">Where should we send your report?</h2>
-            </div>
+          <section className="checkout-block" aria-label="Contact information">
+            <p className="checkout-form-intro">Enter your details below to receive your StyleIQ System report.</p>
 
             <label className="checkout-field">
-              <span>Full name</span>
-              <input autoComplete="name" value={details.name} onChange={(event) => updateDetail("name", event.target.value)} placeholder="Your full name" aria-invalid={Boolean(errors.name)} />
+              <span className="checkout-sr-only">Full name</span>
+              <input autoComplete="name" value={details.name} onChange={(event) => updateDetail("name", event.target.value)} placeholder="Enter your full name" aria-label="Full name" aria-invalid={Boolean(errors.name)} />
               {errors.name ? <small>{errors.name}</small> : null}
             </label>
             <label className="checkout-field">
-              <span>Email address</span>
-              <input type="email" autoComplete="email" value={details.email} onChange={(event) => updateDetail("email", event.target.value)} placeholder="you@example.com" aria-invalid={Boolean(errors.email)} />
+              <span className="checkout-sr-only">Email address</span>
+              <input type="email" autoComplete="email" value={details.email} onChange={(event) => updateDetail("email", event.target.value)} placeholder="Enter your email address" aria-label="Email address" aria-invalid={Boolean(errors.email)} />
               {errors.email ? <small>{errors.email}</small> : null}
             </label>
             <label className="checkout-field">
-              <span>WhatsApp number</span>
-              <div className="checkout-phone"><select className="checkout-country-code" autoComplete="tel-country-code" value={details.phoneCountryCode || "+91"} onChange={(event) => updateDetail("phoneCountryCode", event.target.value)} aria-label="Country calling code">{COUNTRY_CODES.map(([code, country]) => <option value={code} key={code}>{country} {code}</option>)}</select><input type="tel" inputMode="tel" autoComplete="tel-national" value={details.phone} onChange={(event) => updateDetail("phone", event.target.value)} placeholder="98765 43210" aria-invalid={Boolean(errors.phone)} /></div>
+              <span className="checkout-sr-only">WhatsApp number</span>
+              <div className="checkout-phone"><select className="checkout-country-code" autoComplete="tel-country-code" value={details.phoneCountryCode || "+91"} onChange={(event) => updateDetail("phoneCountryCode", event.target.value)} aria-label="Country calling code">{COUNTRY_CODES.map(([code, country]) => <option value={code} key={code}>{country} {code}</option>)}</select><input type="tel" inputMode="tel" autoComplete="tel-national" value={details.phone} onChange={(event) => updateDetail("phone", normalizePhoneInput(event.target.value, details.phoneCountryCode || "+91"))} placeholder="Enter your number" aria-label="WhatsApp number" aria-invalid={Boolean(errors.phone)} /></div>
               {errors.phone ? <small>{errors.phone}</small> : null}
             </label>
           </section>
 
-          <section className="checkout-block checkout-addons" aria-labelledby="addons-title">
-            <div className="checkout-block-heading checkout-addons-heading">
-              <h2 id="addons-title">Optional Upgrades</h2>
-            </div>
+          <section className="checkout-block checkout-addons" aria-label="Outfit visualisation upgrade">
             <div className="checkout-bumps">
-              {BUMPS.map(({ id, title, price, Icon, summary }) => {
+              {BUMPS.map(({ id, headline, offer, benefits }) => {
                 const isSelected = selected.includes(id);
                 return (
                   <label className={`checkout-bump ${isSelected ? "selected" : ""}`} key={id}>
@@ -299,10 +275,16 @@ export function CheckoutPage() {
                     <span className="bump-check" aria-hidden="true">{isSelected ? <Check size={15} weight="bold" /> : null}</span>
                     <span className="bump-copy">
                       <span className="bump-title-row">
-                        <span><Icon size={20} /><strong>{title}</strong></span>
-                        <b className="bump-price">+{formatAddOnPrice(price)} + GST</b>
+                        <span><strong>{headline}</strong></span>
+                        <b className="bump-price">{offer}</b>
                       </span>
-                      <span className="bump-summary">{summary}</span>
+                      <ul className="bump-benefits">
+                        {benefits.map((benefit) => (
+                          <li key={benefit.emphasis}>
+                            {benefit.before}<strong>{benefit.emphasis}</strong>{benefit.after}
+                          </li>
+                        ))}
+                      </ul>
                     </span>
                   </label>
                 );
@@ -319,38 +301,45 @@ export function CheckoutPage() {
               {orderItems.map((item) => (
                 <div className="checkout-recap-item" key={item.id}>
                   <span>{item.title}</span>
-                  <b>{formatMoney(item.price)}</b>
+                  <span className="checkout-recap-price">
+                    <b>{item.priceLabel}</b>
+                    {item.detail ? <small>{item.detail}</small> : null}
+                  </span>
                 </div>
               ))}
             </div>
 
             <div className="checkout-totals">
-              <div><span>GST (18%)</span><b>{formatMoney(gst)}</b></div>
               <div className="checkout-total"><span>Total payable</span><strong>{formatMoney(total)}</strong></div>
+              <div className="checkout-savings" aria-label={`Today's saving ${formatMoney(savings)}`}>Today&apos;s saving: <b>{formatMoney(savings)}</b></div>
             </div>
           </section>
 
           <section className="checkout-block checkout-payment" aria-label="Secure payment">
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
-              <LockKey size={20} weight="fill" /> {isPaying ? "Processing" : "Complete My Order"}
+              <LockKey size={20} weight="fill" /> {isPaying ? "Processing" : "Complete Order"}
             </button>
-            {status ? <p className="checkout-status" role="status">{status}</p> : null}
 
             <figure className="checkout-payment-trust">
               <img src={PAYMENT_TRUST_IMAGE_URL} alt="Secure payment options including UPI, Visa, Mastercard, RuPay, netbanking and wallets" width="1600" height="420" loading="lazy" decoding="async" />
             </figure>
-
-            <div className="checkout-testimonials" aria-label="Customer feedback">
-              <article><span aria-hidden="true">★★★★★</span><p>“It felt like someone actually looked at my face and body instead of giving random tips.”</p><strong>Rishi · Pune</strong></article>
-              <article><span aria-hidden="true">★★★★★</span><p>“I finally understood what fits to choose and what to stop buying.”</p><strong>Vikram · Chennai</strong></article>
+            <div className="checkout-offer-price" aria-label="Current StyleIQ offer">
+              <span>Normal price: <del>₹2,999</del></span>
+              <strong>Today only: ₹1,999 + GST</strong>
             </div>
-
+            {status ? <p className="checkout-status" role="status">{status}</p> : null}
           </section>
         </form>
 
-        <section className="checkout-next">
-          <h2>What happens after payment?</h2>
-          <div><span><b>1</b> 6 to 8-Minute Assessment</span><span><b>2</b> Expert Personal Analysis</span><span><b>3</b> Report Delivery Within 48 Hours</span></div>
+        <section className="checkout-next" aria-labelledby="report-recap-title">
+          <h2 id="report-recap-title">Your report recap</h2>
+          <ul className="checkout-report-recap">
+            <li>Personalised hairstyle and beard ideas</li>
+            <li>Colours and clothing fits chosen for you</li>
+            <li>20 ready-to-wear looks for real occasions</li>
+            <li>Shoe, watch, perfume and shopping guidance</li>
+            <li>90-day upgrade plan with lifetime access</li>
+          </ul>
         </section>
       </main>
 

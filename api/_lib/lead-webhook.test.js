@@ -106,7 +106,7 @@ test("builds checkout lead webhook payload from request and tracking context", (
     },
     order: {
       currency: "INR",
-      product: "AttractiveMen Personalized Style Report",
+      product: "StyleIQ System",
       selected_item_ids: ["style-consultation"],
       selected_bumps: [
         {

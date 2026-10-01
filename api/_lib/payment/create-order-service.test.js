@@ -18,7 +18,7 @@ test("creates a checkout payment order from trusted server totals", async () => 
         email: "harsh@example.com",
         phone: "+91 98765 43210",
       },
-      selected: ["style-consultation"],
+      selected: ["outfit-visualizer"],
       tracking: {
         marketing: { source: "meta" },
       },
@@ -51,27 +51,27 @@ test("creates a checkout payment order from trusted server totals", async () => 
     phonePeOrderId: "OMO_TEST_ORDER",
     state: "PENDING",
     redirectUrl: "https://phonepe.example/pay",
-    amountPaise: 294764,
+    amountPaise: 285800,
   });
   assert.deepEqual(createdPayments, [
     {
       merchantOrderId: "AM_TEST_ORDER",
-      amountPaise: 294764,
+      amountPaise: 285800,
       redirectUrl: "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_TEST_ORDER",
       phoneNumber: "9876543210",
       metaInfo: {
         udf1: "Harsh Goel",
         udf2: "harsh@example.com",
         udf3: "9876543210",
-        udf4: "AttractiveMen Personalized Style Report",
-        udf5: "style-consultation",
+        udf4: "StyleIQ System",
+        udf5: "outfit-visualizer",
       },
     },
   ]);
   assert.equal(forwardedPayloads.length, 1);
   assert.equal(forwardedPayloads[0].event_name, "checkout.payment_initiated");
   assert.equal(forwardedPayloads[0].merchant_order_id, "AM_TEST_ORDER");
-  assert.equal(forwardedPayloads[0].amount_paise, "294764");
+  assert.equal(forwardedPayloads[0].amount_paise, "285800");
   assert.deepEqual(paymentLogs.map((log) => log.eventName), [
     "phonepe.payment_create_started",
     "phonepe.payment_create_succeeded",

@@ -13,33 +13,28 @@ test("calculates trusted server-side totals from selected bump ids", () => {
     basePrice: 1999,
     bumpsTotal: 0,
     subtotal: 1999,
-    gst: 359.82,
-    total: 2358.82,
-    amountPaise: 235882,
+    gst: 360,
+    total: 2359,
+    amountPaise: 235900,
     selectedBumps: [],
   });
 
   assert.deepEqual(calculateCheckoutTotals([
-    "style-consultation",
-    "instagram-makeover",
-    "style-consultation",
+    "outfit-visualizer",
+    "outfit-visualizer",
+    "outfit-visualizer",
   ]), {
     basePrice: 1999,
-    bumpsTotal: 798,
-    subtotal: 2797,
-    gst: 503.46,
-    total: 3300.46,
-    amountPaise: 330046,
+    bumpsTotal: 422.88,
+    subtotal: 2421.88,
+    gst: 436,
+    total: 2858,
+    amountPaise: 285800,
     selectedBumps: [
       {
-        id: "style-consultation",
-        title: "Personal Style Consultation",
-        price: 499,
-      },
-      {
-        id: "instagram-makeover",
-        title: "Instagram Profile Analysis + Makeover",
-        price: 299,
+        id: "outfit-visualizer",
+        title: "Face-Matched Outfit Preview",
+        price: 422.88,
       },
     ],
   });

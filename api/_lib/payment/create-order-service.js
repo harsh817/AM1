@@ -13,7 +13,7 @@ import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { createPhonePePayment } from "../phonepe.js";
 import { buildConvexAttribution, recordConvexOrder } from "../convex.js";
 
-const PRODUCT_NAME = "AttractiveMen Personalized Style Report";
+const PRODUCT_NAME = "StyleIQ System";
 const CREATE_ORDER_ROUTE = "/api/phonepe/create-order";
 const CREATE_PAYMENT_OPERATION = "phonepe.payment.create";
 

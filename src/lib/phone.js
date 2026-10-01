@@ -9,3 +9,12 @@ export function normalizeIndianMobile(phone) {
 export function normalizeInternationalPhone(phone) {
   return String(phone ?? "").replace(/\D/g, "");
 }
+
+export function normalizePhoneInput(phone, countryCode = "+91") {
+  const digits = normalizeInternationalPhone(phone);
+  const callingCode = normalizeInternationalPhone(countryCode);
+  if (callingCode && digits.startsWith(callingCode) && digits.length > callingCode.length + 6) {
+    return digits.slice(callingCode.length);
+  }
+  return digits;
+}

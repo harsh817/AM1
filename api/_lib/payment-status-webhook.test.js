@@ -24,7 +24,7 @@ test("builds a complete failed payment payload for sheet routing", () => {
         udf1: "Harsh Goel",
         udf2: "harsh@example.com",
         udf3: "9876543210",
-        udf4: "AttractiveMen Personalized Style Report",
+        udf4: "StyleIQ System",
         udf5: "call",
       },
       errorContext: {
@@ -95,7 +95,7 @@ test("builds a complete failed payment payload for sheet routing", () => {
       identity: "harsh@example.com",
     },
     order: {
-      product: "AttractiveMen Personalized Style Report",
+      product: "StyleIQ System",
       selected_item_ids: ["call"],
     },
     location: {
@@ -154,7 +154,7 @@ test("builds a complete failed payment payload for sheet routing", () => {
           udf1: "Harsh Goel",
           udf2: "harsh@example.com",
           udf3: "9876543210",
-          udf4: "AttractiveMen Personalized Style Report",
+          udf4: "StyleIQ System",
           udf5: "call",
         },
         errorContext: {
