@@ -18,3 +18,8 @@ export function normalizePhoneInput(phone, countryCode = "+91") {
   }
   return digits;
 }
+
+export function getInitialPhoneCountryCode(details = {}, defaultCountryCode = "+91") {
+  const hasPhoneNumber = Boolean(normalizeInternationalPhone(details.phone));
+  return hasPhoneNumber && details.phoneCountryCode ? details.phoneCountryCode : defaultCountryCode;
+}

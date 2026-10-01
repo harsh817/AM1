@@ -9,7 +9,7 @@ import {
   rememberCheckoutVisit,
 } from "../lib/checkout-tracking.js";
 import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
-import { normalizeInternationalPhone, normalizePhoneInput } from "../lib/phone.js";
+import { getInitialPhoneCountryCode, normalizeInternationalPhone, normalizePhoneInput } from "../lib/phone.js";
 import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
@@ -52,8 +52,15 @@ function loadDraft() {
   try {
     const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
     const selected = [];
+    const savedDetails = saved?.details ?? {};
     return {
-      details: { name: "", email: "", phone: "", phoneCountryCode: defaultCountryCode, ...saved?.details },
+      details: {
+        name: "",
+        email: "",
+        phone: "",
+        ...savedDetails,
+        phoneCountryCode: getInitialPhoneCountryCode(savedDetails, defaultCountryCode),
+      },
       selected,
     };
   } catch {

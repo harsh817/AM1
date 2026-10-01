@@ -31,6 +31,7 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.match(checkoutSource, /placeholder="Enter your full name"/);
   assert.match(checkoutSource, /placeholder="Enter your email address"/);
   assert.match(checkoutSource, /placeholder="Enter your number"/);
+  assert.match(checkoutSource, /phoneCountryCode: getInitialPhoneCountryCode\(savedDetails, defaultCountryCode\)/);
   assert.match(checkoutSource, /aria-label="Outfit visualisation upgrade"/);
   assert.match(checkoutSource, /CHECKOUT_BUMPS\.map\(\(bump\) =>/);
   assert.match(checkoutSource, /className="bump-benefits"/);
