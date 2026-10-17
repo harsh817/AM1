@@ -155,9 +155,10 @@ test("verified thank-you page starts the assessment journey", () => {
   assert.match(thankyouSource, /className="thankyou-legal"/);
   assert.match(thankyouSource, /href="\/privacy"/);
   assert.match(thankyouSource, /href="\/terms"/);
-  assert.match(paymentFailedSource, /Oops, something didn’t go as planned/);
+  assert.match(paymentFailedSource, /Oops, seems like something didn’t go as planned/);
   assert.match(paymentFailedSource, /verified \? "Payment not completed"/);
-  assert.match(paymentFailedSource, /1,119\+ men and rated 4\.8 stars/);
+  assert.match(paymentFailedSource, /seems like something didn’t go as planned/);
+  assert.match(paymentFailedSource, /personal style report tried by 1,119\+ men and rated 4\.5 stars/);
   assert.match(paymentFailedSource, /Your style upgrade is still within reach/);
   assert.match(paymentFailedSource, /Continue to checkout/);
   assert.match(paymentFailedSource, /If money was deducted, please check your payment status/);

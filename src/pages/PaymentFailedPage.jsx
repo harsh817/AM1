@@ -6,11 +6,12 @@ import "../styles/checkout.css";
 export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("Confirming the payment outcome with PhonePe...");
+  const reassurance = "Don’t worry—you can still look attractive, masculine and confident with a personal style report tried by 1,119+ men and rated 4.5 stars.";
 
   useEffect(() => {
     if (import.meta.env.DEV && preview === "failed") {
       setVerified(true);
-      setMessage("Don’t worry—you can still build a more attractive, masculine and confident style with a personal report trusted by 1,119+ men and rated 4.8 stars.");
+      setMessage(reassurance);
       return undefined;
     }
     let cancelled = false;
@@ -28,7 +29,7 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
           return;
         }
         setVerified(true);
-        setMessage("Don’t worry—you can still build a more attractive, masculine and confident style with a personal report trusted by 1,119+ men and rated 4.8 stars.");
+        setMessage(reassurance);
       })
       .catch(() => {
         if (!cancelled) {
@@ -56,7 +57,7 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true"><WarningCircle size={30} weight="bold" /></div>
           <p className="checkout-step">{verified ? "Payment not completed" : "StyleIQ System"}</p>
-          <h1>{verified ? "Oops, something didn’t go as planned" : "Checking payment"}</h1>
+          <h1>{verified ? "Oops, seems like something didn’t go as planned" : "Checking payment"}</h1>
           <p aria-live="polite">{message}</p>
         </div>
         {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
