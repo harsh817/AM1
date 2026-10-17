@@ -67,16 +67,18 @@ export function PaymentStatusPage({ merchantOrderId = "", preview = "" }) {
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true"><LockKey size={30} weight="bold" /></div>
           <p className="checkout-step">StyleIQ System</p>
-          <h1>Checking your payment</h1>
+          <h1>{merchantOrderId ? "Checking your payment" : "Order reference missing"}</h1>
           <p aria-live="polite">{message}</p>
         </div>
         {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
-        <div className="thankyou-actions">
-          <button className="checkout-pay thankyou-primary" type="button" disabled={checking} onClick={() => setManualCheck((count) => count + 1)}>
-            <ArrowClockwise size={19} aria-hidden="true" /> {checking ? "Checking…" : attempt >= MAX_AUTOMATIC_CHECKS ? "Check status again" : "Check payment status"}
-          </button>
-          <a className="checkout-save" href={`mailto:attractivemen08@gmail.com?subject=Payment%20status%20${encodeURIComponent(merchantOrderId)}`}>Contact support</a>
-        </div>
+        {merchantOrderId ? (
+          <div className="thankyou-actions">
+            <button className="checkout-pay thankyou-primary" type="button" disabled={checking} onClick={() => setManualCheck((count) => count + 1)}>
+              <ArrowClockwise size={19} aria-hidden="true" /> {checking ? "Checking…" : attempt >= MAX_AUTOMATIC_CHECKS ? "Check status again" : "Check payment status"}
+            </button>
+            <a className="checkout-save" href={`mailto:attractivemen08@gmail.com?subject=Payment%20status%20${encodeURIComponent(merchantOrderId)}`}>Contact support</a>
+          </div>
+        ) : null}
         <LegalLinks />
       </section>
     </main>

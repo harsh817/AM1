@@ -152,6 +152,7 @@ test("verified thank-you page starts the assessment journey", () => {
   assert.match(thankyouSource, /same name, email address, and WhatsApp number/);
   assert.match(thankyouSource, /48 hours after we receive your completed assessment and required photos/);
   assert.match(thankyouSource, /getAssessmentFormUrl\(\)/);
+  assert.match(thankyouSource, /merchantOrderId \? "Confirming payment" : "Order reference missing"/);
   assert.match(thankyouSource, /className="thankyou-legal"/);
   assert.match(thankyouSource, /href="\/privacy"/);
   assert.match(thankyouSource, /href="\/terms"/);
@@ -164,6 +165,8 @@ test("verified thank-you page starts the assessment journey", () => {
   assert.doesNotMatch(paymentFailedSource, />Contact support</);
   assert.match(paymentFailedSource, /markFailedPaymentRetry\(merchantOrderId\)/);
   assert.match(paymentStatusSource, /Check payment status/);
+  assert.match(paymentStatusSource, /merchantOrderId \? "Checking your payment" : "Order reference missing"/);
+  assert.match(paymentFailedSource, /merchantOrderId \? "Checking payment" : "Order reference missing"/);
   assert.match(checkoutSource, /canRestoreSelection[\s\S]*saved\.selected\.filter\(\(id\) => VALID_BUMP_IDS\.has\(id\)\)/);
 });
 

@@ -58,9 +58,9 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
       <section className="thankyou-card completed">
         {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made and no conversion was recorded</p> : null}
         <div className="thankyou-status-panel">
-          <div className="thankyou-icon" aria-hidden="true"><Check size={30} weight="bold" /></div>
+          <div className="thankyou-icon" aria-hidden="true">{verified ? <Check size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
           <p className="checkout-step">StyleIQ System</p>
-          <h1>{verified ? "Payment confirmed" : "Confirming payment"}</h1>
+          <h1>{verified ? "Payment confirmed" : merchantOrderId ? "Confirming payment" : "Order reference missing"}</h1>
           <p>{message}</p>
         </div>
         {verified ? (
@@ -77,13 +77,13 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
             )}
             <p className="thankyou-delivery-note">Your report is delivered within 48 hours after we receive your completed assessment and required photos.</p>
           </div>
-        ) : (
+        ) : merchantOrderId ? (
           <div className="thankyou-next thankyou-confirming">
             <LockKey size={19} aria-hidden="true" />
             <span>We’ll show the next step as soon as your payment is confirmed.</span>
-            {merchantOrderId ? <a href={getPaymentStatusUrl(merchantOrderId)}>Check payment status</a> : null}
+            <a href={getPaymentStatusUrl(merchantOrderId)}>Check payment status</a>
           </div>
-        )}
+        ) : null}
         {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
         <nav className="thankyou-legal" aria-label="Legal links"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a></nav>
       </section>

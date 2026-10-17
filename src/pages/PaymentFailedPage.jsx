@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { WarningCircle } from "@phosphor-icons/react";
+import { LockKey, WarningCircle } from "@phosphor-icons/react";
 import { checkPaymentStatus, getFailedPaymentRetryUrl, getPaymentDestination, getPaymentStatusUrl, markFailedPaymentRetry } from "../lib/payment-return.js";
 import "../styles/checkout.css";
 
@@ -55,9 +55,9 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
       <section className="thankyou-card failed">
         {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made</p> : null}
         <div className="thankyou-status-panel">
-          <div className="thankyou-icon" aria-hidden="true"><WarningCircle size={30} weight="bold" /></div>
+          <div className="thankyou-icon" aria-hidden="true">{verified ? <WarningCircle size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
           <p className="checkout-step">{verified ? "Payment not completed" : "StyleIQ System"}</p>
-          <h1>{verified ? "Oops, seems like something didn’t go as planned" : "Checking payment"}</h1>
+          <h1>{verified ? "Oops, seems like something didn’t go as planned" : merchantOrderId ? "Checking payment" : "Order reference missing"}</h1>
           <p aria-live="polite">{message}</p>
         </div>
         {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
@@ -68,9 +68,9 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
               <button className="checkout-pay thankyou-primary" type="button" onClick={handleRetry}>Continue to checkout</button>
             </div>
           </div>
-        ) : (
+        ) : merchantOrderId ? (
           <div className="thankyou-next thankyou-confirming"><a href={getPaymentStatusUrl(merchantOrderId)}>Check payment status</a></div>
-        )}
+        ) : null}
         <nav className="thankyou-legal" aria-label="Legal links"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a></nav>
       </section>
     </main>
