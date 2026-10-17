@@ -10,6 +10,7 @@ import {
 } from "../lib/checkout-tracking.js";
 import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
 import { getInitialPhoneCountryCode, normalizeInternationalPhone, normalizePhoneInput } from "../lib/phone.js";
+import { FAILED_RETRY_MARKER } from "../lib/payment-return.js";
 import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
@@ -51,7 +52,17 @@ function loadDraft() {
   const defaultCountryCode = getDefaultCountryCode();
   try {
     const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
-    const selected = [];
+    const params = new URLSearchParams(window.location.search);
+    const retryOrderId = params.get("retryOrderId") || "";
+    let canRestoreSelection = false;
+    try {
+      canRestoreSelection = Boolean(retryOrderId && sessionStorage.getItem(FAILED_RETRY_MARKER) === retryOrderId);
+    } catch {
+      canRestoreSelection = false;
+    }
+    const selected = canRestoreSelection && Array.isArray(saved?.selected)
+      ? saved.selected.filter((id) => VALID_BUMP_IDS.has(id))
+      : [];
     const savedDetails = saved?.details ?? {};
     return {
       details: {
@@ -93,6 +104,17 @@ export function CheckoutPage() {
   const [status, setStatus] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
+
+  useEffect(() => {
+    const retryOrderId = new URLSearchParams(window.location.search).get("retryOrderId");
+    try {
+      if (retryOrderId && sessionStorage.getItem(FAILED_RETRY_MARKER) === retryOrderId) {
+        sessionStorage.removeItem(FAILED_RETRY_MARKER);
+      }
+    } catch {
+      // A failed-retry marker is only used to restore an optional selection.
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ details, selected }));

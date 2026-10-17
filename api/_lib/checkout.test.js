@@ -55,7 +55,7 @@ test("rejects invalid contact fields and unknown bump ids", () => {
 test("builds PhonePe-safe redirect and merchant order ids", () => {
   assert.equal(
     buildRedirectUrl("https://thriveonp.com/", "AM_123"),
-    "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_123",
+    "https://thriveonp.com/a-m-payment-status?merchantOrderId=AM_123",
   );
 
   const id = createMerchantOrderId();

@@ -97,6 +97,19 @@ test("logs status failures before rethrowing provider errors", async () => {
   assert.doesNotMatch(JSON.stringify(paymentLogs), /raw status failure/);
 });
 
+test("returns a PhonePe-confirmed outcome even when Make delivery fails", async () => {
+  const paymentLogs = [];
+  const result = await checkPaymentOrderStatus({
+    merchantOrderId: "AM_MAKE_DOWN",
+    getStatus: async () => ({ state: "COMPLETED", amount: 224200 }),
+    forwardWebhook: async () => ({ sent: false }),
+    logger: (eventName, fields) => paymentLogs.push({ eventName, fields }),
+  });
+
+  assert.equal(result.state, "COMPLETED");
+  assert.ok(paymentLogs.some((log) => log.eventName === "phonepe.status_make_delivery_failed"));
+});
+
 test("rejects invalid merchant order ids before provider calls", async () => {
   await assert.rejects(
     checkPaymentOrderStatus({

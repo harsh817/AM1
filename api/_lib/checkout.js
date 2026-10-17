@@ -86,7 +86,7 @@ export function createMerchantOrderId() {
  * @returns {string} Absolute thank-you URL with the merchant order id attached.
  */
 export function buildRedirectUrl(baseUrl, merchantOrderId) {
-  const redirectUrl = new URL("/a-m-thankyou", baseUrl);
+  const redirectUrl = new URL("/a-m-payment-status", baseUrl);
   redirectUrl.searchParams.set("merchantOrderId", merchantOrderId);
   return redirectUrl.toString();
 }

@@ -265,6 +265,17 @@
 .thankyou-legal a:hover { color: var(--checkout-copper); text-decoration-color: currentColor; }
 .checkout-save { min-height: 54px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(var(--checkout-ink-rgb), 0.16); border-radius: var(--checkout-radius); background: var(--checkout-white); color: var(--checkout-black); font-size: 1rem; font-weight: 850; text-decoration: none; transition: var(--checkout-transition); }
 .checkout-save:hover { border-color: var(--checkout-copper); color: var(--checkout-copper); }
+.thankyou-next > p { margin: 0 0 16px; color: rgba(var(--checkout-ink-rgb), 0.78); font-size: 0.98rem; line-height: 1.55; }
+.thankyou-next > .thankyou-primary { width: 100%; display: flex; margin-top: 14px; text-decoration: none; }
+.thankyou-next > .thankyou-assessment-cue { display: flex; align-items: center; gap: 7px; margin: 0 0 -5px; color: var(--checkout-copper); font-size: 0.88rem; font-weight: 850; }
+.thankyou-next > .thankyou-primary { justify-content: center; gap: 10px; }
+.thankyou-next > .thankyou-delivery-note { margin: 14px 0 0; color: rgba(var(--checkout-ink-rgb), 0.68); font-size: 0.86rem; }
+.thankyou-form-unavailable { padding: 14px; border: 1px solid rgba(var(--checkout-ink-rgb), 0.12); border-radius: var(--checkout-radius); background: var(--checkout-linen); color: var(--checkout-black); line-height: 1.5; }
+.thankyou-confirming { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+.thankyou-confirming > a { grid-column: 2; width: fit-content; color: var(--checkout-black); font-weight: 800; text-underline-offset: 3px; }
+.thankyou-actions button.checkout-pay { width: 100%; }
+.thankyou-actions button.checkout-pay:disabled { cursor: wait; opacity: 0.72; }
+.payment-preview-notice { margin: 0; padding: 10px 16px; border-bottom: 1px solid rgba(var(--checkout-ink-rgb), 0.12); background: var(--checkout-linen); color: var(--checkout-black); font-size: 0.76rem; font-weight: 800; text-align: center; }
 @media (max-width: 640px) {
   .checkout-main { width: min(calc(100% - 20px), 760px); padding: 12px 0 48px; }
   .checkout-intro { width: min(calc(100% - 20px), 760px); padding: 22px 14px 24px; }

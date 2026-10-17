@@ -16,15 +16,6 @@ import {
 const indexHtml = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
 const checkoutHtml = readFileSync(new URL("../../checkout.html", import.meta.url), "utf8");
 
-function assertRouteGatedThankYouPixelFallback(html) {
-  assert.match(html, /__attractiveMenThankYouPixelLoaded/);
-  assert.match(html, /normalizedPath !== "\/a-m-thankyou"/);
-  assert.match(html, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
-  assert.match(html, /fbq\("track", "PageView"/);
-  assert.doesNotMatch(html, /www\.clarity\.ms\/tag|clarity\("event"/);
-  assert.match(html, /facebook\.com\/tr\?id=2647411082380065&ev=PageView&noscript=1/);
-}
-
 function createFakeWindow() {
   const scripts = [];
   const scriptsById = new Map();
@@ -64,13 +55,10 @@ test("analytics initialization no-ops without browser document access", () => {
   assert.equal(initializeAnalytics({}), false);
 });
 
-test("main HTML route-gates a direct thank-you Pixel fallback before React", () => {
-  assertRouteGatedThankYouPixelFallback(indexHtml);
+test("shared HTML does not load Meta Pixel before route verification", () => {
+  assert.doesNotMatch(indexHtml, /connect\.facebook\.net|facebook\.com\/tr|noscript=1/);
+  assert.doesNotMatch(checkoutHtml, /connect\.facebook\.net|facebook\.com\/tr|noscript=1/);
   assert.match(indexHtml, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
-});
-
-test("checkout HTML route-gates a direct thank-you Pixel fallback before React", () => {
-  assertRouteGatedThankYouPixelFallback(checkoutHtml);
   assert.match(checkoutHtml, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
 });
 
@@ -224,4 +212,22 @@ test("purchase fires once only with verified payment amount", () => {
   assert.equal(purchaseCalls[0][2].currency, "INR");
   assert.equal(purchaseCalls[0][2].payment_state, "COMPLETED");
   assert.equal(purchaseCalls[0][3].eventID, buildPaymentEventId("Purchase", "AM_123"));
+});
+
+test("verified purchase remains deduplicated after a page refresh", () => {
+  const stored = new Map();
+  const localStorage = {
+    getItem: (key) => stored.get(key) ?? null,
+    setItem: (key, value) => stored.set(key, value),
+  };
+  const firstWindow = createFakeWindow();
+  firstWindow.localStorage = localStorage;
+  initializeAnalytics({ windowRef: firstWindow, trackPageView: false });
+  assert.equal(trackPaymentCompleted({ windowRef: firstWindow, merchantOrderId: "AM_REFRESH", amountPaise: 224200 }), true);
+
+  const refreshedWindow = createFakeWindow();
+  refreshedWindow.localStorage = localStorage;
+  initializeAnalytics({ windowRef: refreshedWindow, trackPageView: false });
+  assert.equal(trackPaymentCompleted({ windowRef: refreshedWindow, merchantOrderId: "AM_REFRESH", amountPaise: 224200 }), false);
+  assert.equal(refreshedWindow.fbq.queue.filter((args) => Array.from(args)[1] === "Purchase").length, 0);
 });

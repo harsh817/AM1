@@ -98,7 +98,7 @@ test("PhonePe auth, payment, and status requests use server credentials and abor
     const payment = await createPhonePePayment({
       merchantOrderId: "AM_TEST_ORDER",
       amountPaise: TEST_AMOUNT_PAISE,
-      redirectUrl: "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_TEST_ORDER",
+      redirectUrl: "https://thriveonp.com/a-m-payment-status?merchantOrderId=AM_TEST_ORDER",
       phoneNumber: "9876543210",
       metaInfo: { udf1: "Name" },
     });
@@ -145,7 +145,7 @@ test("production PhonePe mode requires the approved production base URL", () => 
   try {
     assert.doesNotThrow(() => validateProductionBaseUrl("production"));
     assert.doesNotThrow(() => validateProductionRedirectUrl(
-      "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_123",
+      "https://thriveonp.com/a-m-payment-status?merchantOrderId=AM_123",
       "production",
     ));
   } finally {

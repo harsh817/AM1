@@ -12,7 +12,38 @@ test("routes requested marketing, checkout, and thank-you URLs", () => {
     page: "thankyou",
     merchantOrderId: "AM_123",
   });
+  assert.deepEqual(getPageRoute("/a-m-payment-status", "?merchantOrderId=AM_123"), {
+    page: "payment-status",
+    merchantOrderId: "AM_123",
+  });
+  assert.deepEqual(getPageRoute("/a-m-payment-failed", "?merchantOrderId=AM_123"), {
+    page: "payment-failed",
+    merchantOrderId: "AM_123",
+  });
+  assert.deepEqual(getPageRoute("/a-m-checkout", "?merchantOrderId=AM_123"), {
+    page: "payment-status",
+    merchantOrderId: "AM_123",
+  });
+  assert.deepEqual(getPageRoute("/thank-you", "?merchantOrderId=AM_123"), {
+    page: "payment-status",
+    merchantOrderId: "AM_123",
+  });
   assert.deepEqual(getPageRoute("/experiment-dashboard", ""), { page: "experiment-dashboard" });
+});
+
+test("passes local payment preview states to the corresponding pages", () => {
+  assert.deepEqual(getPageRoute("/a-m-payment-status", "?merchantOrderId=PREVIEW-1&preview=pending"), {
+    page: "payment-status", merchantOrderId: "PREVIEW-1", preview: "pending",
+  });
+  assert.deepEqual(getPageRoute("/a-m-payment-status", "?merchantOrderId=PREVIEW-1&preview=unavailable"), {
+    page: "payment-status", merchantOrderId: "PREVIEW-1", preview: "unavailable",
+  });
+  assert.deepEqual(getPageRoute("/a-m-payment-failed", "?merchantOrderId=PREVIEW-1&preview=failed"), {
+    page: "payment-failed", merchantOrderId: "PREVIEW-1", preview: "failed",
+  });
+  assert.deepEqual(getPageRoute("/a-m-thankyou", "?merchantOrderId=PREVIEW-1&preview=completed"), {
+    page: "thankyou", merchantOrderId: "PREVIEW-1", preview: "completed",
+  });
 });
 
 test("keeps legacy routes working", () => {
@@ -40,7 +71,7 @@ test("production rewrites expose only current AM1 public routes", () => {
   );
   const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
 
-  assert.deepEqual(rewriteSources, ["/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
+  assert.deepEqual(rewriteSources, ["/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
 
@@ -50,7 +81,7 @@ test("production cache headers are explicit for app routes and assets", () => {
   );
   const headersBySource = new Map(config.headers.map((entry) => [entry.source, entry.headers]));
 
-  for (const source of ["/", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-thankyou", "/experiment-dashboard", "/privacy", "/terms"]) {
+  for (const source of ["/", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/privacy", "/terms"]) {
     assertHeader(headersBySource, source, "Cache-Control", "no-store, max-age=0");
   }
 

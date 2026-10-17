@@ -11,6 +11,8 @@ import { resolveLandingRouteAsync } from "./lib/ab-testing.js";
 const LandingPageAM2 = lazy(() => import("./pages/LandingPageAM2.jsx").then((module) => ({ default: module.LandingPageAM2 })));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage.jsx").then((module) => ({ default: module.CheckoutPage })));
 const ThankYouPage = lazy(() => import("./pages/ThankYouPage.jsx").then((module) => ({ default: module.ThankYouPage })));
+const PaymentStatusPage = lazy(() => import("./pages/PaymentStatusPage.jsx").then((module) => ({ default: module.PaymentStatusPage })));
+const PaymentFailedPage = lazy(() => import("./pages/PaymentFailedPage.jsx").then((module) => ({ default: module.PaymentFailedPage })));
 const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({ default: module.LegalPage })));
 const ExperimentDashboard = lazy(() => import("./pages/ExperimentDashboard.jsx").then((module) => ({ default: module.ExperimentDashboard })));
 
@@ -21,7 +23,11 @@ function App({ route }) {
   ) : route.page === "landing" || route.page === "landing-am2" ? (
     <LandingPageAM2 variant={route.variant || (route.page === "landing-am2" ? "AM2" : "AM")} preview={route.preview} />
   ) : route.page === "thankyou" ? (
-    <ThankYouPage merchantOrderId={route.merchantOrderId} />
+    <ThankYouPage merchantOrderId={route.merchantOrderId} preview={route.preview} />
+  ) : route.page === "payment-status" ? (
+    <PaymentStatusPage merchantOrderId={route.merchantOrderId} preview={route.preview} />
+  ) : route.page === "payment-failed" ? (
+    <PaymentFailedPage merchantOrderId={route.merchantOrderId} preview={route.preview} />
   ) : route.page === "experiment-dashboard" ? (
     <ExperimentDashboard />
   ) : route.page === "dashboard" ? (

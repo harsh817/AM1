@@ -7,7 +7,11 @@
     { "source": "/AM2", "destination": "/" },
     { "source": "/am2", "destination": "/" },
     { "source": "/a-m-checkout", "destination": "/" },
+    { "source": "/a-m-payment-status", "destination": "/" },
     { "source": "/a-m-thankyou", "destination": "/" },
+    { "source": "/a-m-payment-failed", "destination": "/" },
+    { "source": "/thankyou", "destination": "/" },
+    { "source": "/thank-you", "destination": "/" },
     { "source": "/experiment-dashboard", "destination": "/" },
     { "source": "/dashboard", "destination": "/" },
     { "source": "/dashboard/(.*)", "destination": "/" }
@@ -68,7 +72,43 @@
       ]
     },
     {
+      "source": "/a-m-payment-status",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/a-m-thankyou",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/a-m-payment-failed",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/thankyou",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/thank-you",
       "headers": [
         {
           "key": "Cache-Control",

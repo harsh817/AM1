@@ -57,7 +57,7 @@ test("creates a checkout payment order from trusted server totals", async () => 
     {
       merchantOrderId: "AM_TEST_ORDER",
       amountPaise: 285800,
-      redirectUrl: "https://thriveonp.com/a-m-thankyou?merchantOrderId=AM_TEST_ORDER",
+      redirectUrl: "https://thriveonp.com/a-m-payment-status?merchantOrderId=AM_TEST_ORDER",
       phoneNumber: "9876543210",
       metaInfo: {
         udf1: "Harsh Goel",

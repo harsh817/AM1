@@ -66,7 +66,8 @@ export async function checkPaymentOrderStatus({
 
   if (isFinalPaymentState(status.state)) {
     const paymentPayload = buildPaymentStatusPayload({ merchantOrderId: normalizedOrderId, req, status, tracking });
-    await recordConvexOrder({
+    const occurredAt = Date.now();
+    await attemptStatusReporting("phonepe.status_order_record_failed", normalizedOrderId, () => recordConvexOrder({
       merchantOrderId: normalizedOrderId,
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       state: status.state,
@@ -77,31 +78,54 @@ export async function checkPaymentOrderStatus({
         ...(status.errorMessage ? { message: status.errorMessage } : {}),
       } : undefined,
       providerEventId: buildProviderEventId(normalizedOrderId, status),
-      occurredAt: Date.now(),
-    });
-    await recordConvexPaymentReceipt({
+      occurredAt,
+    }), logger);
+    await attemptStatusReporting("phonepe.status_receipt_record_failed", normalizedOrderId, () => recordConvexPaymentReceipt({
       merchantOrderId: normalizedOrderId,
       providerEventId: buildProviderEventId(normalizedOrderId, status),
       state: status.state,
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       errorCode: status.errorCode,
       errorMessage: status.errorMessage,
-      receivedAt: Date.now(),
-    });
-    await forwardWebhook(paymentPayload);
+      receivedAt: occurredAt,
+    }), logger);
+    await attemptStatusReporting("phonepe.status_make_delivery_failed", normalizedOrderId, () => forwardWebhook(paymentPayload), logger);
   }
   if (!isFinalPaymentState(status.state)) {
-    await recordConvexOrder({
+    await attemptStatusReporting("phonepe.status_order_record_failed", normalizedOrderId, () => recordConvexOrder({
       merchantOrderId: normalizedOrderId,
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       state: "PENDING",
       attribution: buildConvexAttribution(tracking),
       providerEventId: buildProviderEventId(normalizedOrderId, status),
       occurredAt: Date.now(),
-    });
+    }), logger);
   }
 
   return buildClientStatusResponse(status, normalizedOrderId);
+}
+
+async function attemptStatusReporting(eventName, merchantOrderId, operation, logger) {
+  try {
+    const result = await operation();
+    if (result?.sent === false || result?.ok === false) {
+      logger(eventName, {
+        level: "error",
+        operation: STATUS_OPERATION,
+        route: STATUS_ROUTE,
+        merchantOrderId,
+        errorType: "ReportingDeliveryUnavailable",
+      });
+    }
+  } catch (error) {
+    logger(eventName, {
+      level: "error",
+      operation: STATUS_OPERATION,
+      route: STATUS_ROUTE,
+      merchantOrderId,
+      errorType: getPaymentErrorType(error),
+    });
+  }
 }
 
 function buildProviderEventId(merchantOrderId, status = {}) {

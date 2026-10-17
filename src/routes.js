@@ -1,7 +1,9 @@
 export const LANDING_PATH = "/a-m";
 export const LANDING_AM2_PATH = "/AM2";
 export const CHECKOUT_PATH = "/a-m-checkout";
+export const PAYMENT_STATUS_PATH = "/a-m-payment-status";
 export const THANKYOU_PATH = "/a-m-thankyou";
+export const PAYMENT_FAILED_PATH = "/a-m-payment-failed";
 export const EXPERIMENT_DASHBOARD_PATH = "/experiment-dashboard";
 export const DASHBOARD_PATH = "/dashboard";
 
@@ -17,14 +19,27 @@ export function getPageRoute(pathname, search = "") {
     return { page: "landing-am2", variant: "AM2" };
   }
 
-  if (query.get("page") === "checkout" || path === CHECKOUT_PATH || path === "/checkout" || path === "/checkout.html") {
+  const merchantOrderId = query.get("merchantOrderId") || "";
+  const paymentPreview = query.get("preview") || "";
+
+  if (path === PAYMENT_STATUS_PATH || path === "/thankyou" || path === "/thank-you") {
+    return { page: "payment-status", merchantOrderId, ...(paymentPreview ? { preview: paymentPreview } : {}) };
+  }
+
+  if (path === PAYMENT_FAILED_PATH) {
+    return { page: "payment-failed", merchantOrderId, ...(paymentPreview ? { preview: paymentPreview } : {}) };
+  }
+
+  if (path === CHECKOUT_PATH || path === "/checkout" || path === "/checkout.html" || query.get("page") === "checkout") {
+    if (merchantOrderId) return { page: "payment-status", merchantOrderId };
     return { page: "checkout" };
   }
 
-  if (path === THANKYOU_PATH || path === "/thankyou" || path === "/thank-you") {
+  if (path === THANKYOU_PATH) {
     return {
       page: "thankyou",
-      merchantOrderId: query.get("merchantOrderId") || "",
+      merchantOrderId,
+      ...(paymentPreview ? { preview: paymentPreview } : {}),
     };
   }
 

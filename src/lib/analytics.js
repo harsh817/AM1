@@ -21,6 +21,7 @@ const CLARITY_SCRIPT_ID = "clarity-sdk";
 const META_PIXEL_SRC = "https://connect.facebook.net/en_US/fbevents.js";
 const CLARITY_SRC = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`;
 const PRODUCT_CONTENT_NAME = "StyleIQ System";
+const COMPLETED_PURCHASES_KEY = "attractivemen-verified-purchase-events:v1";
 
 /**
  * Loads Meta Pixel and Microsoft Clarity after the app can render.
@@ -110,8 +111,11 @@ export function trackPaymentCompleted({
   const value = getPixelValue(amountPaise);
   if (!value) return false;
 
-  return trackFunnelEvent(windowRef, {
-    eventId: buildPaymentEventId("Purchase", merchantOrderId),
+  const eventId = buildPaymentEventId("Purchase", merchantOrderId);
+  if (hasPersistedPurchaseEvent(windowRef, eventId)) return false;
+
+  const tracked = trackFunnelEvent(windowRef, {
+    eventId,
     metaMethod: "track",
     metaEventName: "Purchase",
     clarityEventName: "payment_completed",
@@ -121,6 +125,8 @@ export function trackPaymentCompleted({
     value,
     paymentState: "COMPLETED",
   });
+  if (tracked) rememberPersistedPurchaseEvent(windowRef, eventId);
+  return tracked;
 }
 
 export function trackPaymentFailed({
@@ -257,6 +263,27 @@ function getTrackedEvents(windowRef) {
   }
 
   return windowRef.__attractiveMenAnalyticsTrackedEvents;
+}
+
+function hasPersistedPurchaseEvent(windowRef, eventId) {
+  if (!windowRef || !eventId) return false;
+  try {
+    const events = JSON.parse(windowRef.localStorage?.getItem(COMPLETED_PURCHASES_KEY) || "[]");
+    return Array.isArray(events) && events.includes(eventId);
+  } catch {
+    return false;
+  }
+}
+
+function rememberPersistedPurchaseEvent(windowRef, eventId) {
+  try {
+    const stored = JSON.parse(windowRef?.localStorage?.getItem(COMPLETED_PURCHASES_KEY) || "[]");
+    const events = Array.isArray(stored) ? stored.filter((value) => typeof value === "string") : [];
+    if (!events.includes(eventId)) events.push(eventId);
+    windowRef.localStorage?.setItem(COMPLETED_PURCHASES_KEY, JSON.stringify(events.slice(-300)));
+  } catch {
+    // Pixel event deduplication still applies for the current page session.
+  }
 }
 
 function getPageEventId(windowRef, eventName, route = getCurrentRoute(windowRef)) {

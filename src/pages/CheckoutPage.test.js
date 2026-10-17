@@ -4,6 +4,8 @@ import test from "node:test";
 
 const checkoutSource = readFileSync(new URL("./CheckoutPage.jsx", import.meta.url), "utf8");
 const thankyouSource = readFileSync(new URL("./ThankYouPage.jsx", import.meta.url), "utf8");
+const paymentStatusSource = readFileSync(new URL("./PaymentStatusPage.jsx", import.meta.url), "utf8");
+const paymentFailedSource = readFileSync(new URL("./PaymentFailedPage.jsx", import.meta.url), "utf8");
 const landingSource = readFileSync(new URL("./LandingPageAM2.jsx", import.meta.url), "utf8");
 const legalSource = readFileSync(new URL("./LegalPage.jsx", import.meta.url), "utf8");
 const mainSource = readFileSync(new URL("../main.jsx", import.meta.url), "utf8");
@@ -79,10 +81,14 @@ test("funnel pages own analytics side effects by route", () => {
   assert.match(checkoutSource, /initializeAnalytics\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
-  assert.match(thankyouSource, /if \(data\.state === "COMPLETED"\) \{[\s\S]*initializeAnalytics\(\{ route: THANKYOU_PATH \}\);/);
-  assert.match(thankyouSource, /else if \(data\.state === "FAILED"\) \{[\s\S]*initializeAnalytics\(\{ trackPageView: false, route: THANKYOU_PATH \}\);/);
-  assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
-  assert.match(thankyouSource, /trackPaymentFailed\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: getVerifiedStatusAmountPaise\(data\),[\s\S]*currency: data\.currency,/);
+  assert.match(thankyouSource, /checkPaymentStatus\(merchantOrderId\)[\s\S]*result\.state !== "COMPLETED"[\s\S]*window\.location\.replace/);
+  assert.match(thankyouSource, /if \(result\.state !== "COMPLETED"\)[\s\S]*initializeAnalytics\(\{ route: THANKYOU_PATH \}\);/);
+  assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: result\.payableAmountPaise \?\? result\.amountPaise,[\s\S]*currency: result\.currency,/);
+  assert.doesNotMatch(thankyouSource, /trackPaymentFailed|trackCustom|PaymentFailed/);
+  assert.match(paymentFailedSource, /result\.state !== "FAILED"[\s\S]*window\.location\.replace/);
+  assert.doesNotMatch(paymentFailedSource, /initializeAnalytics|trackPaymentCompleted|trackPaymentFailed/);
+  assert.match(paymentStatusSource, /MAX_AUTOMATIC_CHECKS = 20/);
+  assert.match(paymentStatusSource, /If money was deducted, please don’t pay again yet/);
 });
 
 test("route entry lazy-loads page modules and keeps landing styles out of checkout", () => {
@@ -90,6 +96,8 @@ test("route entry lazy-loads page modules and keeps landing styles out of checko
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LandingPageAM2\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/CheckoutPage\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/ThankYouPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/PaymentStatusPage\.jsx"\)/);
+  assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/PaymentFailedPage\.jsx"\)/);
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LegalPage\.jsx"\)/);
   assert.doesNotMatch(mainSource, /from "\.\/pages\/LandingPage\.jsx"|from "\.\/pages\/CheckoutPage\.jsx"|from "\.\/styles\/landing\.css"/);
   assert.match(landingSource, /import "\.\.\/styles\/landing\.css";/);
@@ -135,23 +143,28 @@ test("checkout add-ons use the approved shared config", () => {
   assert.doesNotMatch(checkoutConfigSource, /style-consultation|instagram-makeover|20-Minute Style Review Call \+ Flirting Guide/);
 });
 
-test("thank-you page uses the same status and next-step treatment", () => {
+test("verified thank-you page starts the assessment journey", () => {
   assert.match(thankyouSource, /className="thankyou-status-panel"/);
   assert.match(thankyouSource, /className="thankyou-next"/);
-  assert.match(thankyouSource, /Complete your assessment/);
-  assert.match(thankyouSource, /Your report arrives within 48 hours/);
-  assert.match(thankyouSource, /Keep this order ID saved/);
+  assert.match(thankyouSource, /Start my assessment/);
+  assert.match(thankyouSource, /Your next step: tap below to begin/);
+  assert.match(thankyouSource, /ArrowRight/);
+  assert.match(thankyouSource, /same name, email address, and WhatsApp number/);
+  assert.match(thankyouSource, /48 hours after we receive your completed assessment and required photos/);
+  assert.match(thankyouSource, /getAssessmentFormUrl\(\)/);
   assert.match(thankyouSource, /className="thankyou-legal"/);
   assert.match(thankyouSource, /href="\/privacy"/);
   assert.match(thankyouSource, /href="\/terms"/);
-  assert.match(thankyouSource, /\{isFailed \? \(/);
-  assert.match(thankyouSource, /href=\{CHECKOUT_PATH\}/);
-  assert.match(thankyouSource, /Retry checkout/);
-  assert.doesNotMatch(thankyouSource, /Back to landing page|LANDING_PATH/);
-  assert.match(thankyouSource, /const THANKYOU_STATUS_RETRY_DELAY_MS = 3000;/);
-  assert.match(thankyouSource, /const THANKYOU_STATUS_MAX_ATTEMPTS = 20;/);
-  assert.match(thankyouSource, /retryTimeout = window\.setTimeout\(\(\) => checkStatus\(attempt \+ 1\), THANKYOU_STATUS_RETRY_DELAY_MS\);/);
-  assert.match(thankyouSource, /window\.clearTimeout\(retryTimeout\);/);
+  assert.match(paymentFailedSource, /Oops, something didn’t go as planned/);
+  assert.match(paymentFailedSource, /verified \? "Payment not completed"/);
+  assert.match(paymentFailedSource, /1,119\+ men and rated 4\.8 stars/);
+  assert.match(paymentFailedSource, /Your style upgrade is still within reach/);
+  assert.match(paymentFailedSource, /Continue to checkout/);
+  assert.match(paymentFailedSource, /If money was deducted, please check your payment status/);
+  assert.doesNotMatch(paymentFailedSource, />Contact support</);
+  assert.match(paymentFailedSource, /markFailedPaymentRetry\(merchantOrderId\)/);
+  assert.match(paymentStatusSource, /Check payment status/);
+  assert.match(checkoutSource, /canRestoreSelection[\s\S]*saved\.selected\.filter\(\(id\) => VALID_BUMP_IDS\.has\(id\)\)/);
 });
 
 test("privacy page explicitly discloses analytics and ad attribution", () => {
@@ -189,7 +202,7 @@ test("checkout stylesheet follows the approved Ink Luxury tokens", () => {
 });
 
 test("checkout stylesheet stays compact and mobile-safe", () => {
-  assert.ok(checkoutCss.split(/\r?\n/).length <= 300);
+  assert.ok(checkoutCss.split(/\r?\n/).length <= 320);
   assert.match(checkoutCss, /\.checkout-main,[\s\S]*\.checkout-recap-item span\s*{ min-width: 0; }/);
   assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.checkout-intro h1 \{ font-size: var\(--checkout-headline-size\); \}/s);
   assert.match(checkoutCss, /@media \(max-width: 640px\)\s*{[\s\S]*\.checkout-report-body \{ grid-template-columns: 72px minmax\(0, 1fr\);/s);

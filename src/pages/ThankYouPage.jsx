@@ -1,137 +1,92 @@
 import { useEffect, useState } from "react";
-import { Check, LockKey, WarningCircle } from "@phosphor-icons/react";
-import { initializeAnalytics, trackPaymentCompleted, trackPaymentFailed } from "../lib/analytics.js";
-import { getCheckoutOrderTrackingPayload } from "../lib/checkout-tracking.js";
-import { CHECKOUT_PATH, THANKYOU_PATH } from "../routes.js";
+import { ArrowDown, ArrowRight, Check, LockKey } from "@phosphor-icons/react";
+import { initializeAnalytics, trackPaymentCompleted } from "../lib/analytics.js";
+import { checkPaymentStatus, getAssessmentFormUrl, getPaymentDestination, getPaymentStatusUrl } from "../lib/payment-return.js";
+import { THANKYOU_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
-const THANKYOU_STATUS_RETRY_DELAY_MS = 3000;
-const THANKYOU_STATUS_MAX_ATTEMPTS = 20;
-
-export function ThankYouPage({ merchantOrderId = "" }) {
-  const [status, setStatus] = useState("Checking your payment status...");
-  const [paymentResult, setPaymentResult] = useState(null);
+export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
+  const [verified, setVerified] = useState(false);
+  const [message, setMessage] = useState("Confirming your payment with PhonePe...");
+  const assessmentUrl = getAssessmentFormUrl();
 
   useEffect(() => {
-    if (!merchantOrderId) {
-      setStatus("Order ID is missing. If payment was deducted, contact support with your PhonePe transaction details.");
+    if (import.meta.env.DEV && preview === "completed") {
+      setVerified(true);
+      setMessage("Your payment is confirmed. Your StyleIQ journey starts here.");
       return undefined;
     }
-
     let cancelled = false;
-    let retryTimeout;
+    if (!merchantOrderId) {
+      setMessage("We need your order reference to confirm this payment. Please contact support if money was deducted.");
+      return () => { cancelled = true; };
+    }
 
-    const checkStatus = (attempt = 1) => {
-      fetch("/api/phonepe/status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    checkPaymentStatus(merchantOrderId)
+      .then((result) => {
+        if (cancelled) return;
+        const destination = getPaymentDestination(result.state, merchantOrderId);
+        if (result.state !== "COMPLETED") {
+          window.location.replace(destination || getPaymentStatusUrl(merchantOrderId));
+          return;
+        }
+
+        initializeAnalytics({ route: THANKYOU_PATH });
+        trackPaymentCompleted({
           merchantOrderId,
-          tracking: getCheckoutOrderTrackingPayload(merchantOrderId),
-        }),
-      })
-        .then(async (response) => {
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.message || "Payment status could not be checked.");
-          return data;
-        })
-        .then((data) => {
-          if (cancelled) return;
-          setPaymentResult(data);
-
-          if (data.state === "COMPLETED") {
-            initializeAnalytics({ route: THANKYOU_PATH });
-            trackPaymentCompleted({
-              merchantOrderId,
-              amountPaise: getVerifiedStatusAmountPaise(data),
-              currency: data.currency,
-              route: THANKYOU_PATH,
-            });
-            localStorage.removeItem("attractivemen-checkout-draft");
-            setStatus("Payment received. Your report order is confirmed.");
-          } else if (data.state === "FAILED") {
-            initializeAnalytics({ trackPageView: false, route: THANKYOU_PATH });
-            trackPaymentFailed({
-              merchantOrderId,
-              amountPaise: getVerifiedStatusAmountPaise(data),
-              currency: data.currency,
-              route: THANKYOU_PATH,
-            });
-            setStatus("Payment was not completed. You can retry checkout.");
-          } else if (attempt < THANKYOU_STATUS_MAX_ATTEMPTS) {
-            setStatus("Payment is pending. Checking again in a moment.");
-            retryTimeout = window.setTimeout(() => checkStatus(attempt + 1), THANKYOU_STATUS_RETRY_DELAY_MS);
-          } else {
-            setStatus("Payment is pending. If money was deducted, wait a moment and refresh this page.");
-          }
-        })
-        .catch((error) => {
-          if (!cancelled) setStatus(error.message);
+          amountPaise: result.payableAmountPaise ?? result.amountPaise,
+          currency: result.currency,
+          route: THANKYOU_PATH,
         });
-    };
+        try {
+          localStorage.removeItem("attractivemen-checkout-draft:v2");
+        } catch {
+          // Draft cleanup is best-effort and does not affect the confirmed order.
+        }
+        setVerified(true);
+        setMessage("Your payment is confirmed. Your StyleIQ journey starts here.");
+      })
+      .catch(() => {
+        if (!cancelled) setMessage("We couldn’t confirm your payment yet. Check its status before trying again.");
+      });
 
-    checkStatus();
-
-    return () => {
-      cancelled = true;
-      if (retryTimeout) window.clearTimeout(retryTimeout);
-    };
-  }, [merchantOrderId]);
-
-  const state = paymentResult?.state || "PENDING";
-  const isCompleted = state === "COMPLETED";
-  const isFailed = state === "FAILED";
-  const Icon = isCompleted ? Check : isFailed ? WarningCircle : LockKey;
-  const nextSteps = isCompleted
-    ? ["Complete your assessment", "Your stylist reviews your details", "Your report arrives within 48 hours"]
-    : ["Keep this order ID saved", "Retry checkout if needed", "Contact support if money was deducted"];
+    return () => { cancelled = true; };
+  }, [merchantOrderId, preview]);
 
   return (
     <main className="thankyou-page">
-      <section className={`thankyou-card ${state.toLowerCase()}`}>
+      <section className="thankyou-card completed">
+        {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made and no conversion was recorded</p> : null}
         <div className="thankyou-status-panel">
-          <div className="thankyou-icon" aria-hidden="true">
-            <Icon size={30} weight="bold" />
+          <div className="thankyou-icon" aria-hidden="true"><Check size={30} weight="bold" /></div>
+          <p className="checkout-step">StyleIQ System</p>
+          <h1>{verified ? "Payment confirmed" : "Confirming payment"}</h1>
+          <p>{message}</p>
+        </div>
+        {verified ? (
+          <div className="thankyou-next">
+            <h2>Start your assessment</h2>
+            <p>Use the same name, email address, and WhatsApp number you entered at checkout so we can match your answers to your order.</p>
+            {assessmentUrl ? (
+              <>
+                <p className="thankyou-assessment-cue"><ArrowDown size={17} weight="bold" aria-hidden="true" /><span>Your next step: tap below to begin</span></p>
+                <a className="checkout-pay thankyou-primary" href={assessmentUrl} target="_blank" rel="noreferrer"><span>Start my assessment</span><ArrowRight size={19} weight="bold" aria-hidden="true" /></a>
+              </>
+            ) : (
+              <div className="thankyou-form-unavailable" role="status">Your assessment link is being prepared. Please contact support and include your order ID.</div>
+            )}
+            <p className="thankyou-delivery-note">Your report is delivered within 48 hours after we receive your completed assessment and required photos.</p>
           </div>
-          <p className="checkout-step">AttractiveMen order</p>
-          <h1>{isCompleted ? "Payment received" : isFailed ? "Payment failed" : "Payment pending"}</h1>
-          <p>{status}</p>
-        </div>
-
-        <div className="thankyou-order">
-          <span>Merchant order ID</span>
-          <strong>{merchantOrderId || "Unavailable"}</strong>
-        </div>
-
-        <div className="thankyou-next">
-          <h2>What happens next?</h2>
-          <ul>
-            {nextSteps.map((step) => (
-              <li key={step}><Check size={17} weight="bold" aria-hidden="true" /> {step}</li>
-            ))}
-          </ul>
-        </div>
-
-        {isFailed ? (
-          <div className="thankyou-actions">
-            <a className="checkout-pay thankyou-primary" href={CHECKOUT_PATH}>
-              Retry checkout
-            </a>
-            <a className="checkout-save" href={`mailto:attractivemen08@gmail.com?subject=AttractiveMen order ${merchantOrderId}`}>
-              Contact support
-            </a>
+        ) : (
+          <div className="thankyou-next thankyou-confirming">
+            <LockKey size={19} aria-hidden="true" />
+            <span>We’ll show the next step as soon as your payment is confirmed.</span>
+            {merchantOrderId ? <a href={getPaymentStatusUrl(merchantOrderId)}>Check payment status</a> : null}
           </div>
-        ) : null}
-
-        <nav className="thankyou-legal" aria-label="Legal links">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms &amp; Conditions</a>
-        </nav>
+        )}
+        {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
+        <nav className="thankyou-legal" aria-label="Legal links"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a></nav>
       </section>
     </main>
   );
-}
-
-function getVerifiedStatusAmountPaise(data) {
-  return data?.payableAmountPaise ?? data?.amountPaise ?? data?.payableAmount ?? data?.amount ?? "";
 }
