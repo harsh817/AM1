@@ -63,8 +63,6 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
         {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
         {verified ? (
           <div className="thankyou-next">
-            <h2>Your style upgrade is still within reach</h2>
-            <p>Your StyleIQ report brings together hairstyle and beard ideas, colours, clothing fits, outfits and grooming guidance chosen around you.</p>
             <p className="thankyou-delivery-note">If money was deducted, please check your payment status before starting another payment attempt.</p>
             <div className="thankyou-actions">
               <button className="checkout-pay thankyou-primary" type="button" onClick={handleRetry}>Continue to checkout</button>
