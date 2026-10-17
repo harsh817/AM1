@@ -82,7 +82,8 @@ test("funnel pages own analytics side effects by route", () => {
   assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
   assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
   assert.match(thankyouSource, /checkPaymentStatus\(merchantOrderId\)[\s\S]*result\.state !== "COMPLETED"[\s\S]*window\.location\.replace/);
-  assert.match(thankyouSource, /if \(result\.state !== "COMPLETED"\)[\s\S]*initializeAnalytics\(\{ route: THANKYOU_PATH \}\);/);
+  assert.match(thankyouSource, /if \(!import\.meta\.env\.DEV\) initializeAnalytics\(\{ route: THANKYOU_PATH \}\);[\s\S]*checkPaymentStatus\(merchantOrderId\)/);
+  assert.doesNotMatch(thankyouSource, /result\.state !== "COMPLETED"\)[\s\S]*initializeAnalytics/);
   assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: result\.payableAmountPaise \?\? result\.amountPaise,[\s\S]*currency: result\.currency,/);
   assert.doesNotMatch(thankyouSource, /trackPaymentFailed|trackCustom|PaymentFailed/);
   assert.match(paymentFailedSource, /result\.state !== "FAILED"[\s\S]*window\.location\.replace/);

@@ -16,6 +16,8 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
       setMessage("Your payment is confirmed. Your StyleIQ journey starts here.");
       return undefined;
     }
+    if (!import.meta.env.DEV) initializeAnalytics({ route: THANKYOU_PATH });
+
     let cancelled = false;
     if (!merchantOrderId) {
       setMessage("We need your order reference to confirm this payment. Please contact support if money was deducted.");
@@ -31,7 +33,6 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
           return;
         }
 
-        initializeAnalytics({ route: THANKYOU_PATH });
         trackPaymentCompleted({
           merchantOrderId,
           amountPaise: result.payableAmountPaise ?? result.amountPaise,
