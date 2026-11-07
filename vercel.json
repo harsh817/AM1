@@ -26,7 +26,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mercury.phonepe.com https://connect.facebook.net https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https://res.cloudinary.com; connect-src 'self' https://*.phonepe.com https://connect.facebook.net https://*.facebook.com https://www.clarity.ms https://scripts.clarity.ms https://z.clarity.ms https://*.clarity.ms https://*.convex.cloud https://*.convex.site wss://*.convex.cloud wss://*.convex.site; frame-src https://*.phonepe.com; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mercury.phonepe.com https://connect.facebook.net https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https://res.cloudinary.com; connect-src 'self' https://d3-36c34dc0877246a0b32c4f4e24be6ce8.ecs.us-east-1.on.aws https://demo-1.conversionsapigateway.com https://*.phonepe.com https://connect.facebook.net https://*.facebook.com https://www.clarity.ms https://scripts.clarity.ms https://z.clarity.ms https://*.clarity.ms https://*.convex.cloud https://*.convex.site wss://*.convex.cloud wss://*.convex.site; frame-src https://*.phonepe.com https://www.facebook.com; frame-ancestors 'none'"
         }
       ]
     },
