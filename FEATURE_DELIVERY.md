@@ -1,5 +1,20 @@
 # Feature Delivery
 
+## Complexion persona release — 2026-11-07
+
+Separate page: `/style-for-your-complexion`. AM and AM2 keep their existing designs; ads continue to use `/a-m`.
+
+Routing matches the standalone word `dark`, case-insensitively, in decoded `utm_medium` only. Verified in Meta Ads Manager: active Dark Skin ad `Sep_PA_H2_dark_outside_CTA_M` points to `/a-m` and uses `utm_medium={{adset.name}}`. Its sibling ads and Dark avoids white V2 are visible in the campaign. Do not match `utm_content`: Belly creatives can retain old dark filenames. Meta name macros use the first published name; renamed ad sets need review before relying on their current display names.
+
+Persona redirect precedes A/B assignment and preserves campaign parameters, click identifiers and fragments. `utm_term=COMPLEXION`, variant `COMPLEXION`, blank experiment ID, and direct classification keep this audience out of the randomized comparison. Direct here means non-randomized, not necessarily organic. Use the Complexion persona page filter in Overview, Orders, Campaigns and Funnel. Checkout carries tab-local context and orders snapshot attribution at initiation. Payment amounts and state rules are unchanged.
+
+Switch: `COMPLEXION_ROUTING_ENABLED=true` enables matching redirects; default is off. Set false and redeploy to roll back redirects, keeping the direct page and historical orders. Configuration failure falls back to existing control behavior.
+
+Verification: 127 tests passed; persona precedence, disabled routing, Belly exclusion, checkout/order attribution, click identifiers, invalid randomized persona rejection and retry checked. Build/bundle checks passed. Overall coverage: 94.57% statements, 81.20% branches, 95.28% functions. Runtime dependency audit: zero vulnerabilities. Additive Convex production changes deployed to grand-cod-27 after type checks; no indexes/data deleted. Standalone regenerated for route/composition changes. Local 390px and 1440px checks passed; recap scroll and checkout preserve UTMs. Referenced GIFs converted to lossless animated WebP; original working assets remain local.
+
+Frontend deployment and production smoke checks pending. No real payment used. Make payload fields remain stable; external mappings with AM/AM2-only filters may need extension. Existing dashboard aggregation limits are unchanged.
+
+
 ## AM2 Promoted Control and Dark Variant (2026-09-26)
 
 - Outcome: The current AM2 composition is shared at `/a-m` as the promoted light control; `/AM2` uses the same content and functionality with a dark theme.

@@ -383,9 +383,10 @@ function FilterBar({ filters, setFilters }) {
             }))
           }
         >
-          <option value="">AM and AM2</option>
+          <option value="">All pages</option>
           <option value="AM">AM</option>
           <option value="AM2">AM2</option>
+          <option value="COMPLEXION">Complexion persona</option>
         </select>
       </label>
       <label>

@@ -102,7 +102,7 @@ test("route entry lazy-loads page modules and keeps landing styles out of checko
   assert.match(mainSource, /lazy\(\(\) => import\("\.\/pages\/LegalPage\.jsx"\)/);
   assert.doesNotMatch(mainSource, /from "\.\/pages\/LandingPage\.jsx"|from "\.\/pages\/CheckoutPage\.jsx"|from "\.\/styles\/landing\.css"/);
   assert.match(landingSource, /import "\.\.\/styles\/landing\.css";/);
-  assert.match(landingSource, /data-page-variant=\{variant\}/);
+  assert.match(landingSource, /data-page-variant=\{pageIdentity\}/);
   assert.match(landingSource, /className=\{`am2-site\$\{isDarkVariant \? " am2-theme-dark" : ""\}`\}/);
   assert.match(landingSource, /if \(preview \|\| import\.meta\.env\?\.DEV\) return;/);
   assert.match(checkoutSource, /import "\.\.\/styles\/checkout\.css";/);

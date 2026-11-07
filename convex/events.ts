@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 const experimentId = v.string();
-const variant = v.union(v.literal("AM"), v.literal("AM2"));
+const variant = v.union(v.literal("AM"), v.literal("AM2"), v.literal("COMPLEXION"));
 const entryType = v.union(v.literal("randomized"), v.literal("direct"), v.literal("test"));
 const attribution = v.object({
   experimentId,

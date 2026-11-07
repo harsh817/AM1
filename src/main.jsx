@@ -20,6 +20,10 @@ function App({ route }) {
   if (route.page === "pending") return null;
   const page = route.page === "checkout" ? (
     <CheckoutPage />
+  ) : route.page === "complexion" ? (
+    <LandingPageAM2 variant="AM2" persona="complexion" />
+  ) : route.page === "complexion-preview" ? (
+    <LandingPageAM2 variant="AM2" preview persona="complexion" />
   ) : route.page === "landing" || route.page === "landing-am2" ? (
     <LandingPageAM2 variant={route.variant || (route.page === "landing-am2" ? "AM2" : "AM")} preview={route.preview} />
   ) : route.page === "thankyou" ? (
@@ -42,7 +46,9 @@ function App({ route }) {
 }
 
 resolveLandingRouteAsync(window).then((landingRoute) => {
-  const route = landingRoute || getPageRoute(window.location.pathname, window.location.search);
+  const route = import.meta.env.DEV && window.location.pathname === "/preview/deeper-complexion"
+    ? { page: "complexion-preview" }
+    : landingRoute || getPageRoute(window.location.pathname, window.location.search);
   createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <App route={route} />

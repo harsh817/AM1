@@ -79,6 +79,33 @@ html:has(.am2-site.am2-theme-dark) {
   color: var(--palette-accent);
 }
 
+.am2-theme-dark .am2-styleiq-hero .complexion-hero-message {
+  margin: 12px auto 0;
+  color: var(--palette-soft-linen);
+  font-size: clamp(1rem, 3.8vw, var(--hero-eyebrow-size));
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.am2-theme-dark .am2-styleiq-hero .complexion-hero-message strong {
+  color: var(--am2-dark-highlight);
+}
+
+.am2-theme-dark .am2-styleiq-hero .complexion-hero-message strong em,
+.am2-theme-dark .am2-styleiq-hero h1 .hero-title-accent em {
+  color: inherit;
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.am2-theme-dark .am2-styleiq-hero .complexion-hero-underline {
+  font-style: italic;
+  text-decoration: underline;
+  text-decoration-color: var(--am2-dark-highlight);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
+}
+
 .am2-styleiq-hero h1 em {
   font-style: italic;
 }

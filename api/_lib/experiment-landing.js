@@ -7,17 +7,22 @@ const MAX_REQUESTS_PER_WINDOW = 60;
 const recentRequests = new Map();
 const requestCounts = new Map();
 
-export async function recordExperimentLanding({ payload = {}, req, forwardWebhook = forwardMakeWebhookPayload } = {}) {
+export async function recordExperimentLanding({ payload = {}, req, forwardWebhook = forwardMakeWebhookPayload, recordLanding = recordConvexLanding } = {}) {
   const visitorId = clean(payload.visitor_id);
   const variant = clean(payload.page_variant);
   const entryType = clean(payload.entry_type);
-  if (!visitorId || !["AM", "AM2"].includes(variant) || !["randomized", "direct", "test"].includes(entryType)) {
+  if (!visitorId || !["AM", "AM2", "COMPLEXION"].includes(variant) || !["randomized", "direct", "test"].includes(entryType)) {
     const error = new Error("Invalid experiment landing payload.");
     error.statusCode = 400;
     throw error;
   }
 
-  const experimentId = clean(payload.experiment_id);
+  const experimentId = variant === "COMPLEXION" ? "" : clean(payload.experiment_id);
+  if (variant === "COMPLEXION" && entryType === "randomized") {
+    const error = new Error("Persona traffic is not randomized experiment traffic.");
+    error.statusCode = 400;
+    throw error;
+  }
   const dedupeKey = `${experimentId || "direct"}:${visitorId}:${variant}`;
   const now = Date.now();
   const clientKey = getHeader(req, "x-forwarded-for") || "unknown";
@@ -37,7 +42,6 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
   if (recentRequests.has(requestKey) && now - recentRequests.get(requestKey) < 60 * 60 * 1000) {
     return { recorded: false, duplicate: true };
   }
-  recentRequests.set(requestKey, now);
   pruneRecentRequests(now);
 
   const marketing = payload.marketing || {};
@@ -58,9 +62,7 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
     utm_term: clean(marketing.term),
     utm_id: clean(marketing.id),
   };
-  await forwardWebhook(event);
-  try {
-    await recordConvexLanding({
+  const result = await recordLanding({
       dedupeKey,
       occurredAt: now,
       attribution: {
@@ -80,9 +82,11 @@ export async function recordExperimentLanding({ payload = {}, req, forwardWebhoo
         fbclid: clean(marketing.fbclid),
       },
     });
-  } catch {
-    // Reporting outages must never block the landing page.
+  if (result?.configured === false) {
+    throw new Error("Landing reporting is not configured.");
   }
+  recentRequests.set(requestKey, now);
+  await forwardWebhook(event);
 
   return { recorded: true };
 }

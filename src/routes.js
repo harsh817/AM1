@@ -10,6 +10,7 @@ export const DASHBOARD_PATH = "/dashboard";
 export function getPageRoute(pathname, search = "") {
   const query = new URLSearchParams(search);
   const path = normalizePath(pathname);
+  if (path === "/style-for-your-complexion") return { page: "complexion" };
 
   if (path === LANDING_PATH) {
     return { page: "landing", variant: "AM" };

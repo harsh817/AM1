@@ -1,3 +1,7 @@
+import { isComplexionAdSet, buildComplexionDestination } from "./persona-routing.js";
+const PERSONA_PATH = "/style-for-your-complexion";
+const PAGE_CONTEXT_KEY = "attractivemen-page-context:v1";
+const landingRequests = new Set();
 export const EXPERIMENT_ID = "am-vs-am2-v3";
 export const ORIGINAL_VARIANT = "AM";
 export const AM2_VARIANT = "AM2";
@@ -8,7 +12,8 @@ export const EXPERIMENT_ENABLED = false;
 export const ASSIGNMENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 
 export async function resolveLandingRouteAsync(windowRef = globalThis.window) {
-  if (!windowRef?.location || !["/a-m", "/AM2", "/am2"].includes(normalizePath(windowRef.location.pathname))) return null;
+  if (!windowRef?.location || !["/a-m", "/AM2", "/am2", PERSONA_PATH].includes(normalizePath(windowRef.location.pathname))) return null;
+  if (normalizePath(windowRef.location.pathname) === PERSONA_PATH) return resolveLandingRoute(windowRef);
   if (import.meta.env?.DEV) {
     const previewVariant = new URL(windowRef.location.href).searchParams.get("previewVariant");
     if (normalizePath(windowRef.location.pathname) === "/a-m" && [ORIGINAL_VARIANT, AM2_VARIANT].includes(previewVariant)) {
@@ -34,6 +39,18 @@ export async function resolveLandingRouteAsync(windowRef = globalThis.window) {
 export function resolveLandingRoute(windowRef = globalThis.window, config = null) {
   if (!windowRef?.location) return null;
   const path = normalizePath(windowRef.location.pathname);
+  if (path === "/a-m" && config?.complexionRoutingEnabled === true && isComplexionAdSet(windowRef.location.search)) {
+    windowRef.location.replace(buildComplexionDestination(windowRef.location.href));
+    return { page: "pending" };
+  }
+  if (path === PERSONA_PATH) {
+    replaceLandingQuery(windowRef, "COMPLEXION");
+    getExperimentContext(windowRef);
+    return { page: "complexion" };
+  }
+  if (path === "/a-m" || path.toLowerCase() === "/am2") {
+    writeStorageValue(getWindowStorage(windowRef, "sessionStorage"), PAGE_CONTEXT_KEY, "");
+  }
   if (path.toLowerCase() === "/am2" && !new URL(windowRef.location.href).searchParams.get("utm_term")) {
     replaceLandingQuery(windowRef, AM2_VARIANT);
     return null;
@@ -68,6 +85,23 @@ export function getExperimentContext(context = getBrowserContext()) {
   const assignment = readAssignment(context);
   const location = context.location || {};
   const pathname = normalizePath(location.pathname);
+  const tabStorage = getContextStorage(context, "sessionStorage");
+  const isPersona = pathname === PERSONA_PATH;
+  const isLanding = isPersona || pathname === "/a-m" || pathname.toLowerCase() === "/am2";
+  if (!isLanding) {
+    try {
+      const saved = JSON.parse(readStorageValue(tabStorage, PAGE_CONTEXT_KEY) || "null");
+      if (saved?.page_variant === "COMPLEXION") return saved;
+    } catch { /* Invalid tab context falls back to existing attribution. */ }
+    if (new URLSearchParams(location.search || "").get("utm_term") === "COMPLEXION") {
+      return { experiment_id: "", visitor_id: assignment?.visitorId || readOrCreateVisitorId(context), page_variant: "COMPLEXION", entry_type: "direct" };
+    }
+  }
+  if (isPersona) {
+    const persona = { experiment_id: "", visitor_id: assignment?.visitorId || readOrCreateVisitorId(context), page_variant: "COMPLEXION", entry_type: "direct" };
+    writeStorageValue(tabStorage, PAGE_CONTEXT_KEY, JSON.stringify(persona));
+    return persona;
+  }
   const variant = pathname.toLowerCase() === "/am2" ? AM2_VARIANT : pathname === "/a-m" ? ORIGINAL_VARIANT : "";
   const storedVariant = assignment?.variant || "";
   const randomizedLanding = Boolean(assignment?.experimentId === EXPERIMENT_ID && storedVariant === variant);
@@ -101,8 +135,8 @@ export function sendExperimentLanding(windowRef = globalThis.window) {
   const dedupeKey = `${context.experiment_id || "direct"}:${context.visitor_id}:${context.page_variant}`;
   const sessionStorage = getWindowStorage(windowRef, "sessionStorage");
 
-  if (!context.page_variant || readLandingMarker(sessionStorage) === dedupeKey) return false;
-  writeLandingMarker(sessionStorage, dedupeKey);
+  if (!context.page_variant || readLandingMarker(sessionStorage) === dedupeKey || landingRequests.has(dedupeKey)) return false;
+  landingRequests.add(dedupeKey);
 
   void fetch("/api/experiment/landing", {
     method: "POST",
@@ -113,7 +147,9 @@ export function sendExperimentLanding(windowRef = globalThis.window) {
       landing_path: windowRef.location?.pathname || "",
     }),
     keepalive: true,
-  }).catch(() => undefined);
+  }).then((response) => {
+    if (response.ok) writeLandingMarker(sessionStorage, dedupeKey);
+  }).catch(() => undefined).finally(() => landingRequests.delete(dedupeKey));
 
   return true;
 }

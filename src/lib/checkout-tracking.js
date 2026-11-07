@@ -125,9 +125,10 @@ function mergeFirstTouchMarketing(current = {}, search, referrer) {
     fbclid: checkoutMarketing.fbclid || referrerMarketing.fbclid,
   };
 
-  return Object.fromEntries(
-    Object.entries(normalizeMarketing(current)).map(([key, value]) => [key, value || incoming[key] || ""]),
-  );
+  const normalized = normalizeMarketing(current);
+  return normalizeMarketing(Object.fromEntries(
+    Object.keys(incoming).map((key) => [key, normalized[key] || incoming[key] || ""]),
+  ));
 }
 
 function readReferrerMarketing(referrer) {
@@ -305,6 +306,7 @@ function getBrowserContext() {
     location: win?.location,
     document: globalThis.document,
     storage: win?.localStorage,
+    sessionStorage: win?.sessionStorage,
     navigator: globalThis.navigator,
     screen: win?.screen,
     window: win,

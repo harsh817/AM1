@@ -61,10 +61,10 @@ export function buildConvexAttribution(tracking = {}) {
   const experiment = tracking.experiment || {};
   if (!experiment.visitor_id || !experiment.page_variant) return undefined;
   return {
-    experimentId: clean(experiment.experiment_id),
+    experimentId: experiment.page_variant === "COMPLEXION" ? "" : clean(experiment.experiment_id),
     visitorId: clean(experiment.visitor_id),
     variant: experiment.page_variant,
-    entryType: experiment.entry_type || "direct",
+    entryType: experiment.page_variant === "COMPLEXION" && experiment.entry_type !== "test" ? "direct" : experiment.entry_type || "direct",
     utmSource: clean(marketing.source),
     utmMedium: clean(marketing.medium),
     utmCampaign: clean(marketing.campaign),

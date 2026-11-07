@@ -195,6 +195,38 @@ function createWindow(href) {
   return windowRef;
 }
 
+test("persona routing precedes an existing AM2 assignment and preserves campaign data", () => {
+  const win = createWindow("https://thriveonp.com/a-m?utm_medium=Dark+Skin&fbclid=abc#purchase");
+  win.sessionStorage.setItem("attractivemen-ab-v3", JSON.stringify({ experimentId: EXPERIMENT_ID, variant: "AM2", visitorId: "known" }));
+  assert.equal(resolveLandingRoute(win, { enabled: true, complexionRoutingEnabled: true }).page, "pending");
+  assert.equal(win.replaced, "/style-for-your-complexion?utm_medium=Dark+Skin&fbclid=abc#purchase");
+});
+
+test("persona context survives checkout without entering the A/B experiment", () => {
+  const win = createWindow("https://thriveonp.com/style-for-your-complexion?utm_term=AM2");
+  win.sessionStorage.setItem("attractivemen-ab-v3", JSON.stringify({ experimentId: EXPERIMENT_ID, variant: "AM2", visitorId: "known" }));
+  resolveLandingRoute(win);
+  assert.equal(new URL(win.location.href).searchParams.get("utm_term"), "COMPLEXION");
+  const persona = getExperimentContext(win);
+  assert.equal(persona.page_variant, "COMPLEXION");
+  assert.equal(persona.experiment_id, "");
+  assert.equal(persona.entry_type, "direct");
+  win.location.pathname = "/a-m-checkout";
+  assert.deepEqual(getExperimentContext(win), persona);
+  win.location.pathname = "/a-m";
+  resolveLandingRoute(win, { enabled: false });
+  assert.equal(getExperimentContext(win).page_variant, "AM");
+});
+
+test("disabled persona routing and Belly ad sets preserve existing routing", () => {
+  for (const search of ["?utm_medium=Dark+Skin", "?utm_medium=Belly&utm_content=dark_outside"]) {
+    const win = createWindow(`https://thriveonp.com/a-m${search}`);
+    const config = { enabled: false, complexionRoutingEnabled: !search.includes("Dark") };
+    assert.equal(resolveLandingRoute(win, config).page, "landing");
+    assert.equal(win.replaced, undefined);
+  }
+});
+
 function createStorage() {
   const values = new Map();
   return {

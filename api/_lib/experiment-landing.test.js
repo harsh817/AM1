@@ -15,6 +15,7 @@ test("records a validated landing event with an idempotency key", async () => {
       marketing: { term: "AM2" },
     },
     forwardWebhook: async (payload) => payloads.push(payload),
+    recordLanding: async () => ({ recorded: true }),
   });
 
   assert.deepEqual(result, { recorded: true });
@@ -45,6 +46,7 @@ test("accepts marked test traffic without treating it as randomized", async () =
       entry_type: "test",
     },
     forwardWebhook: async (nextPayload) => { payload = nextPayload; },
+    recordLanding: async () => ({ recorded: true }),
   });
 
   assert.deepEqual(result, { recorded: true });

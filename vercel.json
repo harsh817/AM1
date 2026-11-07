@@ -3,6 +3,7 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/style-for-your-complexion", "destination": "/" },
     { "source": "/a-m", "destination": "/" },
     { "source": "/AM2", "destination": "/" },
     { "source": "/am2", "destination": "/" },
@@ -17,6 +18,7 @@
     { "source": "/dashboard/(.*)", "destination": "/" }
   ],
   "headers": [
+    { "source": "/style-for-your-complexion", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     {
       "source": "/(.*)",
       "headers": [

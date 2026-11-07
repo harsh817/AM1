@@ -133,6 +133,17 @@ const styleIqAnalyses = [
   { title: "Lifestyle Analysis", image: "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/analysis/lifestyle-analysis.webp", alt: "Lifestyle and real-world styling analysis" },
 ];
 
+const complexionAnalysisImages = {
+  "Face Shape Analysis": "/assets/persona/face-shape-analysis-scan.webp",
+  "Jawline Analysis": "/assets/persona/jawline-analysis-scan.webp",
+  "Facial Hair Analysis": "/assets/persona/facial-hair-growth-analysis.webp",
+  "Skin Undertone Analysis": "/assets/persona/undertone-analysis-scan.webp",
+  "Body Type Analysis": "/assets/persona/body-type-analysis-scan.webp",
+  "Clothing Fit Analysis": "/assets/persona/clothing-fit-analysis-scan.webp",
+  "Accessory Analysis": "/assets/persona/accessory-analysis-scan.webp",
+  "Lifestyle Analysis": "/assets/persona/lifestyle-analysis-scan.webp",
+};
+
 const deliverables = [
   {
     number: "01",
@@ -257,8 +268,9 @@ const recapItems = [
   "Lifetime Access",
 ];
 
-export function LandingPageAM2({ variant = "AM", preview = false }) {
+export function LandingPageAM2({ variant = "AM", preview = false, persona = "" }) {
   const isDarkVariant = variant === "AM2";
+  const pageIdentity = persona === "complexion" ? "COMPLEXION" : variant;
   const route = globalThis.window?.location?.pathname || (isDarkVariant ? LANDING_AM2_PATH : LANDING_PATH);
 
   useEffect(() => {
@@ -269,16 +281,16 @@ export function LandingPageAM2({ variant = "AM", preview = false }) {
   }, [preview, route]);
 
   return (
-    <div className={`am2-site${isDarkVariant ? " am2-theme-dark" : ""}`} data-page-variant={variant}>
+    <div className={`am2-site${isDarkVariant ? " am2-theme-dark" : ""}`} data-page-variant={pageIdentity}>
       <main className="am2-page">
-        <AM2Hero isDarkVariant={isDarkVariant} />
+        <AM2Hero isDarkVariant={isDarkVariant} persona={persona} />
         <TrustSection />
-        <ReportHighlights />
+        <ReportHighlights persona={persona} />
         <PersonaSection />
         <ButWeGetIt />
-        <StyleIQIntro />
-        <EverythingInside />
-        <Bonuses />
+        <StyleIQIntro persona={persona} />
+        <EverythingInside persona={persona} />
+        <Bonuses persona={persona} />
         <Comparison />
         <HowItWorks />
         <Testimonials />
@@ -292,25 +304,39 @@ export function LandingPageAM2({ variant = "AM", preview = false }) {
   );
 }
 
-function AM2Hero({ isDarkVariant }) {
+function AM2Hero({ isDarkVariant, persona }) {
   return (
     <section className="hero styleiq-hero am2-styleiq-hero" id="top">
       <div className="shell styleiq-page-shell">
         <div className="styleiq-hero-shell">
           <div className="hero-copy">
-            <p className="hero-eyebrow">Dear Men</p>
-            {isDarkVariant ? (
+            {persona === "complexion" ? (
+              <>
+                <h1>
+                  Do You Blame Your <strong className="hero-title-accent"><em>Dark Complexion</em></strong> For Your <em className="hero-title-today">Average Looks</em>?
+                </h1>
+                <p className="complexion-hero-message">
+                  Start Dressing Like A <strong><em>True Stylish Gentleman</em></strong> Based On Your <strong><em>Colour Profile</em></strong> <em className="complexion-hero-underline">Starting Today</em>, Without Copying Others On The Internet Or Paying <strong><em>Celebrity Prices</em></strong>.
+                </p>
+              </>
+            ) : isDarkVariant ? (
+              <>
+              <p className="hero-eyebrow">Dear Men</p>
               <h1 aria-label="DO YOU WANT TO DRESS LIKE A TRUE STYLISH GENTLEMAN STARTING TODAY WITHOUT COPYING OTHERS ON INTERNET OR PAYING CELEBRITY PRICES?">
                 <span className="hero-title-line">DO YOU WANT TO DRESS LIKE A</span>
                 <span className="hero-title-line"><strong className="hero-title-accent">TRUE STYLISH</strong> <em>GENTLEMAN</em></span>
                 <span className="hero-title-line"><em className="hero-title-today">STARTING TODAY</em> WITHOUT COPYING OTHERS ON INTERNET OR PAYING <strong className="hero-title-accent">CELEBRITY PRICES?</strong></span>
               </h1>
+              </>
             ) : (
+              <>
+              <p className="hero-eyebrow">Dear Men</p>
               <h1 aria-label="Want To Look More Stylish And Handsome By Knowing Exactly What Suits You?">
                 <span className="hero-title-line">Want To Look More Stylish</span>
                 <span className="hero-title-line">And Handsome By Knowing</span>
                 <span className="hero-title-line">Exactly What Suits You?</span>
               </h1>
+              </>
             )}
             <p className="hero-lead">
               <span className="hero-lead-copy">
@@ -320,8 +346,8 @@ function AM2Hero({ isDarkVariant }) {
             <div className="am2-hero-transformation-wrap">
               <figure className="am2-hero-transformation">
                 <img
-                  src="https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/hero/before-after-style-report-annotated-v2.webp"
-                  alt="Annotated before and after personal style comparison showing one man with mismatched styling on the left and personalised styling on the right"
+                  src={persona === "complexion" ? "/assets/persona/deeper-complexion-before-after.webp" : "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/hero/before-after-style-report-annotated-v2.webp"}
+                  alt={persona === "complexion" ? "Illustrative before and after style comparison showing an Indian man with a deeper complexion, with annotations for hair, beard, fit, and footwear" : "Annotated before and after personal style comparison showing one man with mismatched styling on the left and personalised styling on the right"}
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
@@ -340,7 +366,7 @@ function AM2Hero({ isDarkVariant }) {
   );
 }
 
-function ReportHighlights() {
+function ReportHighlights({ persona }) {
   return (
     <section className="section report-contents section-editorial-preview report-contents-editorial am2-report-preview" id="preview">
       <div className="shell">
@@ -363,7 +389,19 @@ function ReportHighlights() {
                 </div>
                 <div className="report-content-subsection-body">
                   <figure>
-                    <img src={card.image} alt={card.title} loading="lazy" decoding="async" width={card.width} height={card.height} />
+                    {persona === "complexion" && card.number === "01" ? (
+                      <img src="/assets/persona/hairstyle-analysis.webp" alt="Illustration alternating between face shape analysis and a recommended hairstyle" loading="lazy" decoding="async" width="720" height="720" />
+                    ) : persona === "complexion" && card.number === "02" ? (
+                      <img src="/assets/persona/colour-analysis.webp" alt="Illustration alternating colour profile analysis with white, olive and burgundy shirt ideas" loading="lazy" decoding="async" width="720" height="720" />
+                    ) : persona === "complexion" && card.number === "03" ? (
+                      <img src="/assets/persona/fit-analysis.webp" alt="Illustration alternating fit analysis and recommendations for shoulders, midsection and trouser length" loading="lazy" decoding="async" width="720" height="720" />
+                    ) : persona === "complexion" && card.number === "04" ? (
+                      <img src="/assets/persona/twenty-outfits.webp" alt="Illustration of 20 outfits for office, events, dates, casual outings and the gym" loading="lazy" decoding="async" width="720" height="720" />
+                    ) : persona === "complexion" && card.number === "05" ? (
+                      <img src="/assets/persona/grooming-accessories.webp" alt="Illustration of beard, glasses, watch and outfit analysis followed by styling suggestions" loading="lazy" decoding="async" width="720" height="720" />
+                    ) : (
+                      <img src={card.image} alt={card.title} loading="lazy" decoding="async" width={card.width} height={card.height} />
+                    )}
                   </figure>
                   <p>{renderHighlightedCopy(card.copy, card.highlight)}</p>
                 </div>
@@ -464,7 +502,7 @@ function ButWeGetIt() {
   );
 }
 
-function StyleIQIntro() {
+function StyleIQIntro({ persona }) {
   return (
     <section className="section report-contents section-editorial-preview report-contents-editorial am2-styleiq-intro">
       <div className="shell">
@@ -483,7 +521,7 @@ function StyleIQIntro() {
             {styleIqAnalyses.map((analysis) => (
               <article className="am2-styleiq-analysis-card" key={analysis.title}>
                 <figure>
-                  <img src={analysis.image} alt={analysis.alt} loading="lazy" decoding="async" />
+                  <img src={persona === "complexion" ? complexionAnalysisImages[analysis.title] : analysis.image} alt={analysis.alt} loading="lazy" decoding="async" />
                 </figure>
                 <h3>{analysis.title}</h3>
               </article>
@@ -498,7 +536,20 @@ function StyleIQIntro() {
   );
 }
 
-function EverythingInside() {
+const complexionDeliverableImages = {
+  "01": { src: "/assets/persona/hairstyle-ideas.webp", alt: "Four hairstyle ideas shown on the same man" },
+  "02": { src: "/assets/persona/beard-shaving-closeup.webp", alt: "Clean-shaven, stubble, short beard and full beard styles on the same man" },
+  "03": { src: "/assets/persona/colour-ideas.webp", alt: "A man wearing cream, emerald, rust and burgundy shirts" },
+  "04": { src: "/assets/persona/clothing-fit-ideas.webp", alt: "Examples of shirt, jacket, trouser and blazer fits" },
+  "05": { src: "/assets/persona/shoe-guide-variety.webp", alt: "Footwear ideas for work, weekends, dates and smart casual occasions" },
+  "06": { src: "/assets/persona/perfume-spray.webp", alt: "Close-up of a man applying fragrance with a spray bottle" },
+  "07": { src: "/assets/persona/glasses-shapes.webp", alt: "A man wearing different glasses and sunglasses frame shapes" },
+  "08": { src: "/assets/persona/watch-ideas.webp", alt: "Four watch styles paired with shirt and jacket cuffs" },
+  "09": { src: "/assets/persona/twenty-outfits.webp", alt: "Twenty complete outfit ideas for different occasions" },
+  "10": { src: "/assets/persona/smart-shopping.webp", alt: "A man using style guidance to compare, try and choose a shirt" },
+};
+
+function EverythingInside({ persona }) {
   return (
     <section className="section report-contents section-editorial-preview report-contents-editorial" id="inside">
       <div className="shell">
@@ -514,7 +565,11 @@ function EverythingInside() {
                 </div>
                 <div className="am2-deliverable-body">
                   <figure className="am2-deliverable-visual">
-                    <img src={deliverable.image} alt={deliverable.alt} loading="lazy" decoding="async" />
+                    <img
+                      src={(persona === "complexion" && complexionDeliverableImages[deliverable.number]?.src) || deliverable.image}
+                      alt={(persona === "complexion" && complexionDeliverableImages[deliverable.number]?.alt) || deliverable.alt}
+                      loading="lazy" decoding="async"
+                    />
                   </figure>
                   <p>{renderPersonaCopy(deliverable.copy, deliverable.highlights)}</p>
                 </div>
@@ -527,7 +582,7 @@ function EverythingInside() {
   );
 }
 
-function Bonuses() {
+function Bonuses({ persona }) {
   return (
     <section className="section section-editorial-preview am2-bonuses">
       <div className="shell">
@@ -543,7 +598,7 @@ function Bonuses() {
                 </div>
                 <div className="am2-bonus-body">
                   <figure className="am2-bonus-visual">
-                    <img src={bonus.image} alt={bonus.title} loading="lazy" decoding="async" width={bonus.width} height={bonus.height} />
+                    <img src={persona === "complexion" && bonus.title === "90-Day Style Upgrade Plan" ? "/assets/persona/ninety-day-plan.webp" : persona === "complexion" && bonus.title === "Men's Skincare, Haircare and Fragrance Guide" ? "/assets/persona/grooming-routine.webp" : bonus.image} alt={bonus.title} loading="lazy" decoding="async" width={bonus.width} height={bonus.height} />
                   </figure>
                   <p>{renderPersonaCopy(bonus.copy, bonus.highlights)}</p>
                 </div>
