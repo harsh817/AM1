@@ -134,14 +134,14 @@ const styleIqAnalyses = [
 ];
 
 const complexionAnalysisImages = {
-  "Face Shape Analysis": "/assets/persona/face-shape-analysis-scan.webp",
-  "Jawline Analysis": "/assets/persona/jawline-analysis-scan.webp",
-  "Facial Hair Analysis": "/assets/persona/facial-hair-growth-analysis.webp",
-  "Skin Undertone Analysis": "/assets/persona/undertone-analysis-scan.webp",
-  "Body Type Analysis": "/assets/persona/body-type-analysis-scan.webp",
-  "Clothing Fit Analysis": "/assets/persona/clothing-fit-analysis-scan.webp",
-  "Accessory Analysis": "/assets/persona/accessory-analysis-scan.webp",
-  "Lifestyle Analysis": "/assets/persona/lifestyle-analysis-scan.webp",
+  "Face Shape Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056190/AM%20-%20Assets/persona/face-shape-analysis-scan.webp",
+  "Jawline Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056211/AM%20-%20Assets/persona/jawline-analysis-scan.webp",
+  "Facial Hair Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056194/AM%20-%20Assets/persona/facial-hair-growth-analysis.webp",
+  "Skin Undertone Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056229/AM%20-%20Assets/persona/undertone-analysis-scan.webp",
+  "Body Type Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056178/AM%20-%20Assets/persona/body-type-analysis-scan.webp",
+  "Clothing Fit Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056180/AM%20-%20Assets/persona/clothing-fit-analysis-scan.webp",
+  "Accessory Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056173/AM%20-%20Assets/persona/accessory-analysis-scan.webp",
+  "Lifestyle Analysis": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056214/AM%20-%20Assets/persona/lifestyle-analysis-scan.webp",
 };
 
 const deliverables = [
@@ -346,7 +346,7 @@ function AM2Hero({ isDarkVariant, persona }) {
             <div className="am2-hero-transformation-wrap">
               <figure className="am2-hero-transformation">
                 <img
-                  src={persona === "complexion" ? "/assets/persona/deeper-complexion-before-after.webp" : "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/hero/before-after-style-report-annotated-v2.webp"}
+                  src={persona === "complexion" ? "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056188/AM%20-%20Assets/persona/deeper-complexion-before-after.webp" : "https://res.cloudinary.com/dm49wi6j4/image/upload/f_auto,q_auto,c_limit,w_1200/AM%20-%20Assets/hero/before-after-style-report-annotated-v2.webp"}
                   alt={persona === "complexion" ? "Illustrative before and after style comparison showing an Indian man with a deeper complexion, with annotations for hair, beard, fit, and footwear" : "Annotated before and after personal style comparison showing one man with mismatched styling on the left and personalised styling on the right"}
                   loading="eager"
                   fetchPriority="high"
@@ -390,15 +390,15 @@ function ReportHighlights({ persona }) {
                 <div className="report-content-subsection-body">
                   <figure>
                     {persona === "complexion" && card.number === "01" ? (
-                      <img src="/assets/persona/hairstyle-analysis.webp" alt="Illustration alternating between face shape analysis and a recommended hairstyle" loading="lazy" decoding="async" width="720" height="720" />
+                      <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056207/AM%20-%20Assets/persona/hairstyle-analysis.webp" alt="Illustration alternating between face shape analysis and a recommended hairstyle" loading="lazy" decoding="async" width="720" height="720" />
                     ) : persona === "complexion" && card.number === "02" ? (
-                      <img src="/assets/persona/colour-analysis.webp" alt="Illustration alternating colour profile analysis with white, olive and burgundy shirt ideas" loading="lazy" decoding="async" width="720" height="720" />
+                      <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056184/AM%20-%20Assets/persona/colour-analysis.webp" alt="Illustration alternating colour profile analysis with white, olive and burgundy shirt ideas" loading="lazy" decoding="async" width="720" height="720" />
                     ) : persona === "complexion" && card.number === "03" ? (
-                      <img src="/assets/persona/fit-analysis.webp" alt="Illustration alternating fit analysis and recommendations for shoulders, midsection and trouser length" loading="lazy" decoding="async" width="720" height="720" />
+                      <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056197/AM%20-%20Assets/persona/fit-analysis.webp" alt="Illustration alternating fit analysis and recommendations for shoulders, midsection and trouser length" loading="lazy" decoding="async" width="720" height="720" />
                     ) : persona === "complexion" && card.number === "04" ? (
-                      <img src="/assets/persona/twenty-outfits.webp" alt="Illustration of 20 outfits for office, events, dates, casual outings and the gym" loading="lazy" decoding="async" width="720" height="720" />
+                      <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056226/AM%20-%20Assets/persona/twenty-outfits.webp" alt="Illustration of 20 outfits for office, events, dates, casual outings and the gym" loading="lazy" decoding="async" width="720" height="720" />
                     ) : persona === "complexion" && card.number === "05" ? (
-                      <img src="/assets/persona/grooming-accessories.webp" alt="Illustration of beard, glasses, watch and outfit analysis followed by styling suggestions" loading="lazy" decoding="async" width="720" height="720" />
+                      <img src="https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056202/AM%20-%20Assets/persona/grooming-accessories.webp" alt="Illustration of beard, glasses, watch and outfit analysis followed by styling suggestions" loading="lazy" decoding="async" width="720" height="720" />
                     ) : (
                       <img src={card.image} alt={card.title} loading="lazy" decoding="async" width={card.width} height={card.height} />
                     )}
@@ -537,16 +537,16 @@ function StyleIQIntro({ persona }) {
 }
 
 const complexionDeliverableImages = {
-  "01": { src: "/assets/persona/hairstyle-ideas.webp", alt: "Four hairstyle ideas shown on the same man" },
-  "02": { src: "/assets/persona/beard-shaving-closeup.webp", alt: "Clean-shaven, stubble, short beard and full beard styles on the same man" },
-  "03": { src: "/assets/persona/colour-ideas.webp", alt: "A man wearing cream, emerald, rust and burgundy shirts" },
-  "04": { src: "/assets/persona/clothing-fit-ideas.webp", alt: "Examples of shirt, jacket, trouser and blazer fits" },
-  "05": { src: "/assets/persona/shoe-guide-variety.webp", alt: "Footwear ideas for work, weekends, dates and smart casual occasions" },
-  "06": { src: "/assets/persona/perfume-spray.webp", alt: "Close-up of a man applying fragrance with a spray bottle" },
-  "07": { src: "/assets/persona/glasses-shapes.webp", alt: "A man wearing different glasses and sunglasses frame shapes" },
-  "08": { src: "/assets/persona/watch-ideas.webp", alt: "Four watch styles paired with shirt and jacket cuffs" },
-  "09": { src: "/assets/persona/twenty-outfits.webp", alt: "Twenty complete outfit ideas for different occasions" },
-  "10": { src: "/assets/persona/smart-shopping.webp", alt: "A man using style guidance to compare, try and choose a shirt" },
+  "01": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056208/AM%20-%20Assets/persona/hairstyle-ideas.webp", alt: "Four hairstyle ideas shown on the same man" },
+  "02": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056176/AM%20-%20Assets/persona/beard-shaving-closeup.webp", alt: "Clean-shaven, stubble, short beard and full beard styles on the same man" },
+  "03": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056186/AM%20-%20Assets/persona/colour-ideas.webp", alt: "A man wearing cream, emerald, rust and burgundy shirts" },
+  "04": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056182/AM%20-%20Assets/persona/clothing-fit-ideas.webp", alt: "Examples of shirt, jacket, trouser and blazer fits" },
+  "05": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056221/AM%20-%20Assets/persona/shoe-guide-variety.webp", alt: "Footwear ideas for work, weekends, dates and smart casual occasions" },
+  "06": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056219/AM%20-%20Assets/persona/perfume-spray.webp", alt: "Close-up of a man applying fragrance with a spray bottle" },
+  "07": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056199/AM%20-%20Assets/persona/glasses-shapes.webp", alt: "A man wearing different glasses and sunglasses frame shapes" },
+  "08": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056231/AM%20-%20Assets/persona/watch-ideas.webp", alt: "Four watch styles paired with shirt and jacket cuffs" },
+  "09": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056226/AM%20-%20Assets/persona/twenty-outfits.webp", alt: "Twenty complete outfit ideas for different occasions" },
+  "10": { src: "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056222/AM%20-%20Assets/persona/smart-shopping.webp", alt: "A man using style guidance to compare, try and choose a shirt" },
 };
 
 function EverythingInside({ persona }) {
@@ -598,7 +598,7 @@ function Bonuses({ persona }) {
                 </div>
                 <div className="am2-bonus-body">
                   <figure className="am2-bonus-visual">
-                    <img src={persona === "complexion" && bonus.title === "90-Day Style Upgrade Plan" ? "/assets/persona/ninety-day-plan.webp" : persona === "complexion" && bonus.title === "Men's Skincare, Haircare and Fragrance Guide" ? "/assets/persona/grooming-routine.webp" : bonus.image} alt={bonus.title} loading="lazy" decoding="async" width={bonus.width} height={bonus.height} />
+                    <img src={persona === "complexion" && bonus.title === "90-Day Style Upgrade Plan" ? "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056217/AM%20-%20Assets/persona/ninety-day-plan.webp" : persona === "complexion" && bonus.title === "Men's Skincare, Haircare and Fragrance Guide" ? "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056204/AM%20-%20Assets/persona/grooming-routine.webp" : bonus.image} alt={bonus.title} loading="lazy" decoding="async" width={bonus.width} height={bonus.height} />
                   </figure>
                   <p>{renderPersonaCopy(bonus.copy, bonus.highlights)}</p>
                 </div>

@@ -409,3 +409,7 @@ The project now includes Convex storage for experiment exposures, checkout attri
 `/experiment-dashboard` uses Convex Auth email/password access, approved-admin authorization, password-reset email delivery through Resend, experiment controls, and AM/AM2 reporting. Historical v2 results remain available. The new v3 experiment compares the promoted AM light control with the AM2 dark variant and defaults to paused. `utm_term` is reserved for the displayed page; other UTM values and click identifiers are retained.
 
 Validation: project tests pass 101/101, production build passes, bundle budget passes, Convex local function deployment and typecheck pass, and an isolated local landing write returned `{ recorded: true }`.
+
+## Complexion Cloudinary delivery — 2026-11-07
+
+All 24 persona animations and the hero image now use versioned Cloudinary URLs in AM - Assets/persona. Animated WebP originals are delivered without format/quality transformations; SHA-256 checks confirmed all 25 remote files match the local originals exactly. Local assets remain as restoration copies. See docs/COMPLEXION_ASSET_MANIFEST.json for paths, URLs and hashes. No routing, copy, pricing or payment changes.

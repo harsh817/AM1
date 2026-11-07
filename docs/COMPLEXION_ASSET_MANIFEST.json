@@ -1,0 +1,152 @@
+[
+  {
+    "localPath": "/assets/persona/accessory-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056173/AM%20-%20Assets/persona/accessory-analysis-scan.webp",
+    "bytes": 2868372,
+    "sha256": "d0946f7d14cb3fe9b31a0d9eb29409bce82a87ec35f4b532679ba258624b5193"
+  },
+  {
+    "localPath": "/assets/persona/beard-shaving-closeup.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056176/AM%20-%20Assets/persona/beard-shaving-closeup.webp",
+    "bytes": 929496,
+    "sha256": "b5c9046f21746dc511a7db331057ebdc95ba28329fa7916f93c4bfabbde90864"
+  },
+  {
+    "localPath": "/assets/persona/body-type-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056178/AM%20-%20Assets/persona/body-type-analysis-scan.webp",
+    "bytes": 1955230,
+    "sha256": "044e0f9968116ca8c36191b2afee7a1d4632b84c62b93a74db33eafc6bebe6a6"
+  },
+  {
+    "localPath": "/assets/persona/clothing-fit-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056180/AM%20-%20Assets/persona/clothing-fit-analysis-scan.webp",
+    "bytes": 1876068,
+    "sha256": "eb59ffc34c99a924a07e67dfd799e549986bffbe36fa0a847e897c2468e53cd1"
+  },
+  {
+    "localPath": "/assets/persona/clothing-fit-ideas.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056182/AM%20-%20Assets/persona/clothing-fit-ideas.webp",
+    "bytes": 952588,
+    "sha256": "4e2f1fbf3e89c4f84aa80c8ff499f42677aa395a1e6cb2186f8711f838f76aea"
+  },
+  {
+    "localPath": "/assets/persona/colour-analysis.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056184/AM%20-%20Assets/persona/colour-analysis.webp",
+    "bytes": 1264042,
+    "sha256": "67ac658e450a41d653cc9f2400abd26de6523c44d22e222267e1fb7cfb624be0"
+  },
+  {
+    "localPath": "/assets/persona/colour-ideas.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056186/AM%20-%20Assets/persona/colour-ideas.webp",
+    "bytes": 867262,
+    "sha256": "7e9792062b4d032aaa9e10b6a52b1b4fee51b2026c69db7aa8d075f171f11b29"
+  },
+  {
+    "localPath": "/assets/persona/deeper-complexion-before-after.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056188/AM%20-%20Assets/persona/deeper-complexion-before-after.webp",
+    "bytes": 179584,
+    "sha256": "966c75d027f46e161f26d0d11dfff4d1963afbff0603ab3b1d1497f24004f68f"
+  },
+  {
+    "localPath": "/assets/persona/face-shape-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056190/AM%20-%20Assets/persona/face-shape-analysis-scan.webp",
+    "bytes": 2809970,
+    "sha256": "5e0e5bede26e7b887c5bdd89fdcbf70a93584b1ff4a27584784ebd67809b4d0d"
+  },
+  {
+    "localPath": "/assets/persona/facial-hair-growth-analysis.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056194/AM%20-%20Assets/persona/facial-hair-growth-analysis.webp",
+    "bytes": 2930934,
+    "sha256": "b18aa050fc9e7aa4dd966666bbef3f0567c7cb54f93eef4b4b299dcb6113e92f"
+  },
+  {
+    "localPath": "/assets/persona/fit-analysis.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056197/AM%20-%20Assets/persona/fit-analysis.webp",
+    "bytes": 1449190,
+    "sha256": "8010ed6703e4e961ceff6dfc0824bcde04dc1e82917e14378de503da37bf114f"
+  },
+  {
+    "localPath": "/assets/persona/glasses-shapes.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056199/AM%20-%20Assets/persona/glasses-shapes.webp",
+    "bytes": 1039692,
+    "sha256": "cbb676c7e258e48fd6c013c5eeccb9bcaa27b12b5c40e0494a777dda891dc0af"
+  },
+  {
+    "localPath": "/assets/persona/grooming-accessories.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056202/AM%20-%20Assets/persona/grooming-accessories.webp",
+    "bytes": 1848098,
+    "sha256": "5ca92c9658d5ae881abaed5a669cd803d9a09a5c1027c9312cc4616fcd6992bf"
+  },
+  {
+    "localPath": "/assets/persona/grooming-routine.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056204/AM%20-%20Assets/persona/grooming-routine.webp",
+    "bytes": 1002264,
+    "sha256": "790b8d55f80596b4a16f1465f248f83350ce243d7a8a4abfa7eed6ebac355ea5"
+  },
+  {
+    "localPath": "/assets/persona/hairstyle-analysis.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056207/AM%20-%20Assets/persona/hairstyle-analysis.webp",
+    "bytes": 486272,
+    "sha256": "02e9681a52c05d93302c4354463139984f0e05f1d14672f43c76b8baf0a7c405"
+  },
+  {
+    "localPath": "/assets/persona/hairstyle-ideas.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056208/AM%20-%20Assets/persona/hairstyle-ideas.webp",
+    "bytes": 1017288,
+    "sha256": "f4ab49f3b1588fe9739bfd4d779598554bd888c88baa9987a5f305c3a69ba4b8"
+  },
+  {
+    "localPath": "/assets/persona/jawline-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056211/AM%20-%20Assets/persona/jawline-analysis-scan.webp",
+    "bytes": 2452270,
+    "sha256": "1140738e947536388a365b7ff7bbb43f2d18c4935d71eee45cb41b355f2adaa2"
+  },
+  {
+    "localPath": "/assets/persona/lifestyle-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056214/AM%20-%20Assets/persona/lifestyle-analysis-scan.webp",
+    "bytes": 2252490,
+    "sha256": "757090657d313aa7080595cf5bb35c6419bc0a437bede389523bb56fdec19c19"
+  },
+  {
+    "localPath": "/assets/persona/ninety-day-plan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056217/AM%20-%20Assets/persona/ninety-day-plan.webp",
+    "bytes": 882916,
+    "sha256": "a5d02d909ea3ef9308a119c77fa4ab8a622cbbfa6fd3ffb453d7799b799d547c"
+  },
+  {
+    "localPath": "/assets/persona/perfume-spray.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056219/AM%20-%20Assets/persona/perfume-spray.webp",
+    "bytes": 947626,
+    "sha256": "174a4690a3638e18777ec5c1221bf12fe9f2c1df0235b64c6de7fdbe99d17073"
+  },
+  {
+    "localPath": "/assets/persona/shoe-guide-variety.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056221/AM%20-%20Assets/persona/shoe-guide-variety.webp",
+    "bytes": 1207872,
+    "sha256": "3d4a15697213026c29ccec542fbe6c85c816235de249ad007c0f3fce37a00a57"
+  },
+  {
+    "localPath": "/assets/persona/smart-shopping.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056222/AM%20-%20Assets/persona/smart-shopping.webp",
+    "bytes": 899648,
+    "sha256": "856030175e2d9df73d275fdf71cdc4b7fcd5dc82d45b902488cdb339f85c9598"
+  },
+  {
+    "localPath": "/assets/persona/twenty-outfits.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056226/AM%20-%20Assets/persona/twenty-outfits.webp",
+    "bytes": 4643700,
+    "sha256": "8edc5f99b9c7f8a09838797714c072b429838dcb98528f499b87f32c1097e3e5"
+  },
+  {
+    "localPath": "/assets/persona/undertone-analysis-scan.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056229/AM%20-%20Assets/persona/undertone-analysis-scan.webp",
+    "bytes": 2943230,
+    "sha256": "bda5ed02e95399dd3dd68a169bc6337928d0b5d6df11be791c88ec03054fbd07"
+  },
+  {
+    "localPath": "/assets/persona/watch-ideas.webp",
+    "url": "https://res.cloudinary.com/dm49wi6j4/image/upload/v1794056231/AM%20-%20Assets/persona/watch-ideas.webp",
+    "bytes": 980284,
+    "sha256": "786f4add9db229713c890a680943719ee4b72e54d332fb79876cb01b3bb2f469"
+  }
+]

@@ -573,3 +573,7 @@ Release commit: `6ee8f66` (`main`, pushed to `origin/main`). Production deployme
 - [Vercel DNS records](https://vercel.com/docs/domains/managing-dns-records)
 - [PCI SSC merchant resources](https://www.pcisecuritystandards.org/merchants/)
 - [PCI SSC ecommerce SAQ A clarification](https://blog.pcisecuritystandards.org/faq-clarifies-new-saq-a-eligibility-criteria-for-e-commerce-merchants)
+
+## Complexion Cloudinary delivery — 2026-11-07
+
+All 24 persona animations and the hero image now use versioned Cloudinary URLs in AM - Assets/persona. Animated WebP originals are delivered without format/quality transformations; SHA-256 checks confirmed all 25 remote files match the local originals exactly. Local assets remain as restoration copies. See docs/COMPLEXION_ASSET_MANIFEST.json for paths, URLs and hashes. No routing, copy, pricing or payment changes.
