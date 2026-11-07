@@ -71,7 +71,7 @@ test("production rewrites expose only current AM1 public routes", () => {
   );
   const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
 
-  assert.deepEqual(rewriteSources, ["/style-for-your-complexion", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
+  assert.deepEqual(rewriteSources, ["/style-for-your-complexion", "/am-ds", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
 

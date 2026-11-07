@@ -4,6 +4,7 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/style-for-your-complexion", "destination": "/" },
+    { "source": "/am-ds", "destination": "/" },
     { "source": "/a-m", "destination": "/" },
     { "source": "/AM2", "destination": "/" },
     { "source": "/am2", "destination": "/" },
@@ -19,6 +20,7 @@
   ],
   "headers": [
     { "source": "/style-for-your-complexion", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/am-ds", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     {
       "source": "/(.*)",
       "headers": [

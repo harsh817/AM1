@@ -1,5 +1,6 @@
 import { isComplexionAdSet, buildComplexionDestination } from "./persona-routing.js";
 const PERSONA_PATH = "/style-for-your-complexion";
+const PERSONA_PATHS = [PERSONA_PATH, "/am-ds"];
 const PAGE_CONTEXT_KEY = "attractivemen-page-context:v1";
 const landingRequests = new Set();
 export const EXPERIMENT_ID = "am-vs-am2-v3";
@@ -12,8 +13,8 @@ export const EXPERIMENT_ENABLED = false;
 export const ASSIGNMENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 
 export async function resolveLandingRouteAsync(windowRef = globalThis.window) {
-  if (!windowRef?.location || !["/a-m", "/AM2", "/am2", PERSONA_PATH].includes(normalizePath(windowRef.location.pathname))) return null;
-  if (normalizePath(windowRef.location.pathname) === PERSONA_PATH) return resolveLandingRoute(windowRef);
+  if (!windowRef?.location || !["/a-m", "/AM2", "/am2", ...PERSONA_PATHS].includes(normalizePath(windowRef.location.pathname))) return null;
+  if (PERSONA_PATHS.includes(normalizePath(windowRef.location.pathname))) return resolveLandingRoute(windowRef);
   if (import.meta.env?.DEV) {
     const previewVariant = new URL(windowRef.location.href).searchParams.get("previewVariant");
     if (normalizePath(windowRef.location.pathname) === "/a-m" && [ORIGINAL_VARIANT, AM2_VARIANT].includes(previewVariant)) {
@@ -43,7 +44,7 @@ export function resolveLandingRoute(windowRef = globalThis.window, config = null
     windowRef.location.replace(buildComplexionDestination(windowRef.location.href));
     return { page: "pending" };
   }
-  if (path === PERSONA_PATH) {
+  if (PERSONA_PATHS.includes(path)) {
     replaceLandingQuery(windowRef, "COMPLEXION");
     getExperimentContext(windowRef);
     return { page: "complexion" };
@@ -86,7 +87,7 @@ export function getExperimentContext(context = getBrowserContext()) {
   const location = context.location || {};
   const pathname = normalizePath(location.pathname);
   const tabStorage = getContextStorage(context, "sessionStorage");
-  const isPersona = pathname === PERSONA_PATH;
+  const isPersona = PERSONA_PATHS.includes(pathname);
   const isLanding = isPersona || pathname === "/a-m" || pathname.toLowerCase() === "/am2";
   if (!isLanding) {
     try {
