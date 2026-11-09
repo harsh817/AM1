@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CircleNotch, LockKey } from "@phosphor-icons/react";
+import { ArrowRight, Check, CircleNotch, LockKey } from "@phosphor-icons/react";
 import { CheckoutPage, COUNTRY_CODES } from "../../pages/CheckoutPage.jsx";
 import { ThankYouPage } from "../../pages/ThankYouPage.jsx";
 import { PaymentFailedPage } from "../../pages/PaymentFailedPage.jsx";
@@ -62,7 +62,7 @@ function AssessmentPreview() {
     {submitted ? <p>Delivered within 48 hours after we receive your completed assessment and required photos.</p> : <>
       <p>Order reference <strong>{demoOrder}</strong></p>
       <img src={assessmentGuide} alt="Examples of the three required photo angles" />
-      <p>Use test images here. This local preview keeps the files on your device.</p>
+      <p>Use test images here. This demo keeps the files on your device.</p>
       <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
         {photos.map((photo) => <label key={photo}>{photo}<input type="file" accept="image/*" required /></label>)}
         <button className="style-quiz-primary" type="submit">Complete demo assessment</button>
@@ -117,12 +117,11 @@ async function sendQuizEvent(eventType, visitorId) {
   }
 }
 
-function ProgressHeader({ position, onBack, canGoBack, compact = false, demo = false }) {
+function ProgressHeader({ position, compact = false, demo = false }) {
   const completed = Math.min(100, Math.round(position / 24 * 100));
   return <header className={`style-quiz-header${compact ? " style-quiz-header--compact" : ""}`}>
-    <button type="button" className="style-quiz-back" onClick={onBack} disabled={!canGoBack} aria-label="Go back"><ArrowLeft size={18} /></button>
     <strong className="style-quiz-wordmark">StyleIQ</strong>
-    <span className="style-quiz-progress-label">{demo ? "Demo" : import.meta.env.DEV && (compact || !position) ? "Preview" : position ? "Your profile" : ""}</span>
+    {demo && <span className="style-quiz-progress-label">Demo</span>}
     {!compact && position > 0 && <div className="style-quiz-progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={completed}><span style={{ width: `${completed}%` }} /></div>}
   </header>;
 }
@@ -159,21 +158,20 @@ function ComparisonScreen({ path, answers }) {
     (path !== "overall" || answers["branch-1"]?.[0] === 4);
   const images = comparison.images || [comparison.image];
   return <section className="style-quiz-comparison">
-    <p className="style-quiz-eyebrow">STYLE IN PRACTICE</p>
+    <p className="style-quiz-eyebrow">Styling comparison</p>
     <h1 id="quiz-title" tabIndex={-1}>{comparison.title}</h1>
     {useWalkthrough ? <figure className="style-quiz-reference-comparison">
       <figcaption><span>Before</span><span>After</span></figcaption>
-      <img src={artwork(key)} alt="Side-by-side illustrative styling comparison" />
+      <img src={artwork(key)} alt="Before and after outfits shown side by side" />
     </figure> : <div className={images.length === 1 ? "style-quiz-single-comparison" : "style-quiz-image-pair"}>
       {images.map((source, index) => <figure key={source}>
         <figcaption>{comparison.captions?.[index] || "Before and after"}</figcaption>
         <img src={resolveImage(source)} alt={comparison.alt || comparison.captions[index]} />
       </figure>)}
     </div>}
-    <small>Illustrative styling example</small>
     <p>{useWalkthrough && key === "colours"
       ? "Compare the charcoal shirt with the ivory shirt and burgundy layer. Notice how the lighter shade changes the contrast around his face."
-      : comparison.text}</p>
+      : comparison.text} <span className="style-quiz-image-disclosure">Images are styling illustrations.</span></p>
   </section>;
 }
 
@@ -240,7 +238,7 @@ function PlanAnalysis({ reducedMotion, onContinue, path, answers, goal }) {
   const done = progress === 100;
   const active = Math.floor(progress / 20);
   return <div className="style-quiz-analysis">
-    <p className="style-quiz-eyebrow">YOUR PLAN PREVIEW</p>
+    <p className="style-quiz-eyebrow">Your style priorities</p>
     <h1 id="quiz-title" tabIndex={-1}>We’re building your plan</h1>
     <div className="style-quiz-analysis-goal"><span>Suggested style goal</span><strong>{goal}/100</strong></div>
     <div className="style-quiz-analysis-progress">
@@ -292,7 +290,7 @@ function ContactDetails({ value, error, onChange, onSubmit }) {
     </div>
     <label className="style-quiz-consent"><input type="checkbox" name="followUp" checked={value.followUp} onChange={(event) => onChange("followUp", event.target.checked)} /><span>It’s okay to contact me about completing my StyleIQ assessment.</span></label>
     <button type="submit" className="style-quiz-primary">Continue to checkout <ArrowRight size={18} /></button>
-    <p className="style-quiz-privacy"><LockKey size={14} /> Your contact details stay out of the quiz analytics.</p>
+    <p className="style-quiz-privacy"><LockKey size={14} /> We’ll use these details to deliver your report.</p>
   </form>;
 }
 
@@ -357,9 +355,10 @@ export function StyleQuizPage({ preview = false }) {
     setDraft((current) => ({ ...current, position: Math.max(0, Math.min(STEPS.length - 1, nextPosition)) }));
     window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" });
   }
-  function back() {
-    if (checkout) { setCheckout(false); move(STEPS.indexOf("contact")); return; }
-    move(position - 1);
+  function editContactDetails(selected) {
+    setSelectedBumps(selected);
+    setCheckout(false);
+    move(STEPS.indexOf("contact"));
   }
   function choose(index, currentQuestion) {
     setDraft((current) => {
@@ -398,10 +397,10 @@ export function StyleQuizPage({ preview = false }) {
   if (isDemo && previewStep === "thankyou") return <ThankYouPage merchantOrderId={demoOrder} preview="completed" onPreviewAssessment={() => setPreviewStep("assessment")} />;
   if (isDemo && previewStep === "assessment") return <div className="style-quiz-page"><AssessmentPreview /></div>;
   if (checkout) return <div className="style-quiz-checkout-shell">
-    <ProgressHeader position={absolutePosition} canGoBack onBack={back} compact demo={preview} />
+    <ProgressHeader position={absolutePosition} compact demo={preview} />
     <CheckoutPage quizCheckout initialDetails={details} initialSelected={selectedBumps} quizTracking={quizTracking}
       quizSample={checkoutSample(path || "overall", answers)}
-      onQuizBack={(selected) => { setSelectedBumps(selected); back(); }}
+      onEditContact={editContactDetails}
       onPreviewComplete={isDemo ? () => setPreviewStep("thankyou") : undefined}
       onPreviewFailed={isDemo ? (selected) => {
         if (preview) setSelectedBumps(selected);
@@ -421,7 +420,7 @@ export function StyleQuizPage({ preview = false }) {
     testimonial: ["CUSTOMER STORY", "Clear guidance can make getting dressed easier.", `“${review.quote}”`],
   }[step];
   return <div className={`style-quiz-page${darkSteps.has(step) ? " style-quiz-page--dark" : ""}`}>
-    <ProgressHeader position={absolutePosition} canGoBack={position > 0} onBack={back} compact={["potential", "analysis", "contact"].includes(step)} demo={preview} />
+    <ProgressHeader position={absolutePosition} compact={["potential", "analysis", "contact"].includes(step)} demo={preview} />
     <main ref={screen} className={`style-quiz-content screen-${step}${question ? " screen-question" : ""}`}>
       {step === "intro" && <section className="style-quiz-welcome">
         <p className="style-quiz-eyebrow">A PERSONAL STYLE STARTING POINT</p>

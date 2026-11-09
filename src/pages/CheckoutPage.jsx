@@ -98,7 +98,7 @@ const formatAddOnPrice = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-export function CheckoutPage({ preview = false, quizCheckout = false, initialDetails, quizTracking = null, initialSelected = [], quizSample, onQuizBack, onPreviewComplete, onPreviewFailed } = {}) {
+export function CheckoutPage({ preview = false, quizCheckout = false, initialDetails, quizTracking = null, initialSelected = [], quizSample, onEditContact, onPreviewComplete, onPreviewFailed } = {}) {
   const isPreview = (import.meta.env.DEV && (preview || quizCheckout)) ||
     (quizCheckout && typeof onPreviewComplete === "function");
   const [initialDraft] = useState(() => quizCheckout
@@ -316,7 +316,7 @@ export function CheckoutPage({ preview = false, quizCheckout = false, initialDet
         <form className="checkout-card" onSubmit={handleSubmit} noValidate data-clarity-mask="true">
           {quizCheckout ? <section className="checkout-block checkout-quiz-contact-summary" aria-label="Contact details for delivery">
             <h2>Report delivery details</h2><p><strong>{details.name}</strong><br />{details.email}<br />{getFullPhone(details)}</p>
-            {onQuizBack ? <button type="button" className="checkout-quiz-back" onClick={() => onQuizBack(selected)}>← Edit details</button> : null}
+            {onEditContact ? <button type="button" className="checkout-quiz-text-action" onClick={() => onEditContact(selected)}>Edit contact details</button> : null}
           </section> : <section className="checkout-block" aria-label="Contact information">
             <p className="checkout-form-intro">Enter your details below to receive your StyleIQ System report.</p>
 
@@ -338,7 +338,7 @@ export function CheckoutPage({ preview = false, quizCheckout = false, initialDet
           </section>}
 
           {quizCheckout && quizSample ? <section className="checkout-block checkout-quiz-sample" aria-label="Personalised Style Report sample">
-            <figure><img src={quizSample.image} alt={quizSample.alt} /><figcaption>{quizSample.chapter}</figcaption></figure>
+            <figure><img src={quizSample.image} alt={quizSample.alt} /><figcaption>Report sample · {quizSample.chapter}</figcaption></figure>
             <div><strong>{formatMoney(Math.round(BASE_PRICE * (1 + GST_RATE)))}</strong><small>Including GST</small>
               <p>Guidance on hair, colours, fit and complete outfits.</p></div>
           </section> : null}
@@ -405,7 +405,7 @@ export function CheckoutPage({ preview = false, quizCheckout = false, initialDet
               <strong>Today only: ₹1,999 + GST</strong>
             </div>}
             {quizCheckout ? <p className="checkout-quiz-delivery checkout-quiz-delivery--bottom">Delivered within 48 hours after we receive your completed assessment and required photos.</p> : null}
-            {isPreview && onPreviewFailed && <button className="checkout-quiz-back" type="button" onClick={() => onPreviewFailed(selected)}>Preview a failed payment</button>}
+            {isPreview && onPreviewFailed && <button className="checkout-quiz-text-action" type="button" onClick={() => onPreviewFailed(selected)}>Preview a failed payment</button>}
             {status ? <p className="checkout-status" role="status">{status}</p> : null}
           </section>
         </form>

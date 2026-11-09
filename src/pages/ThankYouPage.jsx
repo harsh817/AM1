@@ -69,7 +69,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true">{verified ? <Check size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
           <p className="checkout-step">{isQuizOrder && verified ? "Your next step" : "StyleIQ System"}</p>
-          <h1>{verified ? isQuizOrder ? "Payment confirmed. Your next step is the assessment." : "Payment confirmed" : merchantOrderId ? "Confirming payment" : "Order reference missing"}</h1>
+          <h1>{verified ? isDemo ? "Demo payment complete" : "Payment confirmed" : merchantOrderId ? "Confirming payment" : "Order reference missing"}</h1>
           <p>{isQuizOrder && verified ? "Have these three photos ready before you start." : message}</p>
         </div>
         {verified ? (
@@ -80,7 +80,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
               <img src={photoGuide} alt="Examples of a front portrait, side profile and full-length photo" />
               <figcaption>Front portrait · Side profile · Full-length photo</figcaption>
             </figure>}
-            {merchantOrderId && isQuizOrder && <p>Include order reference <strong>{merchantOrderId}</strong> in your assessment.</p>}
+            {merchantOrderId && isQuizOrder && <p>Include order reference <strong>{merchantOrderId}</strong>, upload all three photos, and submit the assessment.</p>}
             {onPreviewAssessment ? (
               <button className="checkout-pay thankyou-primary" type="button" onClick={onPreviewAssessment}>Start my assessment <ArrowRight size={19} /></button>
             ) : assessmentUrl ? (
@@ -100,7 +100,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
             <a href={getPaymentStatusUrl(merchantOrderId)}>Check payment status</a>
           </div>
         ) : null}
-        {merchantOrderId ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
+        {merchantOrderId && !isQuizOrder ? <div className="thankyou-order"><span>Order reference</span><strong>{merchantOrderId}</strong></div> : null}
         <nav className="thankyou-legal" aria-label="Legal links"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a></nav>
       </section>
     </main>
