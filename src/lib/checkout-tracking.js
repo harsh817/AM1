@@ -50,6 +50,7 @@ export function getCheckoutTrackingPayload(context = getBrowserContext()) {
     device: buildDevice(context),
     marketing: next.marketing,
     experiment,
+    quiz: normalizeQuizTracking(context.quizTracking),
     engagement: {
       page_visits: String(next.pageVisits),
       form_submissions: String(next.formSubmissions),
@@ -176,10 +177,20 @@ function normalizeTrackingPayload(tracking = {}) {
     device: normalizeDevice(tracking.device),
     marketing: normalizeMarketing(tracking.marketing),
     experiment: normalizeExperiment(tracking.experiment),
+    quiz: normalizeQuizTracking(tracking.quiz),
     engagement: {
       page_visits: String(positiveCount(tracking.engagement?.page_visits)),
       form_submissions: String(positiveCount(tracking.engagement?.form_submissions)),
     },
+  };
+}
+
+function normalizeQuizTracking(quiz = {}) {
+  if (quiz.source !== "style-quiz") return undefined;
+  return {
+    source: "style-quiz",
+    version: clean(quiz.version, 64),
+    visitor_id: clean(quiz.visitor_id, ORDER_TRACKING_ID_MAX_LENGTH),
   };
 }
 

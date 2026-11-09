@@ -1,3 +1,4 @@
+import { issueQuizRetryToken } from "../quiz-retry.js";
 import {
   buildRedirectUrl,
   calculateCheckoutTotals,
@@ -11,7 +12,7 @@ import { buildCheckoutLeadPayload } from "../lead-webhook.js";
 import { forwardMakeWebhookPayload } from "../make.js";
 import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { createPhonePePayment } from "../phonepe.js";
-import { buildConvexAttribution, recordConvexOrder } from "../convex.js";
+import { buildConvexAttribution, buildConvexQuizAttribution, recordConvexOrder } from "../convex.js";
 
 const PRODUCT_NAME = "StyleIQ System";
 const CREATE_ORDER_ROUTE = "/api/phonepe/create-order";
@@ -43,6 +44,7 @@ export async function createCheckoutPaymentOrder({
   baseUrl = getCheckoutBaseUrl(req),
   createOrderId = createMerchantOrderId,
   createPayment = createPhonePePayment,
+  recordOrder = recordConvexOrder,
   forwardWebhook = forwardMakeWebhookPayload,
   logger = logPaymentEvent,
 } = {}) {
@@ -52,6 +54,7 @@ export async function createCheckoutPaymentOrder({
   const selected = payload.selected || [];
   const details = payload.details || {};
   const tracking = payload.tracking || {};
+  const quizAttribution = buildConvexQuizAttribution(tracking);
   const phoneNumber = normalizePhone(details.phone);
   const totals = calculateCheckoutTotals(selected);
   const merchantOrderId = createOrderId();
@@ -59,16 +62,19 @@ export async function createCheckoutPaymentOrder({
   const metaInfo = buildPhonePeMetaInfo({ details, phoneNumber, totals });
 
   try {
-    await recordConvexOrder({
+    const recorded = await recordOrder({
       merchantOrderId,
       amountPaise: totals.amountPaise,
       state: "INITIATED",
       attribution: buildConvexAttribution(tracking),
-      customer: buildConvexCustomer({ details, phoneNumber, selected, totals }),
+      quizAttribution,
+      customer: buildConvexCustomer({ details, phoneNumber, selected, totals, quizAttribution }),
       occurredAt: Date.now(),
     });
+    if (quizAttribution && !recorded?.recorded) throw new Error("Quiz order reporting is unavailable.");
   } catch (error) {
     logger("experiment.order_record_failed", { level: "warn", merchantOrderId, errorType: getPaymentErrorType(error) });
+    if (quizAttribution) throw error;
   }
 
   logger("phonepe.payment_create_started", {
@@ -89,12 +95,13 @@ export async function createCheckoutPaymentOrder({
     });
   } catch (error) {
     try {
-      await recordConvexOrder({
+      await recordOrder({
         merchantOrderId,
         amountPaise: totals.amountPaise,
         state: "FAILED",
         attribution: buildConvexAttribution(tracking),
-        customer: buildConvexCustomer({ details, phoneNumber, selected, totals }),
+        quizAttribution,
+        customer: buildConvexCustomer({ details, phoneNumber, selected, totals, quizAttribution }),
         failure: { type: "checkout_error", message: "Payment checkout could not be created." },
         occurredAt: Date.now(),
       });
@@ -144,16 +151,18 @@ export async function createCheckoutPaymentOrder({
     phonePeOrderId: payment.orderId,
     state: payment.state,
     redirectUrl: payment.redirectUrl,
+    ...(quizAttribution ? { quizRetryToken: issueQuizRetryToken(merchantOrderId) } : {}),
     amountPaise: totals.amountPaise,
   };
 }
 
-function buildConvexCustomer({ details = {}, phoneNumber = "", selected = [], totals = {} } = {}) {
+function buildConvexCustomer({ details = {}, phoneNumber = "", selected = [], totals = {}, quizAttribution } = {}) {
   const selectedBumps = Array.isArray(totals.selectedBumps) ? totals.selectedBumps : [];
   return {
     name: String(details.name || "").trim().slice(0, 128),
     email: String(details.email || "").trim().toLowerCase().slice(0, 256),
     phone: String(phoneNumber || "").trim().slice(0, 32),
+    ...(quizAttribution ? { assessmentFollowUp: details.followUp === true } : {}),
     selectedAddons: selected.map((item) => String(item).slice(0, 64)),
     lineItems: [{ id: "style-report", title: PRODUCT_NAME, pricePaise: Math.round(Number(totals.basePrice || 0) * 100) }, ...selectedBumps.map((bump) => ({ id: String(bump.id), title: String(bump.title), pricePaise: Math.round(Number(bump.price || 0) * 100) }))],
   };

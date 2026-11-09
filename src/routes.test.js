@@ -31,6 +31,11 @@ test("routes requested marketing, checkout, and thank-you URLs", () => {
   assert.deepEqual(getPageRoute("/experiment-dashboard", ""), { page: "experiment-dashboard" });
 });
 
+test("keeps the StyleIQ quiz behind its release flag outside local development", () => {
+  assert.deepEqual(getPageRoute("/style-quiz", "", { styleQuizEnabled: false }), { page: "style-quiz-disabled" });
+  assert.deepEqual(getPageRoute("/style-quiz/", "", { styleQuizEnabled: true }), { page: "style-quiz" });
+});
+
 test("passes local payment preview states to the corresponding pages", () => {
   assert.deepEqual(getPageRoute("/a-m-payment-status", "?merchantOrderId=PREVIEW-1&preview=pending"), {
     page: "payment-status", merchantOrderId: "PREVIEW-1", preview: "pending",
@@ -65,13 +70,13 @@ test("production CSP allows bundled fonts and Cloudinary videos", () => {
   assert.match(contentSecurityPolicy, /media-src 'self' https:\/\/res\.cloudinary\.com/);
 });
 
-test("production rewrites expose only current AM1 public routes", () => {
+test("production rewrites expose current public app routes including the disabled quiz gate", () => {
   const config = JSON.parse(
     readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
   );
   const rewriteSources = config.rewrites.map((rewrite) => rewrite.source);
 
-  assert.deepEqual(rewriteSources, ["/style-for-your-complexion", "/am-ds", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
+  assert.deepEqual(rewriteSources, ["/style-quiz", "/style-for-your-complexion", "/am-ds", "/a-m", "/AM2", "/am2", "/a-m-checkout", "/a-m-payment-status", "/a-m-thankyou", "/a-m-payment-failed", "/thankyou", "/thank-you", "/experiment-dashboard", "/dashboard", "/dashboard/(.*)"]);
   assert.ok(!rewriteSources.includes("/am/temp"));
 });
 

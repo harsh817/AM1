@@ -81,6 +81,37 @@ test("creates a checkout payment order from trusted server totals", async () => 
   assert.doesNotMatch(JSON.stringify(paymentLogs), /Harsh Goel|harsh@example\.com|9876543210/);
 });
 
+test("quiz checkout persists consent and attribution before submitting either trusted total", async () => {
+  for (const [selected, amountPaise] of [[[], 235900], [["outfit-visualizer"], 285800]]) {
+    let stored = false;
+    await createCheckoutPaymentOrder({
+      payload: {
+        details: { name: "Demo Customer", email: "buyer@example.test", phone: "+919876543210", followUp: true },
+        tracking: { quiz: { source: "style-quiz", version: "v1", visitor_id: "visitor" }, marketing: { campaign: "demo" } },
+        selected,
+        amountPaise: 1,
+      },
+      baseUrl: "https://preview.example.test",
+      createOrderId: () => "AM_DEMO",
+      recordOrder: async (order) => {
+        assert.equal(order.customer.assessmentFollowUp, true);
+        assert.equal(order.quizAttribution.campaign.utmCampaign, "demo");
+        assert.deepEqual(order.customer.selectedAddons, selected);
+        assert.equal(order.amountPaise, amountPaise);
+        stored = true;
+        return { recorded: true };
+      },
+      createPayment: async (order) => {
+        assert.equal(stored, true);
+        assert.equal(order.amountPaise, amountPaise);
+        return { orderId: "provider-demo", state: "PENDING", redirectUrl: "https://phonepe.example/pay" };
+      },
+      forwardWebhook: async () => ({ sent: true }),
+      logger: () => {},
+    });
+  }
+});
+
 test("logs payment creation failures without leaking checkout details", async () => {
   const paymentLogs = [];
   const providerError = new Error("raw provider failure with harsh@example.com");

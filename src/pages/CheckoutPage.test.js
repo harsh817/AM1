@@ -14,7 +14,7 @@ const landingAm2Css = readFileSync(new URL("../styles/landing-am2.css", import.m
 const checkoutConfigSource = readFileSync(new URL("../lib/checkout-config.js", import.meta.url), "utf8");
 
 test("checkout page uses a simplified Ink Luxury checkout structure", () => {
-  assert.match(checkoutSource, /<h1 id="checkout-title">Get Your Personal Style Report<\/h1>/);
+  assert.match(checkoutSource, /<h1 id="checkout-title">\{quizCheckout \? "Your Personalised Style Report" : "Get Your Personal Style Report"\}<\/h1>/);
   assert.doesNotMatch(checkoutSource, /className="checkout-intro-copy"|className="checkout-product"|REPORT_PREVIEW_URL/);
   assert.match(checkoutSource, /<div className="checkout-page">\s*<section className="checkout-intro"/);
   assert.match(checkoutSource, /aria-label="Secure payment"/);
@@ -25,7 +25,7 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.doesNotMatch(checkoutSource, /checkout-summary-line|Today's Price \{BASE_PRICE_LABEL\}|BASE_PRICE_LABEL/);
   assert.match(checkoutSource, /<form className="checkout-card" onSubmit=\{handleSubmit\} noValidate data-clarity-mask="true">/);
   assert.match(checkoutSource, /data-clarity-mask="true"/);
-  assert.match(checkoutSource, /const \[initialDraft\] = useState\(loadDraft\);/);
+  assert.match(checkoutSource, /const \[initialDraft\] = useState\(\(\) => quizCheckout[\s\S]*?: loadDraft\(\)\);/);
   assert.doesNotMatch(checkoutSource, /useMemo\(loadDraft/);
   assert.match(checkoutSource, /Enter your details below to receive your StyleIQ System report\./);
   assert.doesNotMatch(checkoutSource, /<h2 id="contact-title">Your details<\/h2>/);
@@ -46,10 +46,10 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.match(checkoutSource, /emphasis: "outfits chosen specifically for you"/);
   assert.doesNotMatch(checkoutSource, /Instagram Profile Analysis|Personal Style Consultation/);
   assert.match(checkoutSource, /const orderItems = \[/);
-  assert.match(checkoutSource, /<h2 id="order-title">Recap of Your Order<\/h2>/);
+  assert.match(checkoutSource, /<h2 id="order-title">\{quizCheckout \? "Order total" : "Recap of Your Order"\}<\/h2>/);
   assert.match(checkoutSource, /className="checkout-recap-items"/);
   assert.match(checkoutSource, /orderItems\.map\(\(item\) =>/);
-  assert.match(checkoutSource, /title: "StyleIQ System", detail: "One-time payment", priceLabel: `\$\{formatMoney\(BASE_PRICE\)\} \+ GST`/);
+  assert.match(checkoutSource, /title: quizCheckout \? "Personalised Style Report" : "StyleIQ System", detail: "One-time payment", priceLabel: `\$\{formatMoney\(BASE_PRICE\)\} \+ GST`/);
   assert.match(checkoutSource, /<span className="checkout-recap-price">\s*<b>\{item\.priceLabel\}<\/b>\s*\{item\.detail \? <small>\{item\.detail\}<\/small> : null\}/);
   assert.match(checkoutSource, /title,\s*priceLabel: formatMoney\(Math\.round\(price \* \(1 \+ GST_RATE\)\)\)/);
   assert.doesNotMatch(checkoutSource, /<span>GST \(18%\)<\/span>/);
@@ -61,7 +61,7 @@ test("checkout page uses a simplified Ink Luxury checkout structure", () => {
   assert.match(checkoutSource, /Today only: ₹1,999 \+ GST/);
   assert.match(checkoutSource, /Normal price: <del>₹2,999<\/del>/);
   assert.doesNotMatch(checkoutSource, /Review your order|See exactly what you are paying|className="checkout-selected-items"|<span>Subtotal<\/span>/);
-  assert.match(checkoutSource, /isPaying \? "Processing" : "Complete Order"/);
+  assert.match(checkoutSource, /isPaying \? "Processing" : onPreviewComplete \? "Complete demo order" : "Complete Order"/);
   assert.doesNotMatch(checkoutSource, /checkout-after-payment|After payment, complete a short assessment/);
   assert.doesNotMatch(checkoutSource, /Proceed to secure payment|Proceed My Order [`$+{]/);
   assert.doesNotMatch(checkoutSource, /<span>1<\/span>\s*<h2 id="contact-title"|<span>2<\/span>[\s\S]*<h2 id="order-title"/);
@@ -78,11 +78,13 @@ test("funnel pages own analytics side effects by route", () => {
   assert.match(landingSource, /import \{ Fragment, useEffect \} from "react";/);
   assert.match(landingSource, /initializeAnalytics\(\{ route \}\);/);
   assert.match(landingSource, /trackLandingView\(\{ route \}\);/);
-  assert.match(checkoutSource, /initializeAnalytics\(\{ route: CHECKOUT_PATH \}\);/);
-  assert.match(checkoutSource, /trackCheckoutView\(\{ route: CHECKOUT_PATH \}\);/);
+  assert.match(checkoutSource, /initializeAnalytics\(\{ route: quizCheckout \? "\/style-quiz\/checkout" : CHECKOUT_PATH \}\);/);
+  assert.match(checkoutSource, /trackCheckoutView\(\{ route: quizCheckout \? "\/style-quiz\/checkout" : CHECKOUT_PATH \}\);/);
+  assert.match(checkoutSource, /if \(!isPreview && !quizCheckout\) localStorage\.setItem/);
+  assert.match(checkoutSource, /tracking\.quiz = \{ source: "style-quiz"/);
   assert.match(checkoutSource, /trackPaymentStarted\(\{[\s\S]*merchantOrderId: data\.merchantOrderId,[\s\S]*amountPaise: data\.amountPaise,[\s\S]*currency: data\.currency,/);
   assert.match(thankyouSource, /checkPaymentStatus\(merchantOrderId\)[\s\S]*result\.state !== "COMPLETED"[\s\S]*window\.location\.replace/);
-  assert.match(thankyouSource, /if \(!import\.meta\.env\.DEV\) initializeAnalytics\(\{ route: THANKYOU_PATH \}\);[\s\S]*checkPaymentStatus\(merchantOrderId\)/);
+  assert.match(thankyouSource, /if \(canTrackLivePayments\(\)\) initializeAnalytics\(\{ route: THANKYOU_PATH \}\);[\s\S]*checkPaymentStatus\(merchantOrderId\)/);
   assert.doesNotMatch(thankyouSource, /result\.state !== "COMPLETED"\)[\s\S]*initializeAnalytics/);
   assert.match(thankyouSource, /trackPaymentCompleted\(\{[\s\S]*merchantOrderId,[\s\S]*amountPaise: result\.payableAmountPaise \?\? result\.amountPaise,[\s\S]*currency: result\.currency,/);
   assert.doesNotMatch(thankyouSource, /trackPaymentFailed|trackCustom|PaymentFailed/);

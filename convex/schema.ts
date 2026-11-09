@@ -18,6 +18,12 @@ const attributionFields = {
   wbraid: v.optional(v.string()),
   fbclid: v.optional(v.string()),
 };
+const quizCampaignFields = {
+  utmSource: v.optional(v.string()), utmMedium: v.optional(v.string()), utmCampaign: v.optional(v.string()),
+  utmContent: v.optional(v.string()), utmTerm: v.optional(v.string()), utmId: v.optional(v.string()),
+  gclid: v.optional(v.string()), gbraid: v.optional(v.string()), wbraid: v.optional(v.string()), fbclid: v.optional(v.string()),
+};
+const quizAttribution = v.object({ source: v.literal("style-quiz"), version: v.string(), visitorId: v.string(), campaign: v.optional(v.object(quizCampaignFields)) });
 
 export default defineSchema({
   ...authTables,
@@ -32,9 +38,11 @@ export default defineSchema({
     variant: v.optional(v.union(v.literal("AM"), v.literal("AM2"), v.literal("COMPLEXION"))),
     entryType: v.optional(v.union(v.literal("randomized"), v.literal("direct"), v.literal("test"))),
     attribution: v.optional(v.object(attributionFields)),
+    quizAttribution: v.optional(quizAttribution),
     customerName: v.optional(v.string()),
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
+    assessmentFollowUp: v.optional(v.boolean()),
     selectedAddons: v.optional(v.array(v.string())),
     lineItems: v.optional(v.array(v.object({ id: v.string(), title: v.string(), pricePaise: v.number() }))),
     failureType: v.optional(v.union(v.literal("payment_failed"), v.literal("checkout_error"), v.literal("provider_uncertain"), v.literal("reporting_failure"))),
@@ -48,6 +56,12 @@ export default defineSchema({
   }).index("by_merchant_order_id", ["merchantOrderId"]).index("by_state", ["state", "updatedAt"]).index("by_visitor_state", ["visitorId", "state"]).index("by_created_at", ["createdAt"]).index("by_customer_email", ["customerEmail"]).index("by_customer_phone", ["customerPhone"]).searchIndex("search_customer_name", { searchField: "customerName", filterFields: ["state"] }),
   contacts: defineTable({ email: v.string(), normalizedEmail: v.string(), name: v.string(), phone: v.string(), firstSeenAt: v.number(), lastSeenAt: v.number(), latestOrderId: v.optional(v.string()), orderCount: v.number(), paidOrderCount: v.number() }).index("by_email", ["normalizedEmail"]).index("by_last_seen", ["lastSeenAt"]).searchIndex("search_name", { searchField: "name" }),
   journeyEvents: defineTable({ eventType: v.union(v.literal("landing"), v.literal("checkout_visit"), v.literal("checkout_submit"), v.literal("thankyou_visit")), visitorId: v.string(), experimentId: v.optional(v.string()), variant: v.optional(v.union(v.literal("AM"), v.literal("AM2"), v.literal("COMPLEXION"))), entryType: v.optional(v.union(v.literal("randomized"), v.literal("direct"), v.literal("test"))), attribution: v.optional(v.object(attributionFields)), dedupeKey: v.string(), occurredAt: v.number() }).index("by_dedupe_key", ["dedupeKey"]).index("by_visitor", ["visitorId", "occurredAt"]).index("by_occurred_at", ["occurredAt"]),
+  quizEvents: defineTable({ eventId: v.string(), eventType: v.union(v.literal("quiz_started"), v.literal("quiz_completed"), v.literal("checkout_started"), v.literal("verified_purchase"), v.literal("assessment_received")), visitorId: v.string(), quizVersion: v.string(), campaign: v.optional(v.object(quizCampaignFields)), merchantOrderId: v.optional(v.string()), occurredAt: v.number(), makeLease: v.optional(v.number()), makeDelivered: v.optional(v.boolean()) }).index("by_event_id", ["eventId"]).index("by_visitor_event", ["visitorId", "eventType", "occurredAt"]).index("by_order", ["merchantOrderId"]),
+  quizAssessments: defineTable({
+    responseId: v.string(), merchantOrderId: v.string(), receivedAt: v.number(),
+    state: v.union(v.literal("ready"), v.literal("unmatched"), v.literal("incomplete"), v.literal("duplicate")),
+    missingPhotos: v.array(v.string()), fulfilmentStartsAt: v.optional(v.number()),
+  }).index("by_response", ["responseId"]).index("by_state", ["state", "receivedAt"]),
   reconciliationJobs: defineTable({ merchantOrderId: v.string(), kind: v.union(v.literal("status_check"), v.literal("receipt_match"), v.literal("reporting_retry")), status: v.union(v.literal("queued"), v.literal("running"), v.literal("completed"), v.literal("failed")), attempts: v.number(), nextRunAt: v.number(), lastError: v.optional(v.string()), createdAt: v.number(), updatedAt: v.number() }).index("by_status_next_run", ["status", "nextRunAt"]).index("by_order", ["merchantOrderId", "updatedAt"]),
   paymentReceipts: defineTable({ merchantOrderId: v.string(), providerEventId: v.string(), state: v.string(), amountPaise: v.optional(v.number()), errorCode: v.optional(v.string()), errorMessage: v.optional(v.string()), receivedAt: v.number() }).index("by_provider_event", ["providerEventId"]).index("by_order", ["merchantOrderId", "receivedAt"]),
   reportingFailures: defineTable({ kind: v.union(v.literal("convex_write"), v.literal("make_delivery"), v.literal("payment_reconciliation")), referenceId: v.string(), message: v.string(), occurredAt: v.number(), resolvedAt: v.optional(v.number()) }).index("by_kind", ["kind", "occurredAt"]).index("by_reference", ["referenceId"]),

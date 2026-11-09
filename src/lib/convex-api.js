@@ -10,6 +10,7 @@ export const convexFunctions = {
   campaigns: makeFunctionReference("dashboard:getCampaigns"),
   funnel: makeFunctionReference("dashboard:getFunnel"),
   health: makeFunctionReference("dashboard:getHealth"),
+  assessmentQueue: makeFunctionReference("events:assessmentQueue"),
   experiment: makeFunctionReference("dashboard:getExperiment"),
   experiments: makeFunctionReference("dashboard:getExperiments"),
   updateExperiment: makeFunctionReference("dashboard:updateExperiment"),

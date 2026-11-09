@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { LockKey, WarningCircle } from "@phosphor-icons/react";
 import { checkPaymentStatus, getFailedPaymentRetryUrl, getPaymentDestination, getPaymentStatusUrl, markFailedPaymentRetry } from "../lib/payment-return.js";
 import "../styles/checkout.css";
+import { getQuizRetry } from "../lib/quiz-retry.js";
+import { STYLE_QUIZ_PATH } from "../routes.js";
 
 export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
   const [verified, setVerified] = useState(false);
@@ -43,10 +45,12 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
     return () => { cancelled = true; };
   }, [merchantOrderId, preview]);
 
-  const retryUrl = getFailedPaymentRetryUrl(merchantOrderId);
   const handleRetry = () => {
     if (!verified || !merchantOrderId) return;
     markFailedPaymentRetry(merchantOrderId);
+    const retryUrl = getQuizRetry(merchantOrderId, false)
+      ? `${STYLE_QUIZ_PATH}?retryOrderId=${encodeURIComponent(merchantOrderId)}`
+      : getFailedPaymentRetryUrl(merchantOrderId);
     window.location.assign(retryUrl);
   };
 

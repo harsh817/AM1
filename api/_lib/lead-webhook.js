@@ -63,6 +63,11 @@ export function buildCheckoutLeadPayload({
     },
     payment: paymentPayload,
     order: buildOrder(selected, totals),
+    ...(tracking.quiz?.source === "style-quiz" ? {
+      quiz_source: "style-quiz",
+      quiz_version: clean(tracking.quiz.version, SHORT_TEXT_MAX_LENGTH),
+      quiz_visitor_id: clean(tracking.quiz.visitor_id, SHORT_TEXT_MAX_LENGTH),
+    } : {}),
     ...buildTrackingFields({ req, tracking }),
   };
 }

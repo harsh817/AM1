@@ -6,10 +6,15 @@ export const THANKYOU_PATH = "/a-m-thankyou";
 export const PAYMENT_FAILED_PATH = "/a-m-payment-failed";
 export const EXPERIMENT_DASHBOARD_PATH = "/experiment-dashboard";
 export const DASHBOARD_PATH = "/dashboard";
+export const STYLE_QUIZ_PATH = "/style-quiz";
 
-export function getPageRoute(pathname, search = "") {
+export function getPageRoute(pathname, search = "", options = {}) {
   const query = new URLSearchParams(search);
   const path = normalizePath(pathname);
+  if (path === STYLE_QUIZ_PATH) {
+    const enabled = options.styleQuizEnabled ?? (import.meta.env?.DEV === true || import.meta.env?.VITE_STYLE_QUIZ_ENABLED === "true");
+    return enabled ? { page: "style-quiz" } : { page: "style-quiz-disabled" };
+  }
   if (["/style-for-your-complexion", "/am-ds"].includes(path)) return { page: "complexion" };
 
   if (path === LANDING_PATH) {

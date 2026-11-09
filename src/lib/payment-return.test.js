@@ -35,8 +35,12 @@ test("failed-payment retry marker is stored in session storage", () => {
   assert.equal(markFailedPaymentRetry("AM_2", null), false);
 });
 
-test("assessment links are limited to secure Google Forms URLs", () => {
-  assert.equal(getAssessmentFormUrl(), DEFAULT_ASSESSMENT_FORM_URL);
+test("assessment links are limited to configured secure Google Forms URLs", () => {
+  assert.equal(getAssessmentFormUrl(), "");
+  assert.equal(getAssessmentFormUrl(undefined, { hostname: "thriveonp.com" }), DEFAULT_ASSESSMENT_FORM_URL);
+  assert.equal(getAssessmentFormUrl(undefined, { hostname: "preview.vercel.app" }), "");
+  assert.equal(getAssessmentFormUrl("https://docs.google.com/forms/d/e/staging/viewform", { hostname: "preview.vercel.app" }), "https://docs.google.com/forms/d/e/staging/viewform");
+  assert.equal(getAssessmentFormUrl("", { hostname: "preview.vercel.app" }), "");
   assert.equal(getAssessmentFormUrl("https://docs.google.com/forms/d/e/example/viewform"), "https://docs.google.com/forms/d/e/example/viewform");
   assert.equal(getAssessmentFormUrl("https://forms.gle/example"), "https://forms.gle/example");
   assert.equal(getAssessmentFormUrl("http://docs.google.com/forms/example"), "");

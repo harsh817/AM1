@@ -15,11 +15,16 @@ const PaymentStatusPage = lazy(() => import("./pages/PaymentStatusPage.jsx").the
 const PaymentFailedPage = lazy(() => import("./pages/PaymentFailedPage.jsx").then((module) => ({ default: module.PaymentFailedPage })));
 const LegalPage = lazy(() => import("./pages/LegalPage.jsx").then((module) => ({ default: module.LegalPage })));
 const ExperimentDashboard = lazy(() => import("./pages/ExperimentDashboard.jsx").then((module) => ({ default: module.ExperimentDashboard })));
+const StyleQuizPage = lazy(() => import("./features/style-quiz/StyleQuizPage.jsx").then((module) => ({ default: module.StyleQuizPage })));
 
 function App({ route }) {
   if (route.page === "pending") return null;
   const page = route.page === "checkout" ? (
-    <CheckoutPage />
+    <CheckoutPage preview={import.meta.env.DEV && new URLSearchParams(window.location.search).get("previewQuiz") === "1"} />
+  ) : route.page === "style-quiz" ? (
+    <StyleQuizPage />
+  ) : route.page === "style-quiz-disabled" ? (
+    <main className="style-quiz-disabled"><h1>StyleIQ is getting ready</h1><p>This quiz isn’t available just yet.</p><a href="/a-m">Explore StyleIQ</a></main>
   ) : route.page === "complexion" ? (
     <LandingPageAM2 variant="AM2" persona="complexion" />
   ) : route.page === "complexion-preview" ? (

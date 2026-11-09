@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, Check, LockKey } from "@phosphor-icons/react";
 import { initializeAnalytics, trackPaymentCompleted } from "../lib/analytics.js";
-import { checkPaymentStatus, getAssessmentFormUrl, getPaymentDestination, getPaymentStatusUrl } from "../lib/payment-return.js";
+import { canTrackLivePayments, checkPaymentStatus, getAssessmentFormUrl, getPaymentDestination, getPaymentStatusUrl, prefillAssessmentOrder } from "../lib/payment-return.js";
+import photoGuide from "../features/style-quiz/assets/approved/assessment-photo-guide.webp";
+import { getQuizRetry, forgetQuizRetry } from "../lib/quiz-retry.js";
+import { getCheckoutOrderTrackingPayload } from "../lib/checkout-tracking.js";
 import { THANKYOU_PATH } from "../routes.js";
 import "../styles/checkout.css";
+import "../styles/quiz-thankyou.css";
 
-export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
+export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAssessment }) {
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("Confirming your payment with PhonePe...");
-  const assessmentUrl = getAssessmentFormUrl();
+  const [isQuizOrder] = useState(() => Boolean(onPreviewAssessment || getQuizRetry(merchantOrderId, false) ||
+    getCheckoutOrderTrackingPayload(merchantOrderId).quiz?.source === "style-quiz"));
+  const assessmentUrl = prefillAssessmentOrder(getAssessmentFormUrl(), merchantOrderId);
 
   useEffect(() => {
     if (import.meta.env.DEV && preview === "completed") {
@@ -16,7 +22,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
       setMessage("Your payment is confirmed. Your StyleIQ journey starts here.");
       return undefined;
     }
-    if (!import.meta.env.DEV) initializeAnalytics({ route: THANKYOU_PATH });
+    if (canTrackLivePayments()) initializeAnalytics({ route: THANKYOU_PATH });
 
     let cancelled = false;
     if (!merchantOrderId) {
@@ -33,12 +39,13 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
           return;
         }
 
-        trackPaymentCompleted({
+        if (canTrackLivePayments()) trackPaymentCompleted({
           merchantOrderId,
           amountPaise: result.payableAmountPaise ?? result.amountPaise,
           currency: result.currency,
           route: THANKYOU_PATH,
         });
+        forgetQuizRetry(merchantOrderId);
         try {
           localStorage.removeItem("attractivemen-checkout-draft:v2");
         } catch {
@@ -55,20 +62,27 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
   }, [merchantOrderId, preview]);
 
   return (
-    <main className="thankyou-page">
+    <main className={`thankyou-page${isQuizOrder ? " thankyou-page--quiz" : ""}`}>
       <section className="thankyou-card completed">
         {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made and no conversion was recorded</p> : null}
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true">{verified ? <Check size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
-          <p className="checkout-step">StyleIQ System</p>
-          <h1>{verified ? "Payment confirmed" : merchantOrderId ? "Confirming payment" : "Order reference missing"}</h1>
-          <p>{message}</p>
+          <p className="checkout-step">{isQuizOrder && verified ? "Your next step" : "StyleIQ System"}</p>
+          <h1>{verified ? isQuizOrder ? "Payment confirmed. Your next step is the assessment." : "Payment confirmed" : merchantOrderId ? "Confirming payment" : "Order reference missing"}</h1>
+          <p>{isQuizOrder && verified ? "Have these three photos ready before you start." : message}</p>
         </div>
         {verified ? (
           <div className="thankyou-next">
-            <h2>Start your assessment</h2>
+            {!isQuizOrder && <h2>Start your assessment</h2>}
             <p>Use the same name, email address, and WhatsApp number you entered at checkout so we can match your answers to your order.</p>
-            {assessmentUrl ? (
+            {isQuizOrder && <figure className="thankyou-photo-guide">
+              <img src={photoGuide} alt="Examples of a front portrait, side profile and full-length photo" />
+              <figcaption>Front portrait · Side profile · Full-length photo</figcaption>
+            </figure>}
+            {merchantOrderId && isQuizOrder && <p>Include order reference <strong>{merchantOrderId}</strong> in your assessment.</p>}
+            {import.meta.env.DEV && onPreviewAssessment ? (
+              <button className="checkout-pay thankyou-primary" type="button" onClick={onPreviewAssessment}>Start my assessment <ArrowRight size={19} /></button>
+            ) : assessmentUrl ? (
               <>
                 <p className="thankyou-assessment-cue"><ArrowDown size={17} weight="bold" aria-hidden="true" /><span>Your next step: tap below to begin</span></p>
                 <a className="checkout-pay thankyou-primary" href={assessmentUrl} target="_blank" rel="noreferrer"><span>Start my assessment</span><ArrowRight size={19} weight="bold" aria-hidden="true" /></a>
@@ -76,7 +90,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "" }) {
             ) : (
               <div className="thankyou-form-unavailable" role="status">Your assessment link is being prepared. Please contact support and include your order ID.</div>
             )}
-            <p className="thankyou-delivery-note">Your report is delivered within 48 hours after we receive your completed assessment and required photos.</p>
+            <p className="thankyou-delivery-note">Delivered within 48 hours after we receive your completed assessment and required photos.</p>
           </div>
         ) : merchantOrderId ? (
           <div className="thankyou-next thankyou-confirming">

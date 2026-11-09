@@ -307,3 +307,7 @@
   .thankyou-page *::before,
   .thankyou-page *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.thankyou-photo-guide { margin: 14px 0; }
+.thankyou-photo-guide img { display: block; width: 100%; border-radius: 10px; }
+.thankyou-photo-guide figcaption { margin-top: 6px; font-size: 12px; }

@@ -4,6 +4,10 @@ import { getCheckoutOrderTrackingPayload } from "./checkout-tracking.js";
 export const FAILED_RETRY_MARKER = "attractivemen-failed-payment-retry:v1";
 export const DEFAULT_ASSESSMENT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfAvXoX7c5qX2Ev_Al6TZ6OE46Yc2bmVJVkqAfIbh66oDbnUQ/viewform";
 
+export function canTrackLivePayments(location = globalThis.window?.location) {
+  return ["thriveonp.com", "www.thriveonp.com"].includes(location?.hostname?.toLowerCase());
+}
+
 export async function checkPaymentStatus(merchantOrderId, fetchRef = globalThis.fetch) {
   const response = await fetchRef("/api/phonepe/status", {
     method: "POST",
@@ -41,12 +45,24 @@ export function markFailedPaymentRetry(merchantOrderId, storage = globalThis.win
   }
 }
 
-export function getAssessmentFormUrl(value = import.meta.env?.VITE_STYLEIQ_ASSESSMENT_FORM_URL || DEFAULT_ASSESSMENT_FORM_URL) {
+export function getAssessmentFormUrl(value, location = globalThis.window?.location) {
+  const configured = value === undefined ? import.meta.env?.VITE_STYLEIQ_ASSESSMENT_FORM_URL : value;
+  const useProductionDefault = canTrackLivePayments(location);
+  const target = configured || (useProductionDefault ? DEFAULT_ASSESSMENT_FORM_URL : "");
+  if (!target) return "";
   try {
-    const url = new URL(String(value || DEFAULT_ASSESSMENT_FORM_URL));
+    const url = new URL(String(target));
     if (url.protocol !== "https:" || !["docs.google.com", "forms.gle"].includes(url.hostname)) return "";
     return url.toString();
   } catch {
     return "";
   }
+}
+
+export function prefillAssessmentOrder(formUrl, merchantOrderId, field = import.meta.env?.VITE_STYLEIQ_ASSESSMENT_ORDER_FIELD) {
+  if (!formUrl || !merchantOrderId || !/^entry\.\d+$/.test(field || "")) return formUrl;
+  const url = new URL(formUrl);
+  if (url.hostname !== "docs.google.com" || !url.pathname.endsWith("/viewform")) return formUrl;
+  url.searchParams.set(field, merchantOrderId);
+  return url.toString();
 }

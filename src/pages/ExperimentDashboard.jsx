@@ -863,8 +863,31 @@ function Health({ health }) {
           </p>
         )}
       </Panel>
+      {import.meta.env.VITE_STYLEIQ_ASSESSMENT_QUEUE === "true" && <AssessmentQueue />}
     </>
   );
+}
+
+function AssessmentQueue() {
+  const [state, setState] = useState("ready");
+  const submissions = useQuery(convexFunctions.assessmentQueue, { state });
+  return <Panel title="StyleIQ assessments" kicker="Fulfilment">
+    <label>Show <select value={state} onChange={(event) => setState(event.target.value)}>
+      <option value="ready">Ready for fulfilment</option>
+      <option value="unmatched">Unmatched</option>
+      <option value="incomplete">Missing photos</option>
+      <option value="duplicate">Duplicates</option>
+    </select></label>
+    {submissions === undefined ? <p role="status">Loading assessments…</p>
+      : submissions.length ? <ul>{submissions.map((submission) => <li key={submission._id}>
+        <strong>{submission.merchantOrderId || "Missing order reference"}</strong>
+        {" · "}Form response {submission.responseId}
+        {submission.fulfilmentStartsAt ? ` · 48-hour window began ${new Intl.DateTimeFormat("en-IN", {
+          dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata",
+        }).format(submission.fulfilmentStartsAt)} IST` : ""}
+        {submission.missingPhotos.length ? ` · Missing: ${submission.missingPhotos.join(", ")}` : ""}
+      </li>)}</ul> : <p>No submissions in this view.</p>}
+  </Panel>;
 }
 function OrderDrawer({ order, close }) {
   return (

@@ -3,6 +3,7 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/style-quiz", "destination": "/" },
     { "source": "/style-for-your-complexion", "destination": "/" },
     { "source": "/am-ds", "destination": "/" },
     { "source": "/a-m", "destination": "/" },
@@ -19,6 +20,7 @@
     { "source": "/dashboard/(.*)", "destination": "/" }
   ],
   "headers": [
+    { "source": "/style-quiz", "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }] },
     { "source": "/style-for-your-complexion", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     { "source": "/am-ds", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     {

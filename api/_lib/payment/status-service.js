@@ -3,7 +3,7 @@ import { getPaymentErrorType, logPaymentEvent } from "../payment-logger.js";
 import { buildPaymentStatusPayload } from "../payment-status-webhook.js";
 import { getPhonePeOrderStatus } from "../phonepe.js";
 import { MERCHANT_ORDER_ID_MAX_LENGTH } from "../constants.js";
-import { buildConvexAttribution, recordConvexOrder, recordConvexPaymentReceipt } from "../convex.js";
+import { buildConvexAttribution, buildConvexQuizAttribution, recordConvexOrder, recordConvexPaymentReceipt } from "../convex.js";
 
 const MERCHANT_ORDER_ID_PATTERN = new RegExp(`^[A-Za-z0-9_-]{1,${MERCHANT_ORDER_ID_MAX_LENGTH}}$`);
 const STATUS_ROUTE = "/api/phonepe/status";
@@ -72,6 +72,7 @@ export async function checkPaymentOrderStatus({
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       state: status.state,
       attribution: buildConvexAttribution(tracking),
+      quizAttribution: buildConvexQuizAttribution(tracking),
       failure: status.state === "FAILED" ? {
         type: "payment_failed",
         ...(status.errorCode ? { code: status.errorCode } : {}),
@@ -97,6 +98,7 @@ export async function checkPaymentOrderStatus({
       amountPaise: normalizeAmountPaise(status.payableAmountPaise ?? status.amountPaise ?? status.amount),
       state: "PENDING",
       attribution: buildConvexAttribution(tracking),
+      quizAttribution: buildConvexQuizAttribution(tracking),
       providerEventId: buildProviderEventId(normalizedOrderId, status),
       occurredAt: Date.now(),
     }), logger);

@@ -1,0 +1,16 @@
+.thankyou-page--quiz {
+  width: min(100%, 390px);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: 28px 22px;
+  background: #f2ece8;
+  color: #10232a;
+}
+.thankyou-page--quiz .thankyou-card { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; text-align: left; }
+.thankyou-page--quiz .thankyou-status-panel { padding: 12px 0 0; border: 0; background: transparent; color: #10232a; text-align: left; }
+.thankyou-page--quiz .thankyou-icon { margin-inline: 0; background: #10232a; color: #e4bc98; }
+.thankyou-page--quiz h1 { max-width: 16ch; font: 700 30px/1.07 Inter, system-ui, sans-serif; letter-spacing: -.04em; color: #10232a; }
+.thankyou-page--quiz .thankyou-next { padding: 0; border: 0; background: transparent; text-align: left; }
+.thankyou-page--quiz .thankyou-photo-guide { border: 1px solid #d8ccc3; border-radius: 10px; overflow: hidden; background: #fffcf9; }
+.thankyou-page--quiz .thankyou-photo-guide figcaption { padding: 0 8px 8px; text-align: center; }
+.thankyou-page--quiz .thankyou-primary { min-height: 48px; border-radius: 9px; background: #b58863; color: #10232a; }

@@ -41,5 +41,18 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react()],
+  plugins: [{
+    name: "style-quiz-dev-route",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const [path, query] = (req.url || "").split(/\?(.*)/s);
+        if (path === "/style-quiz/" || path === "/style-quiz.html") {
+          res.writeHead(302, { Location: "/style-quiz" + (query ? "?" + query : "") });
+          return res.end();
+        }
+        if (path === "/style-quiz") req.url = "/index.html";
+        next();
+      });
+    },
+  }, react()],
 });

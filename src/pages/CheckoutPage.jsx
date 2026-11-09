@@ -11,12 +11,14 @@ import {
 import { initializeAnalytics, trackCheckoutView, trackPaymentStarted } from "../lib/analytics.js";
 import { getInitialPhoneCountryCode, normalizeInternationalPhone, normalizePhoneInput } from "../lib/phone.js";
 import { FAILED_RETRY_MARKER } from "../lib/payment-return.js";
+import { rememberQuizRetry } from "../lib/quiz-retry.js";
+import { canTrackLivePayments } from "../lib/payment-return.js";
 import { CHECKOUT_PATH } from "../routes.js";
 import "../styles/checkout.css";
 
 const DRAFT_KEY = "attractivemen-checkout-draft:v2";
 const PAYMENT_TRUST_IMAGE_URL = "https://res.cloudinary.com/dm49wi6j4/image/upload/f_webp,q_auto,w_1200/AM%20-%20Assets/checkout/payment-trust.png";
-const COUNTRY_CODES = [
+export const COUNTRY_CODES = [
   ["+91", "🇮🇳"], ["+1", "🇺🇸"], ["+44", "🇬🇧"], ["+61", "🇦🇺"], ["+971", "🇦🇪"], ["+65", "🇸🇬"],
   ["+49", "🇩🇪"], ["+33", "🇫🇷"], ["+81", "🇯🇵"], ["+82", "🇰🇷"], ["+86", "🇨🇳"], ["+27", "🇿🇦"],
   ["+234", "🇳🇬"], ["+64", "🇳🇿"], ["+880", "🇧🇩"], ["+92", "🇵🇰"], ["+94", "🇱🇰"], ["+977", "🇳🇵"],
@@ -96,8 +98,13 @@ const formatAddOnPrice = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-export function CheckoutPage() {
-  const [initialDraft] = useState(loadDraft);
+export function CheckoutPage({ preview = false, quizCheckout = false, initialDetails, quizTracking = null, initialSelected = [], quizSample, onQuizBack, onPreviewComplete, onPreviewFailed } = {}) {
+  const isPreview = import.meta.env.DEV && (preview || quizCheckout);
+  const [initialDraft] = useState(() => quizCheckout
+    ? { details: { ...initialDetails, phoneCountryCode: initialDetails?.phoneCountryCode || getDefaultCountryCode() }, selected: initialSelected.filter((id) => VALID_BUMP_IDS.has(id)) }
+    : isPreview
+      ? { details: { name: "", email: "", phone: "", phoneCountryCode: getDefaultCountryCode() }, selected: [] }
+      : loadDraft());
   const [details, setDetails] = useState(initialDraft.details);
   const [selected, setSelected] = useState(initialDraft.selected);
   const [errors, setErrors] = useState({});
@@ -106,6 +113,7 @@ export function CheckoutPage() {
   const [paymentResult, setPaymentResult] = useState(null);
 
   useEffect(() => {
+    if (isPreview) return;
     const retryOrderId = new URLSearchParams(window.location.search).get("retryOrderId");
     try {
       if (retryOrderId && sessionStorage.getItem(FAILED_RETRY_MARKER) === retryOrderId) {
@@ -114,13 +122,14 @@ export function CheckoutPage() {
     } catch {
       // A failed-retry marker is only used to restore an optional selection.
     }
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ details, selected }));
-  }, [details, selected]);
+    if (!isPreview && !quizCheckout) localStorage.setItem(DRAFT_KEY, JSON.stringify({ details, selected }));
+  }, [details, selected, isPreview, quizCheckout]);
 
   useEffect(() => {
+    if (isPreview || quizCheckout) return;
     rememberCheckoutVisit();
     const tracking = getCheckoutTrackingSnapshot();
     void fetch("/api/experiment/checkout", {
@@ -132,14 +141,17 @@ export function CheckoutPage() {
       }),
       keepalive: true,
     }).catch(() => undefined);
-  }, []);
+  }, [isPreview, quizCheckout]);
 
   useEffect(() => {
-    initializeAnalytics({ route: CHECKOUT_PATH });
-    trackCheckoutView({ route: CHECKOUT_PATH });
-  }, []);
+    if (isPreview) return;
+    if (!canTrackLivePayments()) return;
+    initializeAnalytics({ route: quizCheckout ? "/style-quiz/checkout" : CHECKOUT_PATH });
+    trackCheckoutView({ route: quizCheckout ? "/style-quiz/checkout" : CHECKOUT_PATH });
+  }, [isPreview, quizCheckout]);
 
   useEffect(() => {
+    if (isPreview) return undefined;
     const merchantOrderId = new URLSearchParams(window.location.search).get("merchantOrderId");
     if (!merchantOrderId) return undefined;
 
@@ -179,7 +191,7 @@ export function CheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isPreview]);
 
   const selectedBumps = BUMPS.filter((bump) => selected.includes(bump.id));
   const bumpsTotal = selectedBumps.reduce((sum, bump) => sum + bump.price, 0);
@@ -187,7 +199,7 @@ export function CheckoutPage() {
   const gst = Math.round(subtotal * GST_RATE);
   const total = Math.round(subtotal + gst);
   const orderItems = [
-    { id: "style-report", title: "StyleIQ System", detail: "One-time payment", priceLabel: `${formatMoney(BASE_PRICE)} + GST` },
+    { id: "style-report", title: quizCheckout ? "Personalised Style Report" : "StyleIQ System", detail: "One-time payment", priceLabel: `${formatMoney(BASE_PRICE)} + GST` },
     ...selectedBumps.map(({ id, title, price }) => ({
       id,
       title,
@@ -222,6 +234,11 @@ export function CheckoutPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isPreview) {
+      if (onPreviewComplete) return onPreviewComplete(selected);
+      setStatus("This is a local checkout preview. No payment was made.");
+      return;
+    }
     if (!validate()) {
       setStatus("Please check the highlighted fields. Nothing has been charged.");
       return;
@@ -232,10 +249,27 @@ export function CheckoutPage() {
 
     try {
       const tracking = getCheckoutTrackingPayload();
+      if (quizCheckout) {
+        tracking.experiment = { experiment_id: "", visitor_id: "", page_variant: "", entry_type: "direct" };
+        tracking.quiz = { source: "style-quiz", version: quizTracking?.quizVersion || "styleiq-production-v1", visitor_id: quizTracking?.visitorId || "" };
+        const campaign = quizTracking?.campaign || {};
+        tracking.marketing = {
+          source: campaign.utm_source || "",
+          medium: campaign.utm_medium || "",
+          campaign: campaign.utm_campaign || "",
+          content: campaign.utm_content || "",
+          term: campaign.utm_term || "",
+          id: campaign.utm_id || "",
+          gclid: campaign.gclid || "",
+          gbraid: campaign.gbraid || "",
+          wbraid: campaign.wbraid || "",
+          fbclid: campaign.fbclid || "",
+        };
+      }
       const response = await fetch("/api/phonepe/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ details: { ...details, phone: getFullPhone(details) }, selected, tracking }),
+        body: JSON.stringify({ details: { name: details.name, email: details.email, phone: getFullPhone(details), ...(quizCheckout ? { followUp: details.followUp === true } : {}) }, selected, tracking }),
       });
       const data = await response.json().catch(() => ({}));
 
@@ -246,11 +280,14 @@ export function CheckoutPage() {
       if (!data.redirectUrl) throw new Error("Payment gateway did not return a checkout URL.");
 
       rememberCheckoutOrderTracking(data.merchantOrderId, tracking);
-      trackPaymentStarted({
+      if (quizCheckout) rememberQuizRetry(data.merchantOrderId, {
+        selected, tracking: quizTracking, token: data.quizRetryToken,
+      });
+      if (canTrackLivePayments()) trackPaymentStarted({
         merchantOrderId: data.merchantOrderId,
         amountPaise: data.amountPaise,
         currency: data.currency,
-        route: CHECKOUT_PATH,
+        route: quizCheckout ? "/style-quiz/checkout" : CHECKOUT_PATH,
       });
       window.location.assign(data.redirectUrl);
     } catch (error) {
@@ -262,7 +299,9 @@ export function CheckoutPage() {
   return (
     <div className="checkout-page">
       <section className="checkout-intro" aria-labelledby="checkout-title">
-        <h1 id="checkout-title">Get Your Personal Style Report</h1>
+        {quizCheckout ? <p className="checkout-quiz-kicker">Order review</p> : null}
+        <h1 id="checkout-title">{quizCheckout ? "Your Personalised Style Report" : "Get Your Personal Style Report"}</h1>
+        {isPreview && !quizCheckout ? <p>Local quiz checkout preview · Payments disabled</p> : null}
       </section>
 
       <main className="checkout-main">
@@ -274,7 +313,10 @@ export function CheckoutPage() {
         ) : null}
 
         <form className="checkout-card" onSubmit={handleSubmit} noValidate data-clarity-mask="true">
-          <section className="checkout-block" aria-label="Contact information">
+          {quizCheckout ? <section className="checkout-block checkout-quiz-contact-summary" aria-label="Contact details for delivery">
+            <h2>Report delivery details</h2><p><strong>{details.name}</strong><br />{details.email}<br />{getFullPhone(details)}</p>
+            {onQuizBack ? <button type="button" className="checkout-quiz-back" onClick={() => onQuizBack(selected)}>← Edit details</button> : null}
+          </section> : <section className="checkout-block" aria-label="Contact information">
             <p className="checkout-form-intro">Enter your details below to receive your StyleIQ System report.</p>
 
             <label className="checkout-field">
@@ -292,11 +334,16 @@ export function CheckoutPage() {
               <div className="checkout-phone"><select className="checkout-country-code" autoComplete="tel-country-code" value={details.phoneCountryCode || "+91"} onChange={(event) => updateDetail("phoneCountryCode", event.target.value)} aria-label="Country calling code">{COUNTRY_CODES.map(([code, country]) => <option value={code} key={code}>{country} {code}</option>)}</select><input type="tel" inputMode="tel" autoComplete="tel-national" value={details.phone} onChange={(event) => updateDetail("phone", normalizePhoneInput(event.target.value, details.phoneCountryCode || "+91"))} placeholder="Enter your number" aria-label="WhatsApp number" aria-invalid={Boolean(errors.phone)} /></div>
               {errors.phone ? <small>{errors.phone}</small> : null}
             </label>
-          </section>
+          </section>}
 
+          {quizCheckout && quizSample ? <section className="checkout-block checkout-quiz-sample" aria-label="Personalised Style Report sample">
+            <figure><img src={quizSample.image} alt={quizSample.alt} /><figcaption>{quizSample.chapter}</figcaption></figure>
+            <div><strong>{formatMoney(Math.round(BASE_PRICE * (1 + GST_RATE)))}</strong><small>Including GST</small>
+              <p>Guidance on hair, colours, fit and complete outfits.</p></div>
+          </section> : null}
           <section className="checkout-block checkout-addons" aria-label="Outfit visualisation upgrade">
             <div className="checkout-bumps">
-              {BUMPS.map(({ id, headline, offer, benefits }) => {
+              {BUMPS.map(({ id, title, price, headline, offer, benefits }) => {
                 const isSelected = selected.includes(id);
                 return (
                   <label className={`checkout-bump ${isSelected ? "selected" : ""}`} key={id}>
@@ -304,16 +351,16 @@ export function CheckoutPage() {
                     <span className="bump-check" aria-hidden="true">{isSelected ? <Check size={15} weight="bold" /> : null}</span>
                     <span className="bump-copy">
                       <span className="bump-title-row">
-                        <span><strong>{headline}</strong></span>
-                        <b className="bump-price">{offer}</b>
+                        <span><strong>{quizCheckout ? title : headline}</strong></span>
+                        <b className="bump-price">{quizCheckout ? formatMoney(Math.round(price * (1 + GST_RATE))) : offer}</b>
                       </span>
-                      <ul className="bump-benefits">
+                      {quizCheckout ? <small>Optional · GST included</small> : <ul className="bump-benefits">
                         {benefits.map((benefit) => (
                           <li key={benefit.emphasis}>
                             {benefit.before}<strong>{benefit.emphasis}</strong>{benefit.after}
                           </li>
                         ))}
-                      </ul>
+                      </ul>}
                     </span>
                   </label>
                 );
@@ -323,10 +370,10 @@ export function CheckoutPage() {
 
           <section className="checkout-block" aria-labelledby="order-title">
             <div className="checkout-block-heading">
-              <h2 id="order-title">Recap of Your Order</h2>
+              <h2 id="order-title">{quizCheckout ? "Order total" : "Recap of Your Order"}</h2>
             </div>
 
-            <div className="checkout-recap-items">
+            {!quizCheckout && <div className="checkout-recap-items">
               {orderItems.map((item) => (
                 <div className="checkout-recap-item" key={item.id}>
                   <span>{item.title}</span>
@@ -336,31 +383,33 @@ export function CheckoutPage() {
                   </span>
                 </div>
               ))}
-            </div>
+            </div>}
 
             <div className="checkout-totals">
               <div className="checkout-total"><span>Total payable</span><strong>{formatMoney(total)}</strong></div>
-              <div className="checkout-savings" aria-label={`Today's saving ${formatMoney(savings)}`}>Today&apos;s saving: <b>{formatMoney(savings)}</b></div>
+              {!quizCheckout && <div className="checkout-savings" aria-label={`Today's saving ${formatMoney(savings)}`}>Today&apos;s saving: <b>{formatMoney(savings)}</b></div>}
             </div>
           </section>
 
           <section className="checkout-block checkout-payment" aria-label="Secure payment">
             <button className="checkout-pay" type="submit" disabled={isPaying} aria-busy={isPaying}>
-              <LockKey size={20} weight="fill" /> {isPaying ? "Processing" : "Complete Order"}
+              <LockKey size={20} weight="fill" /> {isPaying ? "Processing" : onPreviewComplete ? "Complete demo order" : "Complete Order"}
             </button>
 
-            <figure className="checkout-payment-trust">
+            {quizCheckout ? <p className="checkout-quiz-delivery">One-time payment · {isPreview ? "Demo only" : "Secured by PhonePe"}</p> : <figure className="checkout-payment-trust">
               <img src={PAYMENT_TRUST_IMAGE_URL} alt="Secure payment options including UPI, Visa, Mastercard, RuPay, netbanking and wallets" width="1600" height="420" loading="lazy" decoding="async" />
-            </figure>
-            <div className="checkout-offer-price" aria-label="Current StyleIQ offer">
+            </figure>}
+            {!quizCheckout && <div className="checkout-offer-price" aria-label="Current StyleIQ offer">
               <span>Normal price: <del>₹2,999</del></span>
               <strong>Today only: ₹1,999 + GST</strong>
-            </div>
+            </div>}
+            {quizCheckout ? <p className="checkout-quiz-delivery checkout-quiz-delivery--bottom">Delivered within 48 hours after we receive your completed assessment and required photos.</p> : null}
+            {isPreview && onPreviewFailed && <button className="checkout-quiz-back" type="button" onClick={() => onPreviewFailed(selected)}>Preview a failed payment</button>}
             {status ? <p className="checkout-status" role="status">{status}</p> : null}
           </section>
         </form>
 
-        <section className="checkout-next" aria-labelledby="report-recap-title">
+        {!quizCheckout && <section className="checkout-next" aria-labelledby="report-recap-title">
           <h2 id="report-recap-title">Your report recap</h2>
           <ul className="checkout-report-recap">
             <li>Personalised hairstyle and beard ideas</li>
@@ -369,7 +418,7 @@ export function CheckoutPage() {
             <li>Shoe, watch, perfume and shopping guidance</li>
             <li>90-day upgrade plan with lifetime access</li>
           </ul>
-        </section>
+        </section>}
       </main>
 
       <footer className="checkout-footer">
