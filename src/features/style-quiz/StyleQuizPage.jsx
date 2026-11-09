@@ -289,7 +289,7 @@ function ContactDetails({ value, error, onChange, onSubmit }) {
       {error.phone && <small id="quiz-phone-error">{error.phone}</small>}
     </div>
     <label className="style-quiz-consent"><input type="checkbox" name="followUp" checked={value.followUp} onChange={(event) => onChange("followUp", event.target.checked)} /><span>It’s okay to contact me about completing my StyleIQ assessment.</span></label>
-    <button type="submit" className="style-quiz-primary">Continue to checkout <ArrowRight size={18} /></button>
+    <button type="submit" className="style-quiz-primary">Continue <ArrowRight size={18} /></button>
     <p className="style-quiz-privacy"><LockKey size={14} /> We’ll use these details to deliver your report.</p>
   </form>;
 }
