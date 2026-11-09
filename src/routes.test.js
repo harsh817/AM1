@@ -36,6 +36,11 @@ test("keeps the StyleIQ quiz behind its release flag outside local development",
   assert.deepEqual(getPageRoute("/style-quiz/", "", { styleQuizEnabled: true }), { page: "style-quiz" });
 });
 
+test("the explicit quiz preview opens in demo mode while paid access remains gated", () => {
+  assert.deepEqual(getPageRoute("/style-quiz", "?preview=1", { styleQuizEnabled: false }), { page: "style-quiz", preview: true });
+  assert.deepEqual(getPageRoute("/style-quiz", "?preview=1", { styleQuizEnabled: true }), { page: "style-quiz", preview: true });
+});
+
 test("passes local payment preview states to the corresponding pages", () => {
   assert.deepEqual(getPageRoute("/a-m-payment-status", "?merchantOrderId=PREVIEW-1&preview=pending"), {
     page: "payment-status", merchantOrderId: "PREVIEW-1", preview: "pending",

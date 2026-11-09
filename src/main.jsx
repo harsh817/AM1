@@ -22,9 +22,9 @@ function App({ route }) {
   const page = route.page === "checkout" ? (
     <CheckoutPage preview={import.meta.env.DEV && new URLSearchParams(window.location.search).get("previewQuiz") === "1"} />
   ) : route.page === "style-quiz" ? (
-    <StyleQuizPage />
+    <StyleQuizPage preview={route.preview} />
   ) : route.page === "style-quiz-disabled" ? (
-    <main className="style-quiz-disabled"><h1>StyleIQ is getting ready</h1><p>This quiz isn’t available just yet.</p><a href="/a-m">Explore StyleIQ</a></main>
+    <main className="style-quiz-disabled"><h1>StyleIQ is getting ready</h1><p>You can try the full walkthrough with a simulated checkout.</p><a href="/style-quiz?preview=1">Open the StyleIQ quiz demo</a></main>
   ) : route.page === "complexion" ? (
     <LandingPageAM2 variant="AM2" persona="complexion" />
   ) : route.page === "complexion-preview" ? (

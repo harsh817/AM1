@@ -99,7 +99,8 @@ const formatAddOnPrice = (amount) =>
   }).format(amount);
 
 export function CheckoutPage({ preview = false, quizCheckout = false, initialDetails, quizTracking = null, initialSelected = [], quizSample, onQuizBack, onPreviewComplete, onPreviewFailed } = {}) {
-  const isPreview = import.meta.env.DEV && (preview || quizCheckout);
+  const isPreview = (import.meta.env.DEV && (preview || quizCheckout)) ||
+    (quizCheckout && typeof onPreviewComplete === "function");
   const [initialDraft] = useState(() => quizCheckout
     ? { details: { ...initialDetails, phoneCountryCode: initialDetails?.phoneCountryCode || getDefaultCountryCode() }, selected: initialSelected.filter((id) => VALID_BUMP_IDS.has(id)) }
     : isPreview

@@ -57,7 +57,7 @@ function AssessmentPreview() {
   const [submitted, setSubmitted] = useState(false);
   const photos = ["Front portrait", "Side profile", "Full-length photo"];
   return <section className="style-quiz-assessment">
-    <p className="style-quiz-eyebrow">LOCAL PREVIEW</p>
+    <p className="style-quiz-eyebrow">ASSESSMENT DEMO</p>
     <h1>{submitted ? "Assessment preview complete" : "Complete your photo assessment"}</h1>
     {submitted ? <p>Delivered within 48 hours after we receive your completed assessment and required photos.</p> : <>
       <p>Order reference <strong>{demoOrder}</strong></p>
@@ -71,9 +71,9 @@ function AssessmentPreview() {
   </section>;
 }
 
-function readDraft() {
+function readDraft(key = DRAFT_KEY) {
   try {
-    const saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null");
+    const saved = JSON.parse(sessionStorage.getItem(key) || "null");
     if (saved && Number.isInteger(saved.position) && STEPS[saved.position] && saved.answers && typeof saved.answers === "object") {
       return { position: saved.position, path: PATHS[saved.path] ? saved.path : "", answers: saved.answers };
     }
@@ -117,12 +117,12 @@ async function sendQuizEvent(eventType, visitorId) {
   }
 }
 
-function ProgressHeader({ position, onBack, canGoBack, compact = false }) {
+function ProgressHeader({ position, onBack, canGoBack, compact = false, demo = false }) {
   const completed = Math.min(100, Math.round(position / 24 * 100));
   return <header className={`style-quiz-header${compact ? " style-quiz-header--compact" : ""}`}>
     <button type="button" className="style-quiz-back" onClick={onBack} disabled={!canGoBack} aria-label="Go back"><ArrowLeft size={18} /></button>
     <strong className="style-quiz-wordmark">StyleIQ</strong>
-    <span className="style-quiz-progress-label">{import.meta.env.DEV && (compact || !position) ? "Preview" : position ? "Your profile" : ""}</span>
+    <span className="style-quiz-progress-label">{demo ? "Demo" : import.meta.env.DEV && (compact || !position) ? "Preview" : position ? "Your profile" : ""}</span>
     {!compact && position > 0 && <div className="style-quiz-progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={completed}><span style={{ width: `${completed}%` }} /></div>}
   </header>;
 }
@@ -296,15 +296,20 @@ function ContactDetails({ value, error, onChange, onSubmit }) {
   </form>;
 }
 
-export function StyleQuizPage() {
-  const [draft, setDraft] = useState(readDraft);
-  const [details, setDetails] = useState({ ...emptyDetails, followUp: false });
+export function StyleQuizPage({ preview = false }) {
+  const isDemo = preview || import.meta.env.DEV;
+  const draftKey = preview ? `${DRAFT_KEY}:demo` : DRAFT_KEY;
+  const [draft, setDraft] = useState(() => readDraft(draftKey));
+  const [details, setDetails] = useState(() => ({
+    ...emptyDetails, followUp: false,
+    ...(preview ? { name: "Demo Customer", email: "buyer@example.test", phone: "9876543210" } : {}),
+  }));
   const [errors, setErrors] = useState({});
   const [checkout, setCheckout] = useState(false);
   const [selectedBumps, setSelectedBumps] = useState([]);
   const [previewStep, setPreviewStep] = useState("");
   const [retryOrderId] = useState(() => new URLSearchParams(window.location.search).get("retryOrderId"));
-  const [retry] = useState(() => getQuizRetry(retryOrderId));
+  const [retry] = useState(() => preview ? null : getQuizRetry(retryOrderId));
   const [retryLoading, setRetryLoading] = useState(Boolean(retry?.token && !import.meta.env.DEV));
   const [reducedMotion, setReducedMotion] = useState(false);
   const [visitorId] = useState(getVisitorId);
@@ -340,8 +345,8 @@ export function StyleQuizPage() {
     return () => controller.abort();
   }, [retry, retryOrderId]);
   useEffect(() => {
-    try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch { /* Keep the active session in memory if storage is unavailable. */ }
-  }, [draft]);
+    try { sessionStorage.setItem(draftKey, JSON.stringify(draft)); } catch { /* Keep the active session in memory if storage is unavailable. */ }
+  }, [draft, draftKey]);
   useEffect(() => {
     const query = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (query) { setReducedMotion(query.matches); const update = () => setReducedMotion(query.matches); query.addEventListener?.("change", update); return () => query.removeEventListener?.("change", update); }
@@ -380,25 +385,27 @@ export function StyleQuizPage() {
     if (phoneDigits.length < 7 || phoneDigits.length + details.phoneCountryCode.length - 1 > 15) nextErrors.phone = "Enter a valid phone number.";
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) return;
-    if (!retry) void sendQuizEvent("quiz_completed", visitorId);
+    if (!isDemo && !retry) void sendQuizEvent("quiz_completed", visitorId);
     startCheckout();
   }
   function startCheckout() {
-    if (!retry) void sendQuizEvent("checkout_started", visitorId);
+    if (!isDemo && !retry) void sendQuizEvent("checkout_started", visitorId);
     setCheckout(true);
     window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" });
   }
-  if (import.meta.env.DEV && previewStep === "failed") return <PaymentFailedPage merchantOrderId={demoOrder} preview="failed" />;
-  if (import.meta.env.DEV && previewStep === "thankyou") return <ThankYouPage merchantOrderId={demoOrder} preview="completed" onPreviewAssessment={() => setPreviewStep("assessment")} />;
-  if (import.meta.env.DEV && previewStep === "assessment") return <div className="style-quiz-page"><AssessmentPreview /></div>;
+  if (isDemo && previewStep === "failed") return <PaymentFailedPage merchantOrderId={demoOrder} preview="failed"
+    onPreviewRetry={preview ? () => setPreviewStep("") : undefined} />;
+  if (isDemo && previewStep === "thankyou") return <ThankYouPage merchantOrderId={demoOrder} preview="completed" onPreviewAssessment={() => setPreviewStep("assessment")} />;
+  if (isDemo && previewStep === "assessment") return <div className="style-quiz-page"><AssessmentPreview /></div>;
   if (checkout) return <div className="style-quiz-checkout-shell">
-    <ProgressHeader position={absolutePosition} canGoBack onBack={back} compact />
+    <ProgressHeader position={absolutePosition} canGoBack onBack={back} compact demo={preview} />
     <CheckoutPage quizCheckout initialDetails={details} initialSelected={selectedBumps} quizTracking={quizTracking}
       quizSample={checkoutSample(path || "overall", answers)}
       onQuizBack={(selected) => { setSelectedBumps(selected); back(); }}
-      onPreviewComplete={import.meta.env.DEV ? () => setPreviewStep("thankyou") : undefined}
-      onPreviewFailed={import.meta.env.DEV ? (selected) => {
-        rememberQuizRetry(demoOrder, { selected, tracking: quizTracking });
+      onPreviewComplete={isDemo ? () => setPreviewStep("thankyou") : undefined}
+      onPreviewFailed={isDemo ? (selected) => {
+        if (preview) setSelectedBumps(selected);
+        else rememberQuizRetry(demoOrder, { selected, tracking: quizTracking });
         setPreviewStep("failed");
       } : undefined}
     />
@@ -414,15 +421,15 @@ export function StyleQuizPage() {
     testimonial: ["CUSTOMER STORY", "Clear guidance can make getting dressed easier.", `“${review.quote}”`],
   }[step];
   return <div className={`style-quiz-page${darkSteps.has(step) ? " style-quiz-page--dark" : ""}`}>
-    <ProgressHeader position={absolutePosition} canGoBack={position > 0} onBack={back} compact={["potential", "analysis", "contact"].includes(step)} />
+    <ProgressHeader position={absolutePosition} canGoBack={position > 0} onBack={back} compact={["potential", "analysis", "contact"].includes(step)} demo={preview} />
     <main ref={screen} className={`style-quiz-content screen-${step}${question ? " screen-question" : ""}`}>
       {step === "intro" && <section className="style-quiz-welcome">
         <p className="style-quiz-eyebrow">A PERSONAL STYLE STARTING POINT</p>
         <h1 id="quiz-title" tabIndex={-1}>Find out where to start with your style.</h1>
         <p>Tell us what you’d like to improve. We’ll show you one practical place to start.</p>
         <img src={welcomeOutfits} alt="Four complete outfit directions" />
-        <p className="style-quiz-caption">No photos needed to begin.</p>
-        <button type="button" className="style-quiz-primary" onClick={() => { void sendQuizEvent("quiz_started", visitorId); move(1); }}>Start my quiz</button>
+        <p className="style-quiz-caption">{preview ? "Interactive demo. No payment or uploads." : "No photos needed to begin."}</p>
+        <button type="button" className="style-quiz-primary" onClick={() => { if (!isDemo) void sendQuizEvent("quiz_started", visitorId); move(1); }}>Start my quiz</button>
       </section>}
       {question && <section className="style-quiz-question">
         <h1 id="quiz-title" tabIndex={-1}>{step === "focus" ? "What would you change first?" : question.prompt}</h1>

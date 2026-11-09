@@ -10,6 +10,7 @@ import "../styles/checkout.css";
 import "../styles/quiz-thankyou.css";
 
 export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAssessment }) {
+  const isDemo = Boolean(onPreviewAssessment) || (import.meta.env.DEV && preview === "completed");
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("Confirming your payment with PhonePe...");
   const [isQuizOrder] = useState(() => Boolean(onPreviewAssessment || getQuizRetry(merchantOrderId, false) ||
@@ -17,7 +18,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
   const assessmentUrl = prefillAssessmentOrder(getAssessmentFormUrl(), merchantOrderId);
 
   useEffect(() => {
-    if (import.meta.env.DEV && preview === "completed") {
+    if (isDemo) {
       setVerified(true);
       setMessage("Your payment is confirmed. Your StyleIQ journey starts here.");
       return undefined;
@@ -59,12 +60,12 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
       });
 
     return () => { cancelled = true; };
-  }, [merchantOrderId, preview]);
+  }, [merchantOrderId, isDemo]);
 
   return (
     <main className={`thankyou-page${isQuizOrder ? " thankyou-page--quiz" : ""}`}>
       <section className="thankyou-card completed">
-        {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made and no conversion was recorded</p> : null}
+        {isDemo ? <p className="payment-preview-notice">DEMO · No payment was made and no conversion was recorded</p> : null}
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true">{verified ? <Check size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
           <p className="checkout-step">{isQuizOrder && verified ? "Your next step" : "StyleIQ System"}</p>
@@ -80,7 +81,7 @@ export function ThankYouPage({ merchantOrderId = "", preview = "", onPreviewAsse
               <figcaption>Front portrait · Side profile · Full-length photo</figcaption>
             </figure>}
             {merchantOrderId && isQuizOrder && <p>Include order reference <strong>{merchantOrderId}</strong> in your assessment.</p>}
-            {import.meta.env.DEV && onPreviewAssessment ? (
+            {onPreviewAssessment ? (
               <button className="checkout-pay thankyou-primary" type="button" onClick={onPreviewAssessment}>Start my assessment <ArrowRight size={19} /></button>
             ) : assessmentUrl ? (
               <>

@@ -12,6 +12,7 @@ export function getPageRoute(pathname, search = "", options = {}) {
   const query = new URLSearchParams(search);
   const path = normalizePath(pathname);
   if (path === STYLE_QUIZ_PATH) {
+    if (query.get("preview") === "1") return { page: "style-quiz", preview: true };
     const enabled = options.styleQuizEnabled ?? (import.meta.env?.DEV === true || import.meta.env?.VITE_STYLE_QUIZ_ENABLED === "true");
     return enabled ? { page: "style-quiz" } : { page: "style-quiz-disabled" };
   }

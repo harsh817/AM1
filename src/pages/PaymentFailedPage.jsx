@@ -5,13 +5,14 @@ import "../styles/checkout.css";
 import { getQuizRetry } from "../lib/quiz-retry.js";
 import { STYLE_QUIZ_PATH } from "../routes.js";
 
-export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
+export function PaymentFailedPage({ merchantOrderId = "", preview = "", onPreviewRetry }) {
+  const isDemo = Boolean(onPreviewRetry) || (import.meta.env.DEV && preview === "failed");
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("Confirming the payment outcome with PhonePe...");
   const reassurance = "Don’t worry—you can still look attractive, masculine and confident with a personal style report tried by 1,119+ men and rated 4.5 stars.";
 
   useEffect(() => {
-    if (import.meta.env.DEV && preview === "failed") {
+    if (isDemo) {
       setVerified(true);
       setMessage(reassurance);
       return undefined;
@@ -43,10 +44,11 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
       });
 
     return () => { cancelled = true; };
-  }, [merchantOrderId, preview]);
+  }, [merchantOrderId, isDemo]);
 
   const handleRetry = () => {
     if (!verified || !merchantOrderId) return;
+    if (onPreviewRetry) return onPreviewRetry();
     markFailedPaymentRetry(merchantOrderId);
     const retryUrl = getQuizRetry(merchantOrderId, false)
       ? `${STYLE_QUIZ_PATH}?retryOrderId=${encodeURIComponent(merchantOrderId)}`
@@ -57,7 +59,7 @@ export function PaymentFailedPage({ merchantOrderId = "", preview = "" }) {
   return (
     <main className="thankyou-page">
       <section className="thankyou-card failed">
-        {import.meta.env.DEV && preview ? <p className="payment-preview-notice">LOCAL PREVIEW · No payment was made</p> : null}
+        {isDemo ? <p className="payment-preview-notice">DEMO · No payment was made</p> : null}
         <div className="thankyou-status-panel">
           <div className="thankyou-icon" aria-hidden="true">{verified ? <WarningCircle size={30} weight="bold" /> : <LockKey size={30} weight="bold" />}</div>
           <p className="checkout-step">{verified ? "Payment not completed" : "StyleIQ System"}</p>
